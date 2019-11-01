@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Tweetmeck</string>
+    <string name="home">Home</string>
+    <string name="deeplink">Deeplink</string>
+    <string name="settings">Settings</string>
+    <string name="login_header">Enter your login information!</string>
+    <string name="twitter_username">Twitter username</string>
+    <string name="login_on_twitter">Login on Twitter</string>
+</resources>
