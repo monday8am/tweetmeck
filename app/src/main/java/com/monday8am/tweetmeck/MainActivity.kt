@@ -1,14 +1,18 @@
 package com.monday8am.tweetmeck
 
-import android.content.res.Resources
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,27 +31,32 @@ class MainActivity : AppCompatActivity() {
         // Set up Action Bar
         val navController = host.navController
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            val dest: String = try {
-                resources.getResourceName(destination.id)
-            } catch (e: Resources.NotFoundException) {
-                destination.id.toString()
-            }
-
             when(destination.id) {
-                R.id.loginFragment -> {
-
-                }
-                else -> {
-
-                }
+                R.id.login_dest -> toolbar.visibility = View.GONE
+                else -> toolbar.visibility = View.VISIBLE
             }
         }
-        /*
+
         val drawerLayout : DrawerLayout? = findViewById(R.id.drawer_layout)
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.time, R.id.deeplink_dest),
+            setOf(R.id.timeline_dest, R.id.settings_dest),
             drawerLayout)
 
-         */
+        setupActionBar(navController, appBarConfiguration)
+        setupNavigationMenu(navController)
+    }
+
+    private fun setupNavigationMenu(navController: NavController) {
+        val sideNavView = findViewById<NavigationView>(R.id.nav_view)
+        sideNavView?.setupWithNavController(navController)
+    }
+
+    private fun setupActionBar(navController: NavController,
+                               appBarConfig : AppBarConfiguration) {
+        setupActionBarWithNavController(navController, appBarConfig)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return findNavController(R.id.my_nav_host_fragment).navigateUp(appBarConfiguration)
     }
 }

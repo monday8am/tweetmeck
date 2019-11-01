@@ -4,12 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
     android:label="Login"
-    app:startDestination="@+id/loginFragment">
+    app:startDestination="@+id/login_dest">
 
     <fragment
-        android:id="@+id/loginFragment"
+        android:id="@+id/login_dest"
         android:name="com.monday8am.tweetmeck.login.LoginFragment"
-        android:label="login_fragment"
-        tools:layout="@layout/login_fragment" />
+        android:label="@string/login_info"
+        tools:layout="@layout/login_fragment">
+        <action
+            android:id="@+id/action_loginFragment_to_timelineFragment"
+            app:destination="@+id/timeline_dest" />
+    </fragment>
+    <fragment
+        android:id="@+id/timeline_dest"
+        android:name="com.monday8am.tweetmeck.timeline.TimelineFragment"
+        android:label="Timeline"
+        tools:layout="@layout/timeline_fragment" />
+    <fragment
+        android:id="@+id/settings_dest"
+        android:name="com.monday8am.tweetmeck.settings.SettingsFragment"
+        android:label="@string/settings_screen_title"
+        tools:layout="@layout/settings_fragment" />
 
 </navigation>

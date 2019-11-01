@@ -6,22 +6,26 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 
 import com.monday8am.tweetmeck.R
+import com.monday8am.tweetmeck.databinding.LoginFragmentBinding
 
 class LoginFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = LoginFragment()
-    }
-
+    private lateinit var binding: LoginFragmentBinding
     private lateinit var viewModel: AuthViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.login_fragment, container, false)
+        binding = LoginFragmentBinding.inflate(layoutInflater)
+        binding.button.setOnClickListener {
+            it.findNavController().navigate(R.id.action_loginFragment_to_timelineFragment)
+        }
+
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
