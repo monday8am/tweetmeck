@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_loginFragment_to_timelineFragment"
             app:destination="@+id/timeline_dest" />
+        <action
+            android:id="@+id/action_login_dest_to_authWebViewFragment"
+            app:destination="@id/authWebViewFragment" />
     </fragment>
     <fragment
         android:id="@+id/timeline_dest"
@@ -25,5 +28,10 @@
         android:name="com.monday8am.tweetmeck.settings.SettingsFragment"
         android:label="@string/settings_screen_title"
         tools:layout="@layout/settings_fragment" />
+    <fragment
+        android:id="@+id/authWebViewFragment"
+        android:name="com.monday8am.tweetmeck.login.AuthWebViewFragment"
+        android:label="fragment_auth_web_view"
+        tools:layout="@layout/fragment_auth_web_view" />
 
 </navigation>

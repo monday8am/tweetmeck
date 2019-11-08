@@ -1,14 +1,11 @@
 package com.monday8am.tweetmeck.login
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
-
-import com.monday8am.tweetmeck.R
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import com.monday8am.tweetmeck.databinding.LoginFragmentBinding
 
 class LoginFragment : Fragment() {
@@ -22,7 +19,7 @@ class LoginFragment : Fragment() {
     ): View? {
         binding = LoginFragmentBinding.inflate(layoutInflater)
         binding.button.setOnClickListener {
-            it.findNavController().navigate(R.id.action_loginFragment_to_timelineFragment)
+
         }
 
         return binding.root
@@ -31,7 +28,5 @@ class LoginFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(AuthViewModel::class.java)
-        // TODO: Use the ViewModel
     }
-
 }

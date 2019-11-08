@@ -6,4 +6,7 @@
     <string name="login_info">Enter your login information!</string>
     <string name="twitter_username">Twitter username</string>
     <string name="login_on_twitter">Login on Twitter</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

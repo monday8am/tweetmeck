@@ -4,6 +4,10 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+def apiKeyPropertiesFile = rootProject.file("apikey.properties");
+def apiKeyProperties = new Properties()
+apiKeyProperties.load(new FileInputStream(apiKeyPropertiesFile))
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -13,6 +17,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "apiKey", apiKeyProperties['apiKey'])
+        buildConfigField("String", "apiSecret", apiKeyProperties['apiSecret'])
     }
     buildTypes {
         release {
@@ -43,7 +50,17 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    //Navigation
+    // navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$rootProject.navigationVersion"
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-moshi:$rootProject.retrofitVersion"
+
+    // coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core: $rootProject.kotlinCoroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android: $rootProject.kotlinCoroutinesVersion"
+
+    implementation 'com.github.scribejava:scribejava-apis:6.4.1'
 }
