@@ -21,5 +21,4 @@ object ServiceLocator {
         val twitterAuthService = TwitterAuthServiceImpl(BuildConfig.apiKey, BuildConfig.apiSecret)
         return DefaultAuthRepository(twitterAuthService)
     }
-
 }
