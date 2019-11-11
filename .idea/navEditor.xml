@@ -8,14 +8,23 @@
             <LayoutPositions>
               <option name="myPositions">
                 <map>
-                  <entry key="authWebViewFragment">
+                  <entry key="auth_dest">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="19" />
-                            <option name="y" value="727" />
+                            <option name="x" value="-45" />
+                            <option name="y" value="918" />
                           </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_auth_dest_to_login_dest">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
                         </option>
                       </LayoutPositions>
                     </value>
@@ -25,18 +34,18 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="12" />
-                            <option name="y" value="368" />
+                            <option name="x" value="-303" />
+                            <option name="y" value="436" />
                           </Point>
                         </option>
                         <option name="myPositions">
                           <map>
-                            <entry key="action_loginFragment_to_timelineFragment">
+                            <entry key="action_login_dest_to_auth_dest">
                               <value>
                                 <LayoutPositions />
                               </value>
                             </entry>
-                            <entry key="action_login_dest_to_authWebViewFragment">
+                            <entry key="action_login_dest_to_timeline_dest">
                               <value>
                                 <LayoutPositions />
                               </value>
@@ -51,8 +60,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="12" />
-                            <option name="y" value="12" />
+                            <option name="x" value="-302" />
+                            <option name="y" value="10" />
                           </Point>
                         </option>
                       </LayoutPositions>
@@ -63,8 +72,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="256" />
-                            <option name="y" value="368" />
+                            <option name="x" value="140" />
+                            <option name="y" value="439" />
                           </Point>
                         </option>
                       </LayoutPositions>

@@ -20,6 +20,7 @@ android {
 
         buildConfigField("String", "apiKey", apiKeyProperties['apiKey'])
         buildConfigField("String", "apiSecret", apiKeyProperties['apiSecret'])
+        buildConfigField("String", "callbackUrl", apiKeyProperties['callbackUrl'])
     }
     buildTypes {
         release {

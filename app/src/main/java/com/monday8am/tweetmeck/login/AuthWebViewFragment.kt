@@ -8,10 +8,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import android.widget.ProgressBar
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.monday8am.tweetmeck.R
+import com.monday8am.tweetmeck.util.getViewModelFactory
+import timber.log.Timber
 
 
 class AuthWebViewFragment : Fragment() {
+
+    private val viewModel by activityViewModels<AuthViewModel> { getViewModelFactory() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,10 +50,7 @@ class AuthWebViewFragment : Fragment() {
                 view: WebView?,
                 request: WebResourceRequest?
             ): Boolean {
-                if (true) {
-                    // get data and return true!
-                    return true
-                }
+                viewModel.setAuthResult(request?.url, null)
                 return super.shouldOverrideUrlLoading(view, request)
             }
 
@@ -56,7 +60,7 @@ class AuthWebViewFragment : Fragment() {
                 error: WebResourceError?
             ) {
                 super.onReceivedError(view, request, error)
-                // report error here!
+                viewModel.setAuthResult(null, "Error authenticating user!")
             }
 
             override fun onReceivedSslError(
@@ -65,9 +69,16 @@ class AuthWebViewFragment : Fragment() {
                 error: SslError?
             ) {
                 super.onReceivedSslError(view, handler, error)
-                // report error here!
+                viewModel.setAuthResult(null, "SSL error authenticating user!")
             }
         }
+
+        viewModel.authState.observe(this,  Observer<AuthState> { state ->
+            when (state) {
+                is AuthState.WaitingForUserCredentials -> webView.loadUrl(state.url)
+                else -> this.findNavController().navigate(R.id.action_auth_dest_to_login_dest)
+            }
+        })
 
         return view
     }

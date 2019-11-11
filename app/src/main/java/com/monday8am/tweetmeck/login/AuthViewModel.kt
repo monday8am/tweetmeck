@@ -1,20 +1,21 @@
 package com.monday8am.tweetmeck.login
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.scribejava.core.model.OAuth1RequestToken
 import com.monday8am.tweetmeck.data.AuthRepository
+import com.monday8am.tweetmeck.data.succeeded
 import kotlinx.coroutines.launch
 
 
 sealed class AuthState {
-    object NotStarted : AuthState()
-    object Starting : AuthState()
-    data class Going(val url: String): AuthState()
+    object NotLogged : AuthState()
+    object Loading : AuthState()
+    data class WaitingForUserCredentials(val url: String): AuthState()
     data class Error(val errorMsg: String): AuthState()
-    object Success : AuthState()
+    object Logged : AuthState()
 }
 
 class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
@@ -23,21 +24,44 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     val authState: LiveData<AuthState> = _authState
 
     init {
-        _authState.value = AuthState.NotStarted
+        _authState.value = AuthState.NotLogged
     }
 
     fun triggerAuth() {
         viewModelScope.launch {
-            _authState.value = AuthState.Starting
+            _authState.value = AuthState.Loading
             val url = authRepository.getAuthUrl()
-            _authState.value = AuthState.Going(url)
+            _authState.value = AuthState.WaitingForUserCredentials(url)
         }
     }
 
-    fun login(requestToken: OAuth1RequestToken) {
+    fun setAuthResult(resultUri: Uri?, errorMsg: String? = null) {
         viewModelScope.launch {
-            val result = authRepository.loginWithToken(requestToken)
+            when  {
+                resultUri != null -> {
+                    _authState.value = AuthState.Loading
+                    val result = authRepository.login(resultUri)
+                    if (result.succeeded) {
+                        _authState.value = AuthState.Logged
+                    } else {
+                        _authState.value = AuthState.Error(errorMsg = "Wrong result after login request")
+                    }
+                }
+                errorMsg != null -> _authState.value = AuthState.Error(errorMsg = errorMsg)
+                else -> _authState.value = AuthState.NotLogged
+
+            }
         }
     }
+
+    fun isLogged(): Boolean {
+        return _authState.value == AuthState.Logged
+    }
+
+    fun logout() {
+        // delete login saved data
+        _authState.value = AuthState.NotLogged
+    }
+
 
 }
