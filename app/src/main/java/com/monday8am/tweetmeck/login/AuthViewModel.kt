@@ -49,7 +49,6 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
                 }
                 errorMsg != null -> _authState.value = AuthState.Error(errorMsg = errorMsg)
                 else -> _authState.value = AuthState.NotLogged
-
             }
         }
     }

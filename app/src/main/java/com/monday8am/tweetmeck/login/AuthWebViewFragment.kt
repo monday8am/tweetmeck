@@ -2,23 +2,24 @@ package com.monday8am.tweetmeck.login
 
 import android.net.http.SslError
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import android.widget.ProgressBar
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.util.getViewModelFactory
-import timber.log.Timber
 
 
 class AuthWebViewFragment : Fragment() {
 
     private val viewModel by activityViewModels<AuthViewModel> { getViewModelFactory() }
+
+    private lateinit var webView: WebView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,7 +27,7 @@ class AuthWebViewFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_auth_web_view, container, false)
         val spinner = view.findViewById<ProgressBar>(R.id.webViewSpinner)
-        val webView = view.findViewById<WebView>(R.id.webView)
+        webView = view.findViewById(R.id.webView)
 
         webView.apply {
             visibility = View.INVISIBLE
@@ -73,13 +74,17 @@ class AuthWebViewFragment : Fragment() {
             }
         }
 
-        viewModel.authState.observe(this,  Observer<AuthState> { state ->
+        return view
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        viewModel.authState.observe(viewLifecycleOwner, Observer<AuthState> { state ->
             when (state) {
                 is AuthState.WaitingForUserCredentials -> webView.loadUrl(state.url)
-                else -> this.findNavController().navigate(R.id.action_auth_dest_to_login_dest)
+                else -> this.findNavController().navigateUp()
             }
         })
-
-        return view
     }
 }

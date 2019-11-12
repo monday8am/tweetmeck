@@ -15,7 +15,6 @@ import com.monday8am.tweetmeck.util.getViewModelFactory
 class LoginFragment : Fragment() {
 
     private lateinit var binding: LoginFragmentBinding
-
     private val viewModel by activityViewModels<AuthViewModel> { getViewModelFactory() }
 
     override fun onCreateView(
@@ -26,22 +25,27 @@ class LoginFragment : Fragment() {
         binding.button.setOnClickListener {
             viewModel.triggerAuth()
         }
+        return binding.root
+    }
 
-        viewModel.authState.observe(this,  Observer<AuthState> { state ->
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        viewModel.authState.observe(viewLifecycleOwner,  Observer<AuthState> { state ->
             when (state) {
                 is AuthState.Loading -> {
                     binding.button.alpha = 0.5f
                     binding.button.isEnabled = false
                 }
                 is AuthState.WaitingForUserCredentials -> this.findNavController().navigate(R.id.action_login_dest_to_auth_dest)
-                is AuthState.Logged -> this.findNavController().navigate(R.id.action_login_dest_to_timeline_dest)
+                is AuthState.Logged ->  {
+                    this.findNavController().navigate(R.id.action_login_dest_to_timeline_dest)
+                }
                 else -> {
                     binding.button.alpha = 1.0f
                     binding.button.isEnabled = true
                 }
             }
         })
-
-        return binding.root
     }
 }
