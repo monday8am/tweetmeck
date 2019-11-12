@@ -7,7 +7,7 @@ import timber.log.Timber
 class TweetmeckApplication: Application() {
 
     val authRepository: AuthRepository
-        get() = ServiceLocator.provideAuthRepository()
+        get() = ServiceLocator.provideAuthRepository(this.applicationContext)
 
     override fun onCreate() {
         super.onCreate()

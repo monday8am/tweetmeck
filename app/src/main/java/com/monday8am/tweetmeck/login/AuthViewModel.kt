@@ -24,7 +24,8 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     val authState: LiveData<AuthState> = _authState
 
     init {
-        _authState.value = AuthState.NotLogged
+        _authState.value = AuthState.Loading
+        isLogged()
     }
 
     fun triggerAuth() {
@@ -53,14 +54,21 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
         }
     }
 
-    fun isLogged(): Boolean {
-        return _authState.value == AuthState.Logged
-    }
-
     fun logout() {
-        // delete login saved data
-        _authState.value = AuthState.NotLogged
+        viewModelScope.launch {
+            authRepository.logout()
+            _authState.value = AuthState.NotLogged
+        }
     }
 
+    private fun isLogged() {
+        viewModelScope.launch {
+            _authState.value = if (authRepository.isLogged()) {
+                AuthState.Logged
+            } else {
+                AuthState.NotLogged
+            }
+        }
+    }
 
 }

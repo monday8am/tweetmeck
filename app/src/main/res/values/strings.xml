@@ -9,4 +9,6 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="logout_info">Press button to logout!</string>
+    <string name="logout_from_twitter">Logout from Twitter</string>
 </resources>

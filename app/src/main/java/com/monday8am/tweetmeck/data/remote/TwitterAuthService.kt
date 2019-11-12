@@ -4,24 +4,24 @@ import com.github.scribejava.apis.TwitterApi
 import com.github.scribejava.core.builder.ServiceBuilder
 import com.github.scribejava.core.model.OAuth1RequestToken
 import com.github.scribejava.core.oauth.OAuth10aService
-import timber.log.Timber
 
 interface TwitterAuthService {
     suspend fun getRequestToken(): OAuth1RequestToken
     suspend fun getAuthUrl(token: OAuth1RequestToken): String
-    suspend fun getAccessToken(requestToken: OAuth1RequestToken, oAuthVerifier: String): TwitterSession
+    suspend fun getAccessToken(requestToken: OAuth1RequestToken, oAuthVerifier: String): TwitterAccessToken
 }
 
-data class TwitterAuthToken(val token: String, val secret: String)
+data class TwitterAccessToken(val token: String, val secret: String)
 
 data class TwitterSession(val userId: Long,
                           val userName: String,
-                          val token: TwitterAuthToken)
+                          val token: TwitterAccessToken
+)
 
 class TwitterAuthServiceImpl(apiKey: String, apiSecret: String, callbackUrl: String = "") :
     TwitterAuthService {
 
-    private var service: OAuth10aService = ServiceBuilder("Twitter")
+    private var service: OAuth10aService = ServiceBuilder("TwitterAuthService")
                                                 .apiKey(apiKey)
                                                 .apiSecret(apiSecret)
                                                 .callback(callbackUrl)
@@ -38,9 +38,8 @@ class TwitterAuthServiceImpl(apiKey: String, apiSecret: String, callbackUrl: Str
     override suspend fun getAccessToken(
         requestToken: OAuth1RequestToken,
         oAuthVerifier: String
-    ): TwitterSession {
+    ): TwitterAccessToken {
         val authToken = service.getAccessToken(requestToken, oAuthVerifier)
-        Timber.d("access token info: ${authToken.token} ${authToken.tokenSecret}")
-        return TwitterSession(0, "name", TwitterAuthToken(authToken.token, authToken.tokenSecret))
+        return TwitterAccessToken(authToken.token, authToken.tokenSecret)
     }
 }
