@@ -66,7 +66,8 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
     // Ktor - Twitter API
-    implementation "jp.nephy:penicillin:$penicillin_version"
     implementation "io.ktor:ktor-client-android:$ktor_version"
+    implementation "jp.nephy:penicillin:$penicillin_version"
+    implementation "jp.nephy:jsonkt:$jsonkt_version"
 
 }

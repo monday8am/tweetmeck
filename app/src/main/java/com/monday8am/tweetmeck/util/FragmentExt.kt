@@ -5,6 +5,6 @@ import com.monday8am.tweetmeck.TweetmeckApplication
 import com.monday8am.tweetmeck.ViewModelFactory
 
 fun Fragment.getViewModelFactory(): ViewModelFactory {
-    val authRepository = (requireContext().applicationContext as TweetmeckApplication).authRepository
-    return ViewModelFactory(authRepository)
+    val app = (requireContext().applicationContext as TweetmeckApplication)
+    return ViewModelFactory(app.authRepository, app.dataRepository)
 }

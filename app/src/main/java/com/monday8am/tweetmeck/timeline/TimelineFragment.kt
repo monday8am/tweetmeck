@@ -6,12 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.monday8am.tweetmeck.R
-import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.databinding.TimelineFragmentBinding
 import com.monday8am.tweetmeck.util.getViewModelFactory
 
-class TimelineFragment(private val dataRepository: DataRepository) : Fragment() {
+class TimelineFragment : Fragment() {
 
     private lateinit var binding: TimelineFragmentBinding
 
@@ -22,7 +20,11 @@ class TimelineFragment(private val dataRepository: DataRepository) : Fragment() 
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.timeline_fragment, container, false)
+        binding = TimelineFragmentBinding.inflate(layoutInflater)
+        binding.triggerBtn.setOnClickListener {
+            viewModel.getList()
+        }
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -12,6 +12,7 @@ import jp.nephy.penicillin.endpoints.oauth.accessToken
 import jp.nephy.penicillin.endpoints.oauth.authenticateUrl
 import jp.nephy.penicillin.endpoints.oauth.requestToken
 import jp.nephy.penicillin.extensions.await
+import jp.nephy.jsonkt.delegation.JsonModel
 import timber.log.Timber
 
 interface TwitterClient {
