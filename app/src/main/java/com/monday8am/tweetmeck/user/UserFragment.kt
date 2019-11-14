@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.settings
+package com.monday8am.tweetmeck.user
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,7 +14,7 @@ import com.monday8am.tweetmeck.login.AuthState
 import com.monday8am.tweetmeck.login.AuthViewModel
 import com.monday8am.tweetmeck.util.getViewModelFactory
 
-class SettingsFragment : Fragment() {
+class UserFragment : Fragment() {
 
     private lateinit var binding: SettingsFragmentBinding
 

@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.databinding.TimelineFragmentBinding
 import com.monday8am.tweetmeck.util.getViewModelFactory
+import timber.log.Timber
 
 class TimelineFragment : Fragment() {
 
@@ -21,13 +24,18 @@ class TimelineFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = TimelineFragmentBinding.inflate(layoutInflater)
-        binding.triggerBtn.setOnClickListener {
-            viewModel.getList()
-        }
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        viewModel.twitterLists.observe(viewLifecycleOwner, Observer<List<TwitterList>> { lists ->
+            lists.forEach { Timber.d(it.toString()) }
+        })
+
+        viewModel.dataLoading.observe(viewLifecycleOwner, Observer<Boolean> {
+            Timber.d("Loading: $it")
+        })
     }
 }

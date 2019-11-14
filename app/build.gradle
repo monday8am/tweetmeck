@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
+apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 
 def apiKeyPropertiesFile = rootProject.file("apikey.properties");
@@ -69,5 +68,9 @@ dependencies {
     implementation "io.ktor:ktor-client-android:$ktor_version"
     implementation "jp.nephy:penicillin:$penicillin_version"
     implementation "jp.nephy:jsonkt:$jsonkt_version"
+
+    implementation "androidx.room:room-runtime:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    implementation "androidx.room:room-ktx:$roomVersion"
 
 }

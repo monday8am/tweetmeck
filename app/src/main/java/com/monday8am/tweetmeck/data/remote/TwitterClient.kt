@@ -1,5 +1,6 @@
 package com.monday8am.tweetmeck.data.remote
 
+import com.monday8am.tweetmeck.data.models.TwitterList
 import io.ktor.http.Url
 import jp.nephy.penicillin.PenicillinClient
 import jp.nephy.penicillin.core.session.config.account
@@ -12,14 +13,12 @@ import jp.nephy.penicillin.endpoints.oauth.accessToken
 import jp.nephy.penicillin.endpoints.oauth.authenticateUrl
 import jp.nephy.penicillin.endpoints.oauth.requestToken
 import jp.nephy.penicillin.extensions.await
-import jp.nephy.jsonkt.delegation.JsonModel
-import timber.log.Timber
 
 interface TwitterClient {
     suspend fun getRequestToken(): RequestToken
     suspend fun getAuthUrl(requestToken: RequestToken): String
     suspend fun getAccessToken(requestToken: RequestToken, oAuthVerifier: String): AccessToken
-    suspend fun getUserLists()
+    suspend fun getUserLists(): List<TwitterList>
 }
 
 data class OAuthToken(val token: String, val secret: String)
@@ -61,10 +60,8 @@ class TwitterClientImpl(
         return AccessToken(response.accessToken, response.accessTokenSecret)
     }
 
-    override suspend fun getUserLists() {
-        val favorites = client.lists.list.await()
-        favorites.forEach {
-            Timber.d("Lists created: ${it.fullName}")
-        }
+    override suspend fun getUserLists(): List<TwitterList> {
+        val twitterLists = client.lists.list.await()
+        return twitterLists.results.map { TwitterList.from(it) }
     }
 }

@@ -5,13 +5,13 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.monday8am.tweetmeck.data.remote.AccessToken
 
-interface LocalStorageService {
+interface SharedPreferencesService {
     fun getAccessToken(): AccessToken?
     suspend fun saveAccessToken(token: AccessToken)
     suspend fun deleteAccessToken()
 }
 
-class LocalStorageServiceImpl constructor(private val context: Context) : LocalStorageService {
+class SharedPreferencesServiceImpl constructor(private val context: Context) : SharedPreferencesService {
 
     private val accessTokenKey = "accessToken"
     private val accessTokenSecretKey = "accessTokenSecret"

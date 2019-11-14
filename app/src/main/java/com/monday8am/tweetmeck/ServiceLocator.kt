@@ -2,18 +2,20 @@ package com.monday8am.tweetmeck
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import androidx.room.Room
 import com.monday8am.tweetmeck.data.AuthRepository
 import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.DefaultAuthRepository
 import com.monday8am.tweetmeck.data.DefaultDataRepository
-import com.monday8am.tweetmeck.data.local.LocalStorageService
-import com.monday8am.tweetmeck.data.local.LocalStorageServiceImpl
+import com.monday8am.tweetmeck.data.local.*
 import com.monday8am.tweetmeck.data.remote.TwitterClient
 import com.monday8am.tweetmeck.data.remote.TwitterClientImpl
+import kotlinx.coroutines.runBlocking
 
 object ServiceLocator {
 
     private val lock = Any()
+    private var database: TwitterDatabase? = null
 
     @Volatile
     var authRepository: AuthRepository? = null
@@ -23,7 +25,7 @@ object ServiceLocator {
     var dataRepository: DataRepository? = null
         @VisibleForTesting set
 
-    private var localStorageService: LocalStorageService? = null
+    private var sharedPref: SharedPreferencesService? = null
 
     fun provideAuthRepository(context: Context): AuthRepository {
         synchronized(this) {
@@ -37,35 +39,59 @@ object ServiceLocator {
         }
     }
 
-    private fun createDataRepository(context: Context): DataRepository {
-        return DefaultDataRepository(twitterClient = createTwitterClient(provideLocalStorageService(context)),
-                                     localStorageService = provideLocalStorageService(context))
-    }
-
     private fun createAuthRepository(context: Context): AuthRepository {
-        return DefaultAuthRepository(twitterClient = createTwitterClient(provideLocalStorageService(context)),
-                                     localStorageService = provideLocalStorageService(context))
+        return DefaultAuthRepository(
+            twitterClient = createTwitterClient(provideSharedPreferencesService(context)),
+            sharedPreferencesService = provideSharedPreferencesService(context)
+        )
     }
 
-    private fun createTwitterClient(localStorage: LocalStorageService): TwitterClient {
-        val token = localStorage.getAccessToken()
-        return TwitterClientImpl(BuildConfig.apiKey,
-                                  BuildConfig.apiSecret,
-                                  token?.token ?: "",
-                                  token?.secret ?: "",
-                                  BuildConfig.callbackUrl)
+    private fun createDataRepository(context: Context): DataRepository {
+        val database = database ?: createDataBase(context)
+        return DefaultDataRepository(
+            twitterClient = createTwitterClient(provideSharedPreferencesService(context)),
+            localDataSource = TwitterDataSourceImpl(database.twitterListDao())
+        )
     }
 
-    private fun provideLocalStorageService(context: Context): LocalStorageService {
+    private fun createTwitterClient(sharedPreferences: SharedPreferencesService): TwitterClient {
+        val token = sharedPreferences.getAccessToken()
+        return TwitterClientImpl(
+            BuildConfig.apiKey,
+            BuildConfig.apiSecret,
+            token?.token ?: "",
+            token?.secret ?: "",
+            BuildConfig.callbackUrl)
+    }
+
+    private fun createDataBase(context: Context): TwitterDatabase {
+        val result = Room.databaseBuilder(
+            context.applicationContext,
+            TwitterDatabase::class.java, "Tweetmeck.db"
+        ).build()
+        database = result
+        return result
+    }
+
+    private fun provideSharedPreferencesService(context: Context): SharedPreferencesService {
         synchronized(this) {
-            return localStorageService ?: localStorageService ?: LocalStorageServiceImpl(context)
+            return sharedPref ?: sharedPref ?: SharedPreferencesServiceImpl(context)
         }
     }
 
     @VisibleForTesting
     fun resetRepository() {
         synchronized(lock) {
-            // clean everything!
+            // Clear all data to avoid test pollution.
+            runBlocking {
+                sharedPref?.deleteAccessToken()
+            }
+            database?.apply {
+                clearAllTables()
+                close()
+            }
+            database = null
+            dataRepository = null
         }
     }
 }

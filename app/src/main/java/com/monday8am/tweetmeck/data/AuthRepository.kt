@@ -1,7 +1,7 @@
 package com.monday8am.tweetmeck.data
 
 import android.net.Uri
-import com.monday8am.tweetmeck.data.local.LocalStorageService
+import com.monday8am.tweetmeck.data.local.SharedPreferencesService
 import com.monday8am.tweetmeck.data.remote.OAuthToken
 import com.monday8am.tweetmeck.data.remote.TwitterClient
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,7 +17,7 @@ interface AuthRepository {
 
 class DefaultAuthRepository(
     private val twitterClient: TwitterClient,
-    private val localStorageService: LocalStorageService,
+    private val sharedPreferencesService: SharedPreferencesService,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : AuthRepository {
 
@@ -34,7 +34,7 @@ class DefaultAuthRepository(
 
     override suspend fun isLogged(): Boolean {
         return withContext(ioDispatcher) {
-            localStorageService.getAccessToken() != null
+            sharedPreferencesService.getAccessToken() != null
         }
     }
 
@@ -43,14 +43,14 @@ class DefaultAuthRepository(
         val verifier = resultUri.getQueryParameter(oauthVerifierConst) ?: return Result.Error(exception = Exception("Invalid verifier token!"))
         withContext(ioDispatcher) {
             val accessToken = twitterClient.getAccessToken(requestToken, verifier)
-            localStorageService.saveAccessToken(accessToken)
+            sharedPreferencesService.saveAccessToken(accessToken)
         }
         return Result.Success(true)
     }
 
     override suspend fun logout() {
         withContext(ioDispatcher) {
-            localStorageService.deleteAccessToken()
+            sharedPreferencesService.deleteAccessToken()
         }
     }
 }
