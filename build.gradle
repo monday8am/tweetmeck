@@ -12,12 +12,14 @@ buildscript {
         kotlinCoroutinesVersion = "1.1.0"
         retrofitVersion = "2.6.0"
         retrofitCoroutinesVersion = "0.9.2"
+        penicillin_version = "4.2.3"
+        ktor_version = "1.2.3"
     }
 
     repositories {
         google()
         jcenter()
-        
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.6.0-beta03'
@@ -32,6 +34,8 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
+        maven { url "https://dl.bintray.com/nephyproject/stable" }
     }
 }
 

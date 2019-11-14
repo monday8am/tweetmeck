@@ -1,4 +1,3 @@
 package com.monday8am.tweetmeck.data.local
 
-class TweetDataSource {
-}
+class TweetDataSource

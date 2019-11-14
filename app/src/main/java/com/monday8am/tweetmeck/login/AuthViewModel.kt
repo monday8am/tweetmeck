@@ -9,12 +9,11 @@ import com.monday8am.tweetmeck.data.AuthRepository
 import com.monday8am.tweetmeck.data.succeeded
 import kotlinx.coroutines.launch
 
-
 sealed class AuthState {
     object NotLogged : AuthState()
     object Loading : AuthState()
-    data class WaitingForUserCredentials(val url: String): AuthState()
-    data class Error(val errorMsg: String): AuthState()
+    data class WaitingForUserCredentials(val url: String) : AuthState()
+    data class Error(val errorMsg: String) : AuthState()
     object Logged : AuthState()
 }
 
@@ -38,7 +37,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     fun setAuthResult(resultUri: Uri?, errorMsg: String? = null) {
         viewModelScope.launch {
-            when  {
+            when {
                 resultUri != null -> {
                     _authState.value = AuthState.Loading
                     val result = authRepository.login(resultUri)
@@ -70,5 +69,4 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
             }
         }
     }
-
 }

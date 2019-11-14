@@ -18,7 +18,8 @@ class LoginFragment : Fragment() {
     private val viewModel by activityViewModels<AuthViewModel> { getViewModelFactory() }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = LoginFragmentBinding.inflate(layoutInflater)
@@ -31,14 +32,14 @@ class LoginFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel.authState.observe(viewLifecycleOwner,  Observer<AuthState> { state ->
+        viewModel.authState.observe(viewLifecycleOwner, Observer<AuthState> { state ->
             when (state) {
                 is AuthState.Loading -> {
                     binding.button.alpha = 0.5f
                     binding.button.isEnabled = false
                 }
                 is AuthState.WaitingForUserCredentials -> this.findNavController().navigate(R.id.action_login_dest_to_auth_dest)
-                is AuthState.Logged ->  {
+                is AuthState.Logged -> {
                     this.findNavController().navigate(R.id.action_login_dest_to_timeline_dest)
                 }
                 else -> {

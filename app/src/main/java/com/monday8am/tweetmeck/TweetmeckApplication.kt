@@ -4,7 +4,7 @@ import android.app.Application
 import com.monday8am.tweetmeck.data.AuthRepository
 import timber.log.Timber
 
-class TweetmeckApplication: Application() {
+class TweetmeckApplication : Application() {
 
     val authRepository: AuthRepository
         get() = ServiceLocator.provideAuthRepository(this.applicationContext)

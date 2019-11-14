@@ -21,7 +21,8 @@ class SettingsFragment : Fragment() {
     private val authViewModel by activityViewModels<AuthViewModel> { getViewModelFactory() }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = SettingsFragmentBinding.inflate(layoutInflater)
@@ -34,9 +35,9 @@ class SettingsFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        authViewModel.authState.observe(viewLifecycleOwner,  Observer<AuthState> { state ->
+        authViewModel.authState.observe(viewLifecycleOwner, Observer<AuthState> { state ->
             when (state) {
-                is AuthState.NotLogged ->  {
+                is AuthState.NotLogged -> {
                     this.findNavController().navigate(R.id.action_settings_dest_to_login_dest)
                 }
                 else -> {
@@ -45,6 +46,5 @@ class SettingsFragment : Fragment() {
                 }
             }
         })
-
     }
 }
