@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.Result.Success
+import com.monday8am.tweetmeck.data.Result.Error
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel() {
 
@@ -18,19 +20,18 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
     val dataLoading: LiveData<Boolean> = _dataLoading
 
     init {
-        loadLists(true)
+        loadLists()
     }
 
     private fun loadLists(forceUpload: Boolean = false) {
         viewModelScope.launch {
             _dataLoading.value = true
-            val result = dataRepository.getLists(forceUpload)
-
-            if (result is Success) {
-                _twitterLists.value = result.data
-            } else {
-                // Do something!
+            when(val result = dataRepository.getLists(forceUpload)) {
+                is Success -> _twitterLists.value = result.data
+                is Error -> Timber.d("Error loading lists: ${result.exception.message}")
+                else -> Timber.d("Wrong result state!")
             }
+
             _dataLoading.value = false
         }
     }

@@ -1,9 +1,6 @@
 package com.monday8am.tweetmeck.data.local
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.monday8am.tweetmeck.data.models.TwitterList
 
 /**
@@ -13,15 +10,24 @@ import com.monday8am.tweetmeck.data.models.TwitterList
 interface TwitterListDao {
 
     @Query("SELECT * FROM TwitterLists")
-    suspend fun getLists(): List<TwitterList>
+    suspend fun getAll(): List<TwitterList>
 
-    @Query("SELECT * FROM TwitterLists WHERE id = :listId")
-    suspend fun getListById(listId: Long): TwitterList?
+    @Query("SELECT * FROM TwitterLists WHERE id = :id")
+    suspend fun getItemById(id: Long): TwitterList?
+
+    @Transaction
+    suspend fun updateAll(items: List<TwitterList>) {
+        deleteAll()
+        insertAll(items)
+    }
+
+    @Insert
+    suspend fun insertAll(items: List<TwitterList>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertList(task: TwitterList)
+    suspend fun insert(item: TwitterList): Long
 
     @Query("DELETE FROM TwitterLists")
-    suspend fun deleteLists()
+    suspend fun deleteAll()
 
 }

@@ -12,33 +12,49 @@ import timber.log.Timber
 
 interface TwitterLocalDataSource {
     suspend fun getTwitterLists(): Result<List<TwitterList>>
-    suspend fun saveList(list: TwitterList)
+    suspend fun insertList(list: TwitterList): Result<Long>
+    suspend fun updateAllLists(lists: List<TwitterList>): Result<Unit>
     suspend fun deleteLists()
 }
 
 class TwitterDataSourceImpl internal constructor(
-    private val twitterDao: TwitterListDao,
+    private val listsDao: TwitterListDao,
+    private val userDao: TwitterUserDao,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : TwitterLocalDataSource {
 
     override suspend fun getTwitterLists() = withContext(ioDispatcher) {
         return@withContext try {
-            Success(twitterDao.getLists())
+            Success(listsDao.getAll())
         } catch (e: Exception) {
             Error(e)
         }
     }
 
-    override suspend fun saveList(list: TwitterList) = withContext(ioDispatcher) {
-        twitterDao.insertList(list)
+    override suspend fun insertList(list: TwitterList) = withContext(ioDispatcher) {
+        return@withContext try {
+            Success(listsDao.insert(list))
+        } catch (e: Exception) {
+            Error(e)
+        }
+    }
+
+    override suspend fun updateAllLists(lists: List<TwitterList>) = withContext(ioDispatcher) {
+        return@withContext try {
+            Success(listsDao.updateAll(lists))
+        } catch (e: Exception) {
+            Error(e)
+        }
     }
 
     override suspend fun deleteLists() = withContext(ioDispatcher) {
         try {
-            twitterDao.deleteLists()
+            listsDao.deleteAll()
         } catch (e: Exception) {
            Timber.d("Error deleting lists!")
         }
     }
+
+
 
 }

@@ -50,7 +50,8 @@ object ServiceLocator {
         val database = database ?: createDataBase(context)
         return DefaultDataRepository(
             twitterClient = createTwitterClient(provideSharedPreferencesService(context)),
-            localDataSource = TwitterDataSourceImpl(database.twitterListDao())
+            localDataSource = TwitterDataSourceImpl(database.twitterListDao(),
+                                                    database.twitterUserDao())
         )
     }
 
