@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.monday8am.tweetmeck.timeline.TimelineViewModel" />
+    </data>
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/margin_normal"
+            app:layout_scrollFlags="scroll|snap|enterAlways">
+
+            <ImageView
+                android:id="@+id/profile_button"
+                android:layout_width="@dimen/a11y_min_touch_target"
+                android:layout_height="@dimen/a11y_min_touch_target"
+                android:layout_gravity="center_vertical|start"
+                android:contentDescription="@{context.getString(viewModel.profileContentDesc)}"
+                android:foreground="?selectableItemBackground"
+                android:onClick="@{() -> viewModel.onProfileClicked()}"
+                android:padding="@dimen/spacing_micro"
+                app:clipToCircle="@{true}"
+                app:imageUri="@{viewModel.currentUserImageUri}"
+                app:placeholder="@{@drawable/ic_account_circle}" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:minHeight="?actionBarSize"
+                android:text="@string/title_schedule"
+                android:textAppearance="@style/TextAppearance.IOSched.ToolbarTitle" />
+
+            <!--todo: fix lint on foreground-->
+            <ImageView
+                android:id="@+id/settings_button"
+                android:layout_width="@dimen/a11y_min_touch_target"
+                android:layout_height="@dimen/a11y_min_touch_target"
+                android:layout_gravity="center_vertical|end"
+                android:contentDescription="@string/search_schedule_hint"
+                android:foreground="?selectableItemBackground"
+                android:onClick="@{() -> viewModel.onSearchClicked()}"
+                android:padding="12dp"
+                app:srcCompat="@drawable/ic_search"/>
+
+        </FrameLayout>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+</layout>
