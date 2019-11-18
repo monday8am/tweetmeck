@@ -30,6 +30,9 @@ android {
     viewBinding {
         enabled = true
     }
+    dataBinding {
+        enabled true
+    }
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -44,33 +47,35 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
     implementation 'androidx.core:core-ktx:1.1.0'
+
+    // UI
+    implementation "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
+    implementation "com.google.android.material:material:$rootProject.materialVersion"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintLayoutVersion"
+
+    // Architecture components
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.lifeCycleVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.lifeCycleVersion"
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.1.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-
-    // navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$rootProject.navigationVersion"
-
-    // OAuth lib
-    implementation 'com.github.scribejava:scribejava-apis:6.4.1'
-    implementation 'com.jakewharton.timber:timber:4.7.1'
-
-    // Ktor - Twitter API
-    implementation "io.ktor:ktor-client-android:$ktor_version"
-    implementation "jp.nephy:penicillin:$penicillin_version"
-    implementation "jp.nephy:jsonkt:$jsonkt_version"
-
     implementation "androidx.room:room-runtime:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
 
+    // Remote
+    implementation "io.ktor:ktor-client-android:$rootProject.ktor_version"
+    implementation "jp.nephy:penicillin:$rootProject.penicillin_version"
+    implementation "jp.nephy:jsonkt:$rootProject.jsonkt_version"
+    implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"
+    kapt "com.github.bumptech.glide:compiler:$rootProject.glideVersion"
+
+    // Testing
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    // Extra
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 }

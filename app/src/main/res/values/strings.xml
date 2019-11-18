@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Tweetmeck</string>
-    <string name="timeline_screen_title">Timeline</string>
+
     <string name="login_screen_title">Login</string>
     <string name="settings_screen_title">Settings</string>
     <string name="login_info">Enter your login information!</string>
@@ -11,4 +12,10 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="logout_info">Press button to logout!</string>
     <string name="logout_from_twitter">Logout from Twitter</string>
+
+    <!-- Timeline -->
+    <string name="timeline_screen_title">Timeline</string>
+    <string name="content_sign_in">Sign in</string>
+
+
 </resources>

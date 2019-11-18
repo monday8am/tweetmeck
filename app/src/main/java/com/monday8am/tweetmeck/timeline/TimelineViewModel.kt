@@ -1,13 +1,14 @@
 package com.monday8am.tweetmeck.timeline
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.monday8am.tweetmeck.data.DataRepository
-import com.monday8am.tweetmeck.data.models.TwitterList
-import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.Result.Error
+import com.monday8am.tweetmeck.data.Result.Success
+import com.monday8am.tweetmeck.data.models.TwitterList
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -18,6 +19,9 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
 
     private val _dataLoading = MutableLiveData<Boolean>()
     val dataLoading: LiveData<Boolean> = _dataLoading
+
+    private val _currentUserImageUri = MutableLiveData<Uri>()
+    val currentUserImageUri: LiveData<Uri> = _currentUserImageUri
 
     init {
         loadLists()
@@ -34,5 +38,9 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
 
             _dataLoading.value = false
         }
+    }
+
+    fun onProfileClicked() {
+        Timber.d("OnProfile clicked!")
     }
 }
