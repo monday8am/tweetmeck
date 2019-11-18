@@ -9,6 +9,7 @@ import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.Result.Error
 import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.models.TwitterList
+import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -23,6 +24,11 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
     private val _currentUserImageUri = MutableLiveData<Uri>()
     val currentUserImageUri: LiveData<Uri> = _currentUserImageUri
 
+    private val swipeRefreshResult = MutableLiveData<Result<Boolean>>()
+    val swipeRefreshing: LiveData<Boolean> = swipeRefreshResult.map {
+        false // Whenever refresh finishes, stop the indicator, whatever the result
+    }
+
     init {
         loadLists()
     }
@@ -30,7 +36,7 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
     private fun loadLists(forceUpload: Boolean = false) {
         viewModelScope.launch {
             _dataLoading.value = true
-            when(val result = dataRepository.getLists(forceUpload)) {
+            when (val result = dataRepository.getLists(forceUpload)) {
                 is Success -> _twitterLists.value = result.data
                 is Error -> Timber.d("Error loading lists: ${result.exception.message}")
                 else -> Timber.d("Wrong result state!")
@@ -42,5 +48,9 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
 
     fun onProfileClicked() {
         Timber.d("OnProfile clicked!")
+    }
+
+    fun onSwipeRefresh() {
+        Timber.d("OnSwipe refresh!")
     }
 }

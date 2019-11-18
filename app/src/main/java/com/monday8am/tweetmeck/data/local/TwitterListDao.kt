@@ -29,5 +29,4 @@ interface TwitterListDao {
 
     @Query("DELETE FROM TwitterLists")
     suspend fun deleteAll()
-
 }

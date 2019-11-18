@@ -9,7 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-
 interface TwitterLocalDataSource {
     suspend fun getTwitterLists(): Result<List<TwitterList>>
     suspend fun insertList(list: TwitterList): Result<Long>
@@ -54,7 +53,4 @@ class TwitterDataSourceImpl internal constructor(
            Timber.d("Error deleting lists!")
         }
     }
-
-
-
 }

@@ -1,7 +1,7 @@
 package com.monday8am.tweetmeck.data
 
-import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.Result.Error
+import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.local.TwitterLocalDataSource
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.models.TwitterUser

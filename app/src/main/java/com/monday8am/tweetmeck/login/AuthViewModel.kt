@@ -10,7 +10,7 @@ import com.monday8am.tweetmeck.data.succeeded
 import kotlinx.coroutines.launch
 
 sealed class AuthState {
-    object NotLogged    : AuthState()
+    object NotLogged : AuthState()
     object Loading : AuthState()
     data class WaitingForUserCredentials(val url: String) : AuthState()
     data class Error(val errorMsg: String) : AuthState()

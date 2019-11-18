@@ -20,5 +20,4 @@ interface TwitterUserDao {
 
     @Query("DELETE FROM twitterUsers")
     suspend fun deleteAll()
-
 }

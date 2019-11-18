@@ -8,7 +8,7 @@ import com.monday8am.tweetmeck.data.models.TwitterUser
 
 @Database(entities = [TwitterList::class, TwitterUser::class], version = 1, exportSchema = false)
 @TypeConverters(RoomConverters::class)
-abstract class TwitterDatabase: RoomDatabase() {
+abstract class TwitterDatabase : RoomDatabase() {
 
     abstract fun twitterListDao(): TwitterListDao
 

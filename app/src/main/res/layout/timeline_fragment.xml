@@ -1,20 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-tools:context=".timeline.TimelineFragment">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<Button
-    android:id="@+id/trigger_btn"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/logout_from_twitter"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.5"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    <data>
+        <variable
+            name="viewModel"
+            type="com.monday8am.tweetmeck.timeline.TimelineViewModel" />
+    </data>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.monday8am.tweetmeck.widget.InsetDispatchingCoordinatorLayout
+        android:id="@+id/coordinator_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:marginLeftSystemWindowInsets="@{true}"
+        app:marginRightSystemWindowInsets="@{true}"
+        android:fitsSystemWindows="true">
+
+        <include
+            layout="@layout/timeline_appbar"
+            app:viewModel="@{viewModel}" />
+
+        <!-- A view to draw above the AppBarLayout to mimic the status bar -->
+        <com.monday8am.tweetmeck.widget.StatusBarScrim
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorSurface"
+            android:elevation="@dimen/appbar_elevation"
+            android:outlineProvider="none"
+            android:fitsSystemWindows="true" />
+
+            <com.monday8am.tweetmeck.widget.CustomSwipeRefreshLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                app:onRefreshListener="@{() -> viewModel.onSwipeRefresh()}"
+                app:refreshing="@{viewModel.swipeRefreshing}"
+                app:swipeRefreshColors="@{@intArray/swipe_refresh}">
+
+                <androidx.viewpager.widget.ViewPager
+                    android:id="@+id/viewpager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:pageMargin="@{@dimen/spacing_normal}"
+                    app:pageMarginDrawable="@{@drawable/page_margin}" />
+
+            </com.monday8am.tweetmeck.widget.CustomSwipeRefreshLayout>
+
+
+
+    </com.monday8am.tweetmeck.widget.InsetDispatchingCoordinatorLayout>
+</layout>
