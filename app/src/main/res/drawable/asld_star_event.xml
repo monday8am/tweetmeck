@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/starred"
+        android:drawable="@drawable/ic_star"
+        android:state_checked="true" />
+
+    <item
+        android:id="@+id/unstarred"
+        android:drawable="@drawable/ic_star_border"
+        android:state_checked="false" />
+
+    <transition
+        android:drawable="@drawable/avd_star_event"
+        android:fromId="@id/unstarred"
+        android:toId="@id/starred" />
+
+    <transition
+        android:drawable="@drawable/avd_unstar_event"
+        android:fromId="@id/starred"
+        android:toId="@id/unstarred" />
+
+</animated-selector>

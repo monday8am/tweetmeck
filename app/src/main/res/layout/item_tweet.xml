@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools">
+
+<data>
+
+    <import type="androidx.lifecycle.LiveData" />
+
+    <variable
+        name="tweet"
+        type="com.monday8am.tweetmeck.data.models.Tweet" />
+
+    <variable
+        name="eventListener"
+        type="com.monday8am.tweetmeck.timeline.TweetItemEventListener" />
+
+</data>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackground"
+    android:onClick="@{() -> eventListener.openTweetDetails(tweet.id)}"
+    android:paddingEnd="@dimen/spacing_normal"
+    android:paddingVertical="@dimen/spacing_normal"
+    tools:targetApi="o">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/keyline"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="?sessionListKeyline" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@{tweet.title}"
+        android:paddingBottom="@dimen/spacing_micro"
+        android:textAppearance="@style/TextAppearance.Tweetmeck.SessionTitle"
+        app:layout_constraintEnd_toStartOf="@+id/bookmark_session"
+        app:layout_constraintStart_toEndOf="@id/keyline"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="What's new in Android" />
+
+    <com.google.android.material.internal.CheckableImageButton
+        android:id="@+id/bookmark_session"
+        android:layout_width="@dimen/a11y_min_touch_target"
+        android:layout_height="@dimen/a11y_min_touch_target"
+        android:background="?selectableItemBackgroundBorderless"
+        android:checked="@{tweet.savedForLater}"
+        android:contentDescription="@string/a11y_star"
+        android:onClick="@{() -> eventListener.onUserClicked(tweet)}"
+        android:src="@drawable/asld_star_event"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/livestream_icon"
+        android:layout_width="18dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="12dp"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toStartOf="@id/length_location"
+        app:layout_constraintStart_toEndOf="@id/keyline"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:srcCompat="@drawable/ic_livestreamed" />
+
+    <TextView
+        android:id="@+id/length_location"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Tweetmeck.ListSecondary"
+        app:layout_constraintEnd_toEndOf="@id/title"
+        app:layout_constraintStart_toEndOf="@id/livestream_icon"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        tools:text="1 hour / Amphitheatre" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
+

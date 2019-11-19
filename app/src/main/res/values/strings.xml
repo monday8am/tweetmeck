@@ -15,7 +15,10 @@
 
     <!-- Timeline -->
     <string name="timeline_screen_title">Timeline</string>
-    <string name="content_sign_in">Sign in</string>
+    <string name="timeline_no_tweets">No tweets in this list</string>
 
+    <!-- Accessibility -->
+    <string name="a11y_star" translation_description="Star button" >Bookmark</string>
+    <string name="a11y_sign_in" translation_description="Sign in button" >Sign in</string>
 
 </resources>

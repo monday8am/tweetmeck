@@ -23,7 +23,7 @@
                 android:layout_width="@dimen/a11y_min_touch_target"
                 android:layout_height="@dimen/a11y_min_touch_target"
                 android:layout_gravity="center_vertical|start"
-                android:contentDescription="@string/content_sign_in"
+                android:contentDescription="@string/a11y_sign_in"
                 android:foreground="?selectableItemBackground"
                 android:onClick="@{() -> viewModel.onProfileClicked()}"
                 android:padding="@dimen/spacing_micro"

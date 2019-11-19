@@ -8,12 +8,13 @@ import androidx.lifecycle.viewModelScope
 import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.Result.Error
 import com.monday8am.tweetmeck.data.Result.Success
+import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel() {
+class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(), TweetItemEventListener {
 
     private val _twitterLists = MutableLiveData<List<TwitterList>>()
     val twitterLists: LiveData<List<TwitterList>> = _twitterLists
@@ -53,4 +54,20 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
     fun onSwipeRefresh() {
         Timber.d("OnSwipe refresh!")
     }
+
+    override fun openTweetDetails(tweetId: Long) {
+
+    }
+
+    override fun onUserClicked(tweet: Tweet) {
+
+    }
+}
+
+/**
+ * Actions that can be performed on tweets.
+ */
+interface TweetItemEventListener {
+    fun openTweetDetails(tweetId: Long)
+    fun onUserClicked(tweet: Tweet)
 }

@@ -53,6 +53,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
     implementation "com.google.android.material:material:$rootProject.materialVersion"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintLayoutVersion"
+    implementation "androidx.viewpager2:viewpager2:$rootProject.viewPagerVersion"
 
     // Architecture components
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -61,6 +62,7 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$rootProject.navigationVersion"
     implementation "androidx.room:room-runtime:$roomVersion"
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
     kapt "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
 

@@ -11,6 +11,14 @@ import androidx.lifecycle.Transformations
 import com.monday8am.tweetmeck.TweetmeckApplication
 import com.monday8am.tweetmeck.ViewModelFactory
 
+/**
+ * Implementation of lazy that is not thread safe. Useful when you know what thread you will be
+ * executing on and are not worried about synchronization.
+ */
+fun <T> lazyFast(operation: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.NONE) {
+    operation()
+}
+
 /* Views */
 fun Fragment.getViewModelFactory(): ViewModelFactory {
     val app = (requireContext().applicationContext as TweetmeckApplication)
