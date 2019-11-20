@@ -31,7 +31,7 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
     }
 
     init {
-        loadLists()
+        loadLists(true)
     }
 
     private fun loadLists(forceUpload: Boolean = false) {
@@ -42,7 +42,6 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
                 is Error -> Timber.d("Error loading lists: ${result.exception.message}")
                 else -> Timber.d("Wrong result state!")
             }
-
             _dataLoading.value = false
         }
     }
@@ -56,11 +55,9 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
     }
 
     override fun openTweetDetails(tweetId: Long) {
-
     }
 
     override fun onUserClicked(tweet: Tweet) {
-
     }
 }
 

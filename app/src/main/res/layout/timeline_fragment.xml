@@ -40,7 +40,7 @@
                 app:swipeRefreshColors="@{@intArray/swipe_refresh}">
 
                 <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/viewpager"
+                    android:id="@+id/viewpager2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:pageMargin="@{@dimen/spacing_normal}" />

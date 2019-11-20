@@ -9,7 +9,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:fitsSystemWindows="true">
 
         <FrameLayout
@@ -45,6 +45,8 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
+            app:tabMode="scrollable"
+            app:tabGravity="fill"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize" />
 

@@ -58,7 +58,7 @@ class DefaultDataRepository(
         // Don't read from local if it's forced
         if (forceUpdate) {
             try {
-                val listsFromRemote = twitterClient.getUserLists()
+                val listsFromRemote = twitterClient.getLists()
                 localDataSource.updateAllLists(listsFromRemote)
                 return Success(listsFromRemote)
             } catch (error: Throwable) {

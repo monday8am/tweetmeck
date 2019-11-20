@@ -5,15 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.monday8am.tweetmeck.databinding.FragmentTweetListBinding
 import com.monday8am.tweetmeck.timeline.TimelineViewModel
+import com.monday8am.tweetmeck.util.getViewModelFactory
 import com.monday8am.tweetmeck.util.lazyFast
+import com.monday8am.tweetmeck.util.parentViewModelProvider
 
 class TweetListFragment : Fragment() {
 
     companion object {
-
-        private const val TAG = "TweetListFragment"
         private const val ARG_LIST_ID = "arg.TWEET_LIST_ID"
 
         @JvmStatic
@@ -34,14 +36,13 @@ class TweetListFragment : Fragment() {
         args.getLong(ARG_LIST_ID)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        viewModel = parentViewModelProvider(getViewModelFactory())
+
         binding = FragmentTweetListBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = this@TweetListFragment.viewModel
@@ -53,5 +54,16 @@ class TweetListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         adapter = TweetListAdapter(viewModel, viewLifecycleOwner)
+
+        binding.recyclerview.apply {
+            (layoutManager as LinearLayoutManager).recycleChildrenOnDetach = true
+            (itemAnimator as DefaultItemAnimator).run {
+                supportsChangeAnimations = false
+                addDuration = 160L
+                moveDuration = 160L
+                changeDuration = 160L
+                removeDuration = 120L
+            }
+        }
     }
 }

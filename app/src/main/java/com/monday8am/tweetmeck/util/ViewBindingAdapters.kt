@@ -52,7 +52,7 @@ fun fabVisibility(fab: FloatingActionButton, visible: Boolean) {
 @BindingAdapter("pageMargin")
 fun pageMargin(viewPager: ViewPager2, pageMargin: Float) {
     // TODO: find replacement to original viewPager pageMargin
-    //viewPager.pageMargin = pageMargin.toInt()
+    // viewPager.pageMargin = pageMargin.toInt()
 }
 
 @BindingAdapter("clipToCircle")

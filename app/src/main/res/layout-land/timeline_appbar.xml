@@ -35,6 +35,8 @@
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabs"
+                app:tabMode="scrollable"
+                app:tabGravity="fill"
                 android:layout_width="wrap_content"
                 android:layout_height="?actionBarSize"
                 android:layout_gravity="center" />
