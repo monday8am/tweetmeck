@@ -51,7 +51,8 @@ object ServiceLocator {
         return DefaultDataRepository(
             twitterClient = createTwitterClient(provideSharedPreferencesService(context)),
             localDataSource = TwitterDataSourceImpl(database.twitterListDao(),
-                                                    database.twitterUserDao())
+                                                    database.twitterUserDao(),
+                                                    database.tweetDao())
         )
     }
 

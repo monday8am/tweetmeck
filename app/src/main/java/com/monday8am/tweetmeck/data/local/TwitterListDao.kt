@@ -9,10 +9,10 @@ import com.monday8am.tweetmeck.data.models.TwitterList
 @Dao
 interface TwitterListDao {
 
-    @Query("SELECT * FROM TwitterLists")
+    @Query("SELECT * FROM twitterLists")
     suspend fun getAll(): List<TwitterList>
 
-    @Query("SELECT * FROM TwitterLists WHERE id = :id")
+    @Query("SELECT * FROM twitterLists WHERE id = :id")
     suspend fun getItemById(id: Long): TwitterList?
 
     @Transaction

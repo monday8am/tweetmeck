@@ -11,8 +11,8 @@ data class Tweet(
     @PrimaryKey val id: Long,
     @ColumnInfo(name = "id_str") val idStr: String,
     @ColumnInfo(name = "created_at") val createdAtRaw: String,
-    @ColumnInfo(name = "text") val text: String?,
-    @ColumnInfo(name = "full_text") val fullText: String?,
+    @ColumnInfo(name = "content") val content: String?,
+    @ColumnInfo(name = "full_content") val fullContent: String?,
     val truncated: Boolean,
     val source: String,
 
@@ -22,9 +22,9 @@ data class Tweet(
     @ColumnInfo(name = "in_reply_to_user_id") val inReplyToUserId: Long?,
     @ColumnInfo(name = "in_reply_to_user_id_str") val inReplyToUserIdStr: String?,
 
-    val user: TwitterUser,
+    @Ignore val user: TwitterUser,
     @ColumnInfo(name = "user_id") val userId: Long,
-
+    @ColumnInfo(name = "list_id") val listId: Long,
     @ColumnInfo(name = "quoted_status_id") val quotedStatusId: Long?,
     @ColumnInfo(name = "quoted_status_id_str") val quotedStatusIdStr: String?,
     @Ignore val quotedStatus: Tweet?,
@@ -40,7 +40,7 @@ data class Tweet(
     @ColumnInfo(name = "lang_raw") val langRaw: String
 ) {
     companion object {
-        fun from(dto: Status): Tweet {
+        fun from(dto: Status, listId: Long = -1): Tweet {
             return Tweet(
                 dto.id,
                 dto.idStr,
@@ -56,6 +56,7 @@ data class Tweet(
                 dto.inReplyToUserIdStr,
                 TwitterUser.from(dto.user),
                 dto.user.id,
+                listId,
                 dto.quotedStatusId,
                 dto.quotedStatusIdStr,
                 fromQuotedStatus(dto.quotedStatus),
