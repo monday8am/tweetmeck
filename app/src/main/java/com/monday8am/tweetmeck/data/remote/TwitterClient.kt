@@ -80,6 +80,6 @@ class TwitterClientImpl(
 
     override suspend fun getTweetsFromList(listId: Long): List<Tweet> {
         val response = client.timeline.listTimeline(listId, count = 40).await()
-        return response.results.map { Tweet.from(it) }
+        return emptyList() //response.results.map { Tweet.from(it) }
     }
 }

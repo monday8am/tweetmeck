@@ -10,10 +10,9 @@ enum class ListVisibilityMode {
     Private
 }
 
-@Entity(tableName = "twitterLists")
+@Entity(tableName = "lists")
 data class TwitterList(
     @PrimaryKey val id: Long,
-    @ColumnInfo(name = "id_str") val idStr: String,
     @ColumnInfo(name = "created_at") val createdAt: String,
     val description: String,
     val following: Boolean,
@@ -31,7 +30,6 @@ data class TwitterList(
         fun from(dto: jp.nephy.penicillin.models.TwitterList): TwitterList {
             return TwitterList(
                 dto.id,
-                dto.idStr,
                 dto.createdAtRaw,
                 dto.description,
                 dto.following,
