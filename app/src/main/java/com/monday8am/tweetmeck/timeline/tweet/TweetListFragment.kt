@@ -5,13 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.monday8am.tweetmeck.databinding.FragmentTweetListBinding
 import com.monday8am.tweetmeck.timeline.TimelineViewModel
-import com.monday8am.tweetmeck.util.getViewModelFactory
 import com.monday8am.tweetmeck.util.lazyFast
-import com.monday8am.tweetmeck.util.parentViewModelProvider
+import org.koin.android.viewmodel.ViewModelStoreOwnerDefinition
+import org.koin.android.viewmodel.ext.android.getSharedViewModel
 
 class TweetListFragment : Fragment() {
 
@@ -28,8 +29,10 @@ class TweetListFragment : Fragment() {
     }
 
     private lateinit var adapter: TweetListAdapter
-    private lateinit var viewModel: TimelineViewModel
     private lateinit var binding: FragmentTweetListBinding
+
+    @Suppress("UNCHECKED_CAST")
+    private lateinit var viewModel: TimelineViewModel
 
     private val listId: Long by lazyFast {
         val args = arguments ?: throw IllegalStateException("Missing arguments!")
@@ -41,8 +44,7 @@ class TweetListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = parentViewModelProvider(getViewModelFactory())
-
+        viewModel = getSharedViewModel(from = { parentFragment as ViewModelStoreOwner })
         binding = FragmentTweetListBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = this@TweetListFragment.viewModel
@@ -52,7 +54,6 @@ class TweetListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         adapter = TweetListAdapter(viewModel, viewLifecycleOwner)
 
         binding.recyclerview.apply {

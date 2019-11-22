@@ -5,17 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.databinding.LoginFragmentBinding
-import com.monday8am.tweetmeck.util.getViewModelFactory
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class LoginFragment : Fragment() {
 
     private lateinit var viewBinding: LoginFragmentBinding
-    private val viewModel by activityViewModels<AuthViewModel> { getViewModelFactory() }
+    private val viewModel: AuthViewModel by sharedViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,

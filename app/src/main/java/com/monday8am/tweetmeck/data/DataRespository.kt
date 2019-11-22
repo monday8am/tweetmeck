@@ -24,7 +24,7 @@ interface DataRepository {
 // 2. Local
 // 3. Network
 
-class DefaultDataRepository(
+class DataRepositoryImpl(
     private val twitterClient: TwitterClient,
     private val localDataSource: TwitterLocalDataSource,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO

@@ -15,7 +15,7 @@ interface AuthRepository {
     suspend fun logout()
 }
 
-class DefaultAuthRepository(
+class AuthRepositoryImpl(
     private val twitterClient: TwitterClient,
     private val sharedPreferencesService: SharedPreferencesService,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO

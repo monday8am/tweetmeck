@@ -8,15 +8,14 @@ import android.view.ViewGroup
 import android.webkit.*
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.monday8am.tweetmeck.R
-import com.monday8am.tweetmeck.util.getViewModelFactory
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class AuthWebViewFragment : Fragment() {
 
-    private val viewModel by activityViewModels<AuthViewModel> { getViewModelFactory() }
+    private val viewModel: AuthViewModel by sharedViewModel()
 
     private lateinit var webView: WebView
 
