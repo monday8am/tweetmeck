@@ -7,7 +7,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import com.monday8am.tweetmeck.TweetmeckApplication
-import com.monday8am.tweetmeck.ViewModelFactory
 
 /**
  * Implementation of lazy that is not thread safe. Useful when you know what thread you will be
@@ -15,12 +14,6 @@ import com.monday8am.tweetmeck.ViewModelFactory
  */
 fun <T> lazyFast(operation: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.NONE) {
     operation()
-}
-
-/* Views */
-fun Fragment.getViewModelFactory(): ViewModelFactory {
-    val app = (requireContext().applicationContext as TweetmeckApplication)
-    return ViewModelFactory(app.authRepository, app.dataRepository)
 }
 
 fun View.doOnApplyWindowInsets(
@@ -40,14 +33,6 @@ fun View.doOnApplyWindowInsets(
     }
     requestApplyInsetsWhenAttached()
 }
-
-/**
- * Like [Fragment.viewModelProvider] for Fragments that want a [ViewModel] scoped to the parent
- * Fragment.
- */
-inline fun <reified VM : ViewModel> Fragment.parentViewModelProvider(
-    provider: ViewModelProvider.Factory
-) = ViewModelProvider(requireParentFragment(), provider).get(VM::class.java)
 
 /** Uses `Transformations.map` on a LiveData */
 fun <X, Y> LiveData<X>.map(body: (X) -> Y): LiveData<Y> {

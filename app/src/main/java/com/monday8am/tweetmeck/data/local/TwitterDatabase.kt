@@ -1,6 +1,8 @@
 package com.monday8am.tweetmeck.data.local
 
+import android.content.Context
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.monday8am.tweetmeck.data.models.Tweet
@@ -13,4 +15,13 @@ abstract class TwitterDatabase : RoomDatabase() {
     abstract fun twitterListDao(): TwitterListDao
     abstract fun twitterUserDao(): TwitterUserDao
     abstract fun tweetDao(): TweetDao
+
+    companion object {
+        fun create(context: Context): TwitterDatabase {
+            return Room.databaseBuilder(
+                context.applicationContext,
+                TwitterDatabase::class.java, "Tweetmeck.db"
+            ).build()
+        }
+    }
 }

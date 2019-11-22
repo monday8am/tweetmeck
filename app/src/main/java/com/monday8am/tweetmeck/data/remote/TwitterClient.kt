@@ -1,9 +1,11 @@
 package com.monday8am.tweetmeck.data.remote
 
+import com.monday8am.tweetmeck.data.local.SharedPreferencesService
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
 import io.ktor.http.Url
 import jp.nephy.penicillin.PenicillinClient
+import jp.nephy.penicillin.core.session.ApiClient
 import jp.nephy.penicillin.core.session.config.account
 import jp.nephy.penicillin.core.session.config.application
 import jp.nephy.penicillin.core.session.config.token
@@ -36,16 +38,20 @@ typealias AccessToken = OAuthToken
 class TwitterClientImpl(
     apiKey: String,
     apiSecret: String,
-    accessToken: String = "",
-    accessTokenSecret: String = "",
+    prefService: SharedPreferencesService,
     private val callbackUrl: String = ""
 ) :
     TwitterClient {
 
-    private var client = PenicillinClient {
-        account {
-            application(apiKey, apiSecret)
-            token(accessToken, accessTokenSecret)
+    private var client: ApiClient
+
+    init {
+        val token = prefService.getAccessToken()
+        client = PenicillinClient {
+            account {
+                application(apiKey, apiSecret)
+                token(token?.token ?: "", token?.secret ?: "")
+            }
         }
     }
 
@@ -80,6 +86,6 @@ class TwitterClientImpl(
 
     override suspend fun getTweetsFromList(listId: Long): List<Tweet> {
         val response = client.timeline.listTimeline(listId, count = 40).await()
-        return response.results.map { Tweet.from(it) }
+        return emptyList() //response.results.map { Tweet.from(it) }
     }
 }

@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -15,14 +14,14 @@ import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.databinding.TimelineFragmentBinding
 import com.monday8am.tweetmeck.timeline.tweet.TweetListFragment
-import com.monday8am.tweetmeck.util.getViewModelFactory
+import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class TimelineFragment : Fragment() {
 
     private lateinit var binding: TimelineFragmentBinding
     private lateinit var viewPager2: ViewPager2
-    private val viewModel by viewModels<TimelineViewModel> { getViewModelFactory() }
+    private val viewModel : TimelineViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,

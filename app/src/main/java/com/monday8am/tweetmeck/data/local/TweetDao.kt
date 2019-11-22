@@ -12,7 +12,7 @@ interface TweetDao {
     @Query("SELECT * FROM tweets WHERE id = :id")
     suspend fun getItemById(id: Long): Tweet?
 
-    @Query("SELECT * FROM tweets WHERE listId = :listId")
+    @Query("SELECT * FROM tweets WHERE list_id = :listId")
     suspend fun getTweetsByListId(listId: Long): List<Tweet>
 
     @Transaction

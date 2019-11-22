@@ -80,4 +80,6 @@ dependencies {
 
     // Extra
     implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation "org.koin:koin-android:$rootProject.koinVersion"
+    implementation "org.koin:koin-android-viewmodel:$rootProject.koinVersion"
 }

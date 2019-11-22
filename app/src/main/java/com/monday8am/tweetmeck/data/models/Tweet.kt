@@ -2,7 +2,6 @@ package com.monday8am.tweetmeck.data.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import jp.nephy.penicillin.models.Status
 
@@ -22,14 +21,10 @@ data class Tweet(
     @ColumnInfo(name = "in_reply_to_user_id") val inReplyToUserId: Long?,
     @ColumnInfo(name = "in_reply_to_user_id_str") val inReplyToUserIdStr: String?,
 
-    @Ignore val user: TwitterUser,
-    @ColumnInfo(name = "user_id") val userId: Long,
     @ColumnInfo(name = "list_id") val listId: Long,
+    @ColumnInfo(name = "user_id") val userId: Long,
     @ColumnInfo(name = "quoted_status_id") val quotedStatusId: Long?,
-    @ColumnInfo(name = "quoted_status_id_str") val quotedStatusIdStr: String?,
-    @Ignore val quotedStatus: Tweet?,
     @ColumnInfo(name = "is_quote_status") val isQuoteStatus: Boolean,
-
     @ColumnInfo(name = "retweet_count") val retweetCount: Int,
     @ColumnInfo(name = "favorite_count") val favoriteCount: Int,
 
@@ -54,12 +49,9 @@ data class Tweet(
                 dto.inReplyToStatusIdStr,
                 dto.inReplyToUserId,
                 dto.inReplyToUserIdStr,
-                TwitterUser.from(dto.user),
                 dto.user.id,
                 listId,
                 dto.quotedStatusId,
-                dto.quotedStatusIdStr,
-                fromQuotedStatus(dto.quotedStatus),
                 dto.isQuoteStatus,
                 dto.retweetCount,
                 dto.favoriteCount,
@@ -67,11 +59,6 @@ data class Tweet(
                 dto.retweeted,
                 dto.possiblySensitive,
                 dto.langRaw)
-        }
-
-        private fun fromQuotedStatus(dtoStatus: Status?): Tweet? {
-            dtoStatus ?: return null
-            return from(dtoStatus)
         }
     }
 }
