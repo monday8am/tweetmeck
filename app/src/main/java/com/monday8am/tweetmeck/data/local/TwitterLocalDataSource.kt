@@ -33,7 +33,7 @@ class TwitterDataSourceImpl internal constructor(
         }
     }
 
-    override suspend fun insertList(list: TwitterList) = withContext(ioDispatcher) {
+    override suspend fun insertList(listId: Long, list: TwitterList) = withContext(ioDispatcher) {
         return@withContext try {
             Success(listsDao.insert(list))
         } catch (e: Exception) {
