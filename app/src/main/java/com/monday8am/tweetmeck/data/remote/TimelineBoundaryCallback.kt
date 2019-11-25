@@ -3,6 +3,7 @@ package com.monday8am.tweetmeck.data.remote
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
+import com.monday8am.tweetmeck.data.RequestState
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.Result.*
 import com.monday8am.tweetmeck.data.local.TwitterDatabase
@@ -40,6 +41,7 @@ class TimelineBoundaryCallback(
             scope.launch {
                 when (val result = remoteSource.getListTimeline(listId, itemAtEnd.id, networkPageSize)) {
                     is Success -> {
+                        // try catch?
                         tweetDao.insertTweetsFromList(listId, result.data)
                         it.recordSuccess()
                     }
@@ -60,13 +62,13 @@ private fun getErrorMessage(report: PagingRequestHelper.StatusReport): String {
     }.first()
 }
 
-fun PagingRequestHelper.createStatusLiveData(): LiveData<Result<Boolean>> {
-    val liveData = MutableLiveData<Result<Boolean>>()
+fun PagingRequestHelper.createStatusLiveData(): LiveData<RequestState> {
+    val liveData = MutableLiveData<RequestState>()
     addListener { report ->
         when {
             report.hasRunning() -> liveData.postValue(Loading)
             report.hasError() -> liveData.postValue(Error(Exception(getErrorMessage(report))))
-            else -> liveData.postValue(Success(true))
+            else -> liveData.postValue(Success(0))
         }
     }
     return liveData

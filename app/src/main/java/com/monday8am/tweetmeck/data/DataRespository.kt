@@ -38,7 +38,6 @@ class DataRepositoryImpl(
     private val networkPageSize = 10
     private val pageSize = 30
     private var cachedLists: List<TwitterList>? = null
-    private var timelines: Map<Long, TimelineContent> = emptyMap()
 
     private val pagedListConfig = PagedList.Config.Builder()
                                                     .setInitialLoadSizeHint(pageSize * 2)
@@ -119,5 +118,5 @@ class DataRepositoryImpl(
 
 data class TimelineContent(
     val pagedList: LiveData<PagedList<Tweet>>,
-    val loadMoreState: LiveData<Result<Boolean>>,
-    val refreshState: LiveData<Result<Boolean>>)
+    val loadMoreState: LiveData<RequestState>,
+    val refreshState: LiveData<RequestState>)
