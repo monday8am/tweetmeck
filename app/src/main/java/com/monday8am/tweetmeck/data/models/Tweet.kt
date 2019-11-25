@@ -32,7 +32,10 @@ data class Tweet(
     val retweeted: Boolean,
 
     @ColumnInfo(name = "possibly_sensitive") val possiblySensitive: Boolean,
-    @ColumnInfo(name = "lang_raw") val langRaw: String
+    @ColumnInfo(name = "lang_raw") val langRaw: String,
+
+    /* to be consistent w/ changing backend order, we need to keep a data like this */
+    val indexInResponse: Int = -1
 ) {
     companion object {
         fun from(dto: Status, listId: Long = -1): Tweet {

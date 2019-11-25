@@ -22,7 +22,6 @@ val appModule = module {
     factory { get<TwitterDatabase>().tweetDao() }
     factory { get<TwitterDatabase>().twitterListDao() }
     factory { get<TwitterDatabase>().twitterUserDao() }
-    factory<TwitterLocalDataSource> { TwitterDataSourceImpl(get(), get(), get()) }
 
     single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
     single<DataRepository> { DataRepositoryImpl(get(), get()) }

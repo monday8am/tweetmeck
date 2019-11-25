@@ -2,15 +2,17 @@ package com.monday8am.tweetmeck.data
 
 import androidx.lifecycle.LiveData
 import androidx.paging.PagedList
+import androidx.paging.toLiveData
 import com.monday8am.tweetmeck.data.Result.Error
 import com.monday8am.tweetmeck.data.Result.Success
-import com.monday8am.tweetmeck.data.local.TwitterLocalDataSource
+import com.monday8am.tweetmeck.data.local.TwitterDatabase
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.models.TwitterUser
-import com.monday8am.tweetmeck.data.remote.RequestState
+import com.monday8am.tweetmeck.data.remote.TimelineBoundaryCallback
 import com.monday8am.tweetmeck.data.remote.TwitterClient
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -18,7 +20,7 @@ import timber.log.Timber
 interface DataRepository {
     suspend fun getUser(forceUpdate: Boolean = false): Result<TwitterUser>
     suspend fun getLists(forceUpdate: Boolean = false): Result<List<TwitterList>>
-    suspend fun getListTimeline(listId: Long, forceUpdate: Boolean): TimelineContent
+    fun getListTimeline(listId: Long, scope: CoroutineScope): TimelineContent
     suspend fun deleteCachedData()
 }
 
@@ -28,15 +30,14 @@ interface DataRepository {
 // 3. Network
 
 class DataRepositoryImpl(
-    private val twitterClient: TwitterClient,
-    private val localDataSource: TwitterLocalDataSource,
+    private val remoteClient: TwitterClient,
+    private val db: TwitterDatabase,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : DataRepository {
 
+    private val networkPageSize = 10
     private val pageSize = 30
-
     private var cachedLists: List<TwitterList>? = null
-
     private var timelines: Map<Long, TimelineContent> = emptyMap()
 
     private val pagedListConfig = PagedList.Config.Builder()
@@ -64,19 +65,27 @@ class DataRepositoryImpl(
         return Error(Exception("Not implemented!"))
     }
 
-    override suspend fun getListTimeline(listId: Long, forceUpdate: Boolean): TimelineContent {
+    override fun getListTimeline(listId: Long, scope: CoroutineScope): TimelineContent {
         val boundaryCallback = TimelineBoundaryCallback(
-            webservice = redditApi,
-            subredditName = subReddit,
-            handleResponse = this::insertResultIntoDb,
-            ioExecutor = ioExecutor,
-            networkPageSize = networkPageSize)
-        return Result.Loading
+            listId = listId,
+            remoteSource = remoteClient,
+            localSource = db,
+            scope = scope,
+            networkPageSize = networkPageSize
+        )
+        val livePagedList = db.tweetDao().getTweetsByListId(listId).toLiveData(
+                                pageSize = pageSize,
+                                boundaryCallback = boundaryCallback)
+        return TimelineContent(
+            pagedList = livePagedList,
+            loadMoreState = boundaryCallback.networkState,
+            refreshState = boundaryCallback.networkState
+        )
     }
 
     override suspend fun deleteCachedData() {
-        return withContext(ioDispatcher) {
-            localDataSource.deleteLists()
+        withContext(ioDispatcher) {
+            db.twitterListDao().deleteAll()
         }
     }
 
@@ -84,8 +93,8 @@ class DataRepositoryImpl(
         // Don't read from local if it's forced
         if (forceUpdate) {
             try {
-                val listsFromRemote = twitterClient.getLists()
-                localDataSource.updateAllLists(listsFromRemote)
+                val listsFromRemote = remoteClient.getLists()
+                db.twitterListDao().updateAll(listsFromRemote)
                 return Success(listsFromRemote)
             } catch (error: Throwable) {
                 Timber.d("Remote data source fetch failed : ${error.message}")
@@ -94,26 +103,21 @@ class DataRepositoryImpl(
         }
 
         // Local if remote fails
-        val localLists = localDataSource.getTwitterLists()
-        if (localLists is Success) return localLists
-        return Error(Exception("Error fetching from remote and local"))
+        return try {
+            Success(db.twitterListDao().getAll())
+        } catch (e: Throwable) {
+            Error(Exception("Error fetching from remote and local: ${e.message}"))
+        }
     }
 
-    private fun insertResultIntoDb(listId: Long, content: List<Tweet>) {
-        body!!.data.children.let { posts ->
-            db.runInTransaction {
-                val start = db.posts().getNextIndexInSubreddit(subredditName)
-                val items = posts.mapIndexed { index, child ->
-                    child.data.indexInResponse = start + index
-                    child.data
-                }
-                db.posts().insert(items)
-            }
+    private suspend fun insertResultIntoDb(listId: Long, content: List<Tweet>) {
+        withContext(ioDispatcher) {
+            db.tweetDao().insertTweetsFromList(listId, content)
         }
     }
 }
 
 data class TimelineContent(
     val pagedList: LiveData<PagedList<Tweet>>,
-    val loadMoreState: LiveData<RequestState>,
-    val refreshState: LiveData<RequestState>)
+    val loadMoreState: LiveData<Result<Boolean>>,
+    val refreshState: LiveData<Result<Boolean>>)

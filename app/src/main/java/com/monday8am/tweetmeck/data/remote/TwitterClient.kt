@@ -1,5 +1,6 @@
 package com.monday8am.tweetmeck.data.remote
 
+import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.local.SharedPreferencesService
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
@@ -28,7 +29,7 @@ interface TwitterClient {
     suspend fun getAccessToken(requestToken: RequestToken, oAuthVerifier: String): AccessToken
     suspend fun getUser(id: Long): TwitterUser
     suspend fun getLists(): List<TwitterList>
-    suspend fun getTweetsFromList(listId: Long, sinceId: Long? = null): List<Tweet>
+    suspend fun getListTimeline(listId: Long, sinceTweetId: Long? = null, count: Int = 30): Result<List<Tweet>>
 }
 
 data class OAuthToken(val token: String, val secret: String)
@@ -84,8 +85,14 @@ class TwitterClientImpl(
         return response.results.map { TwitterList.from(it) }
     }
 
-    override suspend fun getTweetsFromList(listId: Long, sinceId: Long?): List<Tweet> {
-        val response = client.timeline.listTimeline(listId, count = 40, sinceId = sinceId).await()
-        return response.results.map { Tweet.from(it) }
+    override suspend fun getListTimeline(listId: Long,
+                                         sinceTweetId: Long?,
+                                         count: Int): Result<List<Tweet>> {
+        return try {
+            val response = client.timeline.listTimeline(listId, count = count, sinceId = sinceTweetId).await()
+            Result.Success(response.results.map { Tweet.from(it) })
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
     }
 }
