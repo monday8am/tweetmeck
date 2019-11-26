@@ -1,5 +1,6 @@
 package com.monday8am.tweetmeck.di
 
+import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.BuildConfig
 import com.monday8am.tweetmeck.data.AuthRepository
 import com.monday8am.tweetmeck.data.AuthRepositoryImpl
@@ -9,9 +10,11 @@ import com.monday8am.tweetmeck.data.local.*
 import com.monday8am.tweetmeck.data.remote.TwitterClient
 import com.monday8am.tweetmeck.data.remote.TwitterClientImpl
 import com.monday8am.tweetmeck.login.AuthViewModel
+import com.monday8am.tweetmeck.timeline.TimelineFragment
 import com.monday8am.tweetmeck.timeline.TimelineViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val appModule = module {
@@ -28,4 +31,8 @@ val appModule = module {
 
     viewModel { AuthViewModel(get()) }
     viewModel { TimelineViewModel(get()) }
+
+    scope(named<TimelineFragment>()) {
+        scoped { RecyclerView.RecycledViewPool() }
+    }
 }

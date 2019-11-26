@@ -16,6 +16,7 @@ import com.monday8am.tweetmeck.databinding.TimelineFragmentBinding
 import com.monday8am.tweetmeck.timeline.tweet.TweetListFragment
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
+import java.lang.Exception
 
 class TimelineFragment : Fragment() {
 
@@ -58,7 +59,7 @@ class TimelineFragment : Fragment() {
 
         viewPager2.adapter = object : FragmentStateAdapter(this) {
             override fun createFragment(position: Int): Fragment {
-                return TweetListFragment.newInstance(position.toLong())
+                return TweetListFragment.newInstance(items[position].id)
             }
 
             override fun getItemCount(): Int {

@@ -35,15 +35,7 @@ class DataRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : DataRepository {
 
-    private val networkPageSize = 10
-    private val pageSize = 30
     private var cachedLists: List<TwitterList>? = null
-
-    private val pagedListConfig = PagedList.Config.Builder()
-                                                    .setInitialLoadSizeHint(pageSize * 2)
-                                                    .setPageSize(pageSize)
-                                                    .setPrefetchDistance(10)
-                                                    .build()
 
     override suspend fun getLists(forceUpdate: Boolean): Result<List<TwitterList>> {
         return withContext(ioDispatcher) {
@@ -65,6 +57,15 @@ class DataRepositoryImpl(
     }
 
     override fun getListTimeline(listId: Long, scope: CoroutineScope): TimelineContent {
+        val networkPageSize = 20
+        val pageSize = 20
+
+        val pagedListConfig = PagedList.Config.Builder()
+            .setInitialLoadSizeHint(pageSize * 2)
+            .setPageSize(pageSize)
+            .setPrefetchDistance(10)
+            .build()
+
         val boundaryCallback = TimelineBoundaryCallback(
             listId = listId,
             remoteSource = remoteClient,
@@ -73,7 +74,7 @@ class DataRepositoryImpl(
             networkPageSize = networkPageSize
         )
         val livePagedList = db.tweetDao().getTweetsByListId(listId).toLiveData(
-                                pageSize = pageSize,
+                                config = pagedListConfig,
                                 boundaryCallback = boundaryCallback)
         return TimelineContent(
             pagedList = livePagedList,

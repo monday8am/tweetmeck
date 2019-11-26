@@ -1,5 +1,6 @@
 package com.monday8am.tweetmeck.data.remote
 
+import com.monday8am.tweetmeck.BuildConfig.apiSecret
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.local.SharedPreferencesService
 import com.monday8am.tweetmeck.data.models.Tweet
@@ -11,15 +12,12 @@ import jp.nephy.penicillin.core.session.ApiClient
 import jp.nephy.penicillin.core.session.config.account
 import jp.nephy.penicillin.core.session.config.application
 import jp.nephy.penicillin.core.session.config.token
-import jp.nephy.penicillin.endpoints.lists
+import jp.nephy.penicillin.endpoints.*
 import jp.nephy.penicillin.endpoints.lists.list
-import jp.nephy.penicillin.endpoints.oauth
 import jp.nephy.penicillin.endpoints.oauth.accessToken
 import jp.nephy.penicillin.endpoints.oauth.authenticateUrl
 import jp.nephy.penicillin.endpoints.oauth.requestToken
-import jp.nephy.penicillin.endpoints.timeline
 import jp.nephy.penicillin.endpoints.timeline.listTimeline
-import jp.nephy.penicillin.endpoints.users
 import jp.nephy.penicillin.endpoints.users.showByUserId
 import jp.nephy.penicillin.extensions.await
 
@@ -39,8 +37,8 @@ typealias RequestToken = OAuthToken
 typealias AccessToken = OAuthToken
 
 class TwitterClientImpl(
-    apiKey: String,
-    apiSecret: String,
+    private val apiKey: String,
+    private val apiSecret: String,
     prefService: SharedPreferencesService,
     private val callbackUrl: String = ""
 ) :
@@ -49,13 +47,8 @@ class TwitterClientImpl(
     private var client: ApiClient
 
     init {
-        val token = prefService.getAccessToken()
-        client = PenicillinClient {
-            account {
-                application(apiKey, apiSecret)
-                token(token?.token ?: "", token?.secret ?: "")
-            }
-        }
+        val savedToken = prefService.getAccessToken()
+        client = getClient(savedToken?.token ?: "", savedToken?.secret ?: "")
     }
 
     override suspend fun getRequestToken(): RequestToken {
@@ -72,6 +65,8 @@ class TwitterClientImpl(
         oAuthVerifier: String
     ): AccessToken {
         val response = client.oauth.accessToken(requestToken.token, requestToken.secret, oAuthVerifier)
+        // recreate client but this time logged.
+        client = getClient(response.accessToken, response.accessTokenSecret)
         return AccessToken(response.accessToken, response.accessTokenSecret)
     }
 
@@ -93,6 +88,15 @@ class TwitterClientImpl(
             Result.Success(response.results.map { Tweet.from(it) })
         } catch (e: Exception) {
             Result.Error(e)
+        }
+    }
+
+    private fun getClient(token: String, secret: String): ApiClient {
+        return PenicillinClient {
+            account {
+                application(apiKey, apiSecret)
+                token(token, secret)
+            }
         }
     }
 }

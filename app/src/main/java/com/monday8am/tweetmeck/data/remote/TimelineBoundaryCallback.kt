@@ -20,17 +20,22 @@ class TimelineBoundaryCallback(
 
     private val tweetDao = localSource.tweetDao()
     private val helper = PagingRequestHelper(Dispatchers.IO.asExecutor())
-    val networkState = helper.createStatusLiveData()
+    val networkState = MutableLiveData<RequestState>() //helper.createStatusLiveData()
 
     override fun onZeroItemsLoaded() {
         helper.runIfNotRunning(PagingRequestHelper.RequestType.INITIAL) {
+            networkState.value = Loading
             scope.launch {
-                when (val result = remoteSource.getListTimeline(listId, count = networkPageSize)) {
+                when (val result = remoteSource.getListTimeline(listId, count = networkPageSize * 3)) {
                     is Success -> {
                         tweetDao.insertTweetsFromList(listId, result.data)
                         it.recordSuccess()
+                        networkState.value = Success(0)
                     }
-                    is Error -> { it.recordFailure(result.exception)}
+                    is Error -> {
+                        it.recordFailure(result.exception)
+                        networkState.value = Error(result.exception)
+                    }
                 }
             }
         }
@@ -38,14 +43,19 @@ class TimelineBoundaryCallback(
 
     override fun onItemAtEndLoaded(itemAtEnd: Tweet) {
         helper.runIfNotRunning(PagingRequestHelper.RequestType.AFTER) {
+            networkState.value = Loading
             scope.launch {
                 when (val result = remoteSource.getListTimeline(listId, itemAtEnd.id, networkPageSize)) {
                     is Success -> {
                         // try catch?
                         tweetDao.insertTweetsFromList(listId, result.data)
                         it.recordSuccess()
+                        networkState.value = Success(0)
                     }
-                    is Error -> { it.recordFailure(result.exception)}
+                    is Error -> {
+                        it.recordFailure(result.exception)
+                        networkState.value = Error(result.exception)
+                    }
                 }
             }
         }
@@ -54,22 +64,4 @@ class TimelineBoundaryCallback(
     override fun onItemAtFrontLoaded(itemAtFront: Tweet) {
         // ignored, since we only ever append to what's in the DB
     }
-}
-
-private fun getErrorMessage(report: PagingRequestHelper.StatusReport): String {
-    return PagingRequestHelper.RequestType.values().mapNotNull {
-        report.getErrorFor(it)?.message
-    }.first()
-}
-
-fun PagingRequestHelper.createStatusLiveData(): LiveData<RequestState> {
-    val liveData = MutableLiveData<RequestState>()
-    addListener { report ->
-        when {
-            report.hasRunning() -> liveData.postValue(Loading)
-            report.hasError() -> liveData.postValue(Error(Exception(getErrorMessage(report))))
-            else -> liveData.postValue(Success(0))
-        }
-    }
-    return liveData
 }

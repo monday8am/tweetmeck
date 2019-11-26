@@ -15,7 +15,9 @@ import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.FragmentTweetListBinding
 import com.monday8am.tweetmeck.timeline.TimelineViewModel
 import com.monday8am.tweetmeck.util.lazyFast
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.getSharedViewModel
+import timber.log.Timber
 
 class TweetListFragment : Fragment() {
 
@@ -33,6 +35,7 @@ class TweetListFragment : Fragment() {
 
     private lateinit var adapter: TweetListAdapter
     private lateinit var binding: FragmentTweetListBinding
+    private val tweetViewPool: RecyclerView.RecycledViewPool by inject()
 
     @Suppress("UNCHECKED_CAST")
     private lateinit var viewModel: TimelineViewModel
@@ -57,9 +60,11 @@ class TweetListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         adapter = TweetListAdapter(listId, viewModel, viewLifecycleOwner)
 
         binding.recyclerview.apply {
+            adapter = this@TweetListFragment.adapter
             (layoutManager as LinearLayoutManager).recycleChildrenOnDetach = true
             (itemAnimator as DefaultItemAnimator).run {
                 supportsChangeAnimations = false
@@ -72,6 +77,7 @@ class TweetListFragment : Fragment() {
 
         val content = viewModel.getTimelineContent(listId)
         content.pagedList.observe(this, Observer<PagedList<Tweet>> {
+            Timber.d("items loaded! ${it.loadedCount}")
             adapter.submitList(it) {
                 // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
                 // item added to the end of the list as an anchor during initial load.
@@ -84,6 +90,7 @@ class TweetListFragment : Fragment() {
         })
 
         content.loadMoreState.observe(this, Observer {
+            Timber.d("Request state! $it")
             adapter.setRequestState(it)
         })
     }
