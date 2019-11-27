@@ -6,8 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.monday8am.tweetmeck.data.DataRepository
+import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.Result.Error
 import com.monday8am.tweetmeck.data.Result.Success
+import com.monday8am.tweetmeck.data.TimelineContent
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.util.map
@@ -30,6 +32,9 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
         false // Whenever refresh finishes, stop the indicator, whatever the result
     }
 
+    private var timelines: MutableMap<Long, TimelineContent> = mutableMapOf()
+    private var currentTimelineId: Long = -1
+
     init {
         loadLists(true)
     }
@@ -38,7 +43,7 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
         viewModelScope.launch {
             _dataLoading.value = true
             when (val result = dataRepository.getLists(forceUpload)) {
-                is Success -> _twitterLists.value = result.data
+                is Success -> _twitterLists.value = result.data.take(1)
                 is Error -> Timber.d("Error loading lists: ${result.exception.message}")
                 else -> Timber.d("Wrong result state!")
             }
@@ -46,18 +51,36 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
         }
     }
 
+    fun getTimelineContent(listId: Long): TimelineContent {
+        return timelines.getOrPut(listId, {
+            dataRepository.getListTimeline(listId, viewModelScope)
+        })
+    }
+
     fun onProfileClicked() {
         Timber.d("OnProfile clicked!")
     }
 
     fun onSwipeRefresh() {
-        Timber.d("OnSwipe refresh!")
+        viewModelScope.launch {
+            swipeRefreshResult.value = dataRepository.refreshTimeline(currentTimelineId)
+        }
+    }
+
+    fun onChangedDisplayedTimeline(listId: Long) {
+        currentTimelineId = listId
     }
 
     override fun openTweetDetails(tweetId: Long) {
+        Timber.d("show tweet!s $tweetId")
     }
 
     override fun onUserClicked(tweet: Tweet) {
+        Timber.d("user tapped")
+    }
+
+    override fun retryLoadMore(listId: Long) {
+        Timber.d("retry load more!!")
     }
 }
 
@@ -67,4 +90,5 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
 interface TweetItemEventListener {
     fun openTweetDetails(tweetId: Long)
     fun onUserClicked(tweet: Tweet)
+    fun retryLoadMore(listId: Long)
 }

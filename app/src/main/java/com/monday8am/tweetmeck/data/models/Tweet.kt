@@ -33,6 +33,7 @@ data class Tweet(
 
     @ColumnInfo(name = "possibly_sensitive") val possiblySensitive: Boolean,
     @ColumnInfo(name = "lang_raw") val langRaw: String
+
 ) {
     companion object {
         fun from(dto: Status, listId: Long = -1): Tweet {
@@ -57,7 +58,7 @@ data class Tweet(
                 dto.favoriteCount,
                 dto.favorited,
                 dto.retweeted,
-                dto.possiblySensitive,
+                false,
                 dto.langRaw)
         }
     }

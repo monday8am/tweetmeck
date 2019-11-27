@@ -65,6 +65,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     kapt "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
+    implementation "androidx.paging:paging-runtime-ktx:$rootProject.navigationVersion"
 
     // Remote
     implementation "io.ktor:ktor-client-android:$rootProject.ktor_version"

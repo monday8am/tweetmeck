@@ -21,7 +21,7 @@ class TimelineFragment : Fragment() {
 
     private lateinit var binding: TimelineFragmentBinding
     private lateinit var viewPager2: ViewPager2
-    private val viewModel : TimelineViewModel by viewModel()
+    private val viewModel: TimelineViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,13 +58,20 @@ class TimelineFragment : Fragment() {
 
         viewPager2.adapter = object : FragmentStateAdapter(this) {
             override fun createFragment(position: Int): Fragment {
-                return TweetListFragment.newInstance(position.toLong())
+                return TweetListFragment.newInstance(items[position].id)
             }
 
             override fun getItemCount(): Int {
                 return items.count()
             }
         }
+
+        viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                viewModel.onChangedDisplayedTimeline(items[position].id)
+            }
+        })
 
         // Attach tabs scrolling to viewPager after its adapter is defined
         TabLayoutMediator(tabs, viewPager2) { tab, position ->

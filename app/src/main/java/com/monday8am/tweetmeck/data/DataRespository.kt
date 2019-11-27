@@ -1,13 +1,18 @@
 package com.monday8am.tweetmeck.data
 
+import androidx.lifecycle.LiveData
+import androidx.paging.PagedList
+import androidx.paging.toLiveData
 import com.monday8am.tweetmeck.data.Result.Error
 import com.monday8am.tweetmeck.data.Result.Success
-import com.monday8am.tweetmeck.data.local.TwitterLocalDataSource
+import com.monday8am.tweetmeck.data.local.TwitterDatabase
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.models.TwitterUser
+import com.monday8am.tweetmeck.data.remote.TimelineBoundaryCallback
 import com.monday8am.tweetmeck.data.remote.TwitterClient
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -15,7 +20,8 @@ import timber.log.Timber
 interface DataRepository {
     suspend fun getUser(forceUpdate: Boolean = false): Result<TwitterUser>
     suspend fun getLists(forceUpdate: Boolean = false): Result<List<TwitterList>>
-    suspend fun getListTimeline(forceUpdate: Boolean = false): Result<List<Tweet>>
+    suspend fun refreshTimeline(listId: Long): Result<Boolean>
+    fun getListTimeline(listId: Long, scope: CoroutineScope): TimelineContent
     suspend fun deleteCachedData()
 }
 
@@ -25,10 +31,13 @@ interface DataRepository {
 // 3. Network
 
 class DataRepositoryImpl(
-    private val twitterClient: TwitterClient,
-    private val localDataSource: TwitterLocalDataSource,
+    private val remoteClient: TwitterClient,
+    private val db: TwitterDatabase,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : DataRepository {
+
+    private val pageSize = 20
+    private val prefetchDistance = 20
 
     private var cachedLists: List<TwitterList>? = null
 
@@ -51,18 +60,45 @@ class DataRepositoryImpl(
         return Error(Exception("Not implemented!"))
     }
 
-    override suspend fun getListTimeline(forceUpdate: Boolean): Result<List<Tweet>> {
-        /*
-        withContext(ioDispatcher) {
-
+    override suspend fun refreshTimeline(listId: Long): Result<Boolean> {
+        return withContext(ioDispatcher) {
+            when (val result = remoteClient.getListTimeline(listId, count = pageSize * 2)) {
+                is Success -> {
+                    db.tweetDao().refreshTweetsFromList(listId, result.data)
+                    Success(true)
+                }
+                is Error -> Error(result.exception)
+                else -> Error(Exception("Wrong state at refresh operation"))
+            }
         }
-        */
-        return Result.Loading
+    }
+
+    override fun getListTimeline(listId: Long, scope: CoroutineScope): TimelineContent {
+        val pagedListConfig = PagedList.Config.Builder()
+            .setInitialLoadSizeHint(pageSize * 2)
+            .setPageSize(pageSize)
+            .setPrefetchDistance(prefetchDistance)
+            .build()
+
+        val boundaryCallback = TimelineBoundaryCallback(
+            listId = listId,
+            remoteSource = remoteClient,
+            localSource = db,
+            scope = scope,
+            networkPageSize = pageSize * 2
+        )
+        val livePagedList = db.tweetDao().getTweetsByListId(listId).toLiveData(
+                                config = pagedListConfig,
+                                boundaryCallback = boundaryCallback)
+        return TimelineContent(
+            pagedList = livePagedList,
+            loadMoreState = boundaryCallback.networkState
+        )
     }
 
     override suspend fun deleteCachedData() {
-        return withContext(ioDispatcher) {
-            localDataSource.deleteLists()
+        withContext(ioDispatcher) {
+            db.twitterListDao().deleteAll()
         }
     }
 
@@ -70,8 +106,8 @@ class DataRepositoryImpl(
         // Don't read from local if it's forced
         if (forceUpdate) {
             try {
-                val listsFromRemote = twitterClient.getLists()
-                localDataSource.updateAllLists(listsFromRemote)
+                val listsFromRemote = remoteClient.getLists()
+                db.twitterListDao().updateAll(listsFromRemote)
                 return Success(listsFromRemote)
             } catch (error: Throwable) {
                 Timber.d("Remote data source fetch failed : ${error.message}")
@@ -80,31 +116,15 @@ class DataRepositoryImpl(
         }
 
         // Local if remote fails
-        val localLists = localDataSource.getTwitterLists()
-        if (localLists is Success) return localLists
-        return Error(Exception("Error fetching from remote and local"))
-    }
-
-    /*
-    private suspend fun fetchTweetsFromRemoteOrLocal(listId: Long,
-                                                     forceUpdate: Boolean): Result<List<Tweet>> {
-        // Don't read from local if it's forced
-        if (forceUpdate) {
-            try {
-                val tweetsFromRemote = twitterClient.getTweetsFromList(listId)
-                localDataSource.insertTweets(tweetsFromRemote)
-                return Success(tweetsFromRemote)
-            } catch (error: Throwable) {
-                Timber.d("Remote data source fetch failed : ${error.message}")
-            }
-            return Error(Exception("Can't force refresh: remote data source is unavailable"))
+        return try {
+            Success(db.twitterListDao().getAll())
+        } catch (e: Throwable) {
+            Error(Exception("Error fetching from remote and local: ${e.message}"))
         }
-
-        // Local if remote fails
-        val localTweets = localDataSource.getTweetsFromList(listId)
-        if (localTweets is Success) return localTweets
-        return Error(Exception("Error fetching from remote and local"))
     }
-     */
-
 }
+
+data class TimelineContent(
+    val pagedList: LiveData<PagedList<Tweet>>,
+    val loadMoreState: LiveData<RequestState>
+)

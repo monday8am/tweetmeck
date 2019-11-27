@@ -16,6 +16,7 @@
     <!-- Timeline -->
     <string name="timeline_screen_title">Timeline</string>
     <string name="timeline_no_tweets">No tweets in this list</string>
+    <string name="retry">Retry</string>
 
     <!-- Accessibility -->
     <string name="a11y_star" translation_description="Star button" >Bookmark</string>

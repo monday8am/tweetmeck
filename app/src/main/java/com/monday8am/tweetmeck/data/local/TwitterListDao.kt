@@ -3,9 +3,6 @@ package com.monday8am.tweetmeck.data.local
 import androidx.room.*
 import com.monday8am.tweetmeck.data.models.TwitterList
 
-/**
- * Data Access Object for the TwitterList table.
- */
 @Dao
 interface TwitterListDao {
 

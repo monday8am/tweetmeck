@@ -5,14 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.paging.PagedList
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.FragmentTweetListBinding
 import com.monday8am.tweetmeck.timeline.TimelineViewModel
 import com.monday8am.tweetmeck.util.lazyFast
-import org.koin.android.viewmodel.ViewModelStoreOwnerDefinition
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.getSharedViewModel
+import timber.log.Timber
 
 class TweetListFragment : Fragment() {
 
@@ -30,6 +35,7 @@ class TweetListFragment : Fragment() {
 
     private lateinit var adapter: TweetListAdapter
     private lateinit var binding: FragmentTweetListBinding
+    private val tweetViewPool: RecyclerView.RecycledViewPool by inject()
 
     @Suppress("UNCHECKED_CAST")
     private lateinit var viewModel: TimelineViewModel
@@ -54,9 +60,11 @@ class TweetListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         adapter = TweetListAdapter(viewModel, viewLifecycleOwner)
 
         binding.recyclerview.apply {
+            adapter = this@TweetListFragment.adapter
             (layoutManager as LinearLayoutManager).recycleChildrenOnDetach = true
             (itemAnimator as DefaultItemAnimator).run {
                 supportsChangeAnimations = false
@@ -66,5 +74,22 @@ class TweetListFragment : Fragment() {
                 removeDuration = 120L
             }
         }
+
+        val content = viewModel.getTimelineContent(listId)
+        content.pagedList.observe(this, Observer<PagedList<Tweet>> {
+            adapter.submitList(it) {
+                // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
+                // item added to the end of the list as an anchor during initial load.
+                val layoutManager = (binding.recyclerview.layoutManager as LinearLayoutManager)
+                val position = layoutManager.findFirstCompletelyVisibleItemPosition()
+                if (position != RecyclerView.NO_POSITION) {
+                    binding.recyclerview.scrollToPosition(position)
+                }
+            }
+        })
+
+        content.loadMoreState.observe(this, Observer {
+            Timber.d("Request state! $it")
+        })
     }
 }
