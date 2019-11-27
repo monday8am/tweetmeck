@@ -6,82 +6,25 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.monday8am.tweetmeck.R
-import com.monday8am.tweetmeck.data.Loaded
-import com.monday8am.tweetmeck.data.RequestState
-import com.monday8am.tweetmeck.data.Result.Loading
 import com.monday8am.tweetmeck.data.models.Tweet
-import com.monday8am.tweetmeck.databinding.ItemRequestStateBinding
 import com.monday8am.tweetmeck.databinding.ItemTweetBinding
 import com.monday8am.tweetmeck.timeline.TweetItemEventListener
-import timber.log.Timber
 
 class TweetListAdapter(
-    private val listId: Long,
     private val eventListener: TweetItemEventListener,
     private val lifecycleOwner: LifecycleOwner
-) : PagedListAdapter<Tweet, RecyclerView.ViewHolder>(TweetItemDiff) {
+) : PagedListAdapter<Tweet, TweetViewHolder>(TweetItemDiff) {
 
-    private var requestState: RequestState? = null
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        /*
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TweetViewHolder {
         val binding = ItemTweetBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return TweetViewHolder(
             binding, eventListener, lifecycleOwner
         )
-         */
-        return when (viewType) {
-            R.layout.item_tweet -> {
-                val binding = ItemTweetBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-                TweetViewHolder(
-                    binding, eventListener, lifecycleOwner
-                )
-            }
-            R.layout.item_request_state -> {
-                val binding = ItemRequestStateBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-                NetworkStateViewHolder(
-                    binding, eventListener, lifecycleOwner
-                )
-            }
-            else -> throw IllegalArgumentException("unknown view type $viewType")
-        }
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (getItemViewType(position)) {
-            R.layout.item_tweet -> {
-                val item = getItem(position) ?: return
-                (holder as TweetViewHolder).bind(item)
-            }
-            R.layout.item_request_state -> (holder as NetworkStateViewHolder).bind(listId, requestState)
-        }
-    }
-
-    private fun hasExtraRow() = requestState?.Loaded ?: false
-
-    override fun getItemViewType(position: Int): Int {
-        return if (hasExtraRow() && position == itemCount - 1) {
-            R.layout.item_request_state
-        } else {
-            R.layout.item_tweet
-        }
-    }
-
-    fun setRequestState(requestState: RequestState?) {
-        val previousState = this.requestState
-        val hadExtraRow = hasExtraRow()
-        this.requestState = requestState
-        val hasExtraRow = hasExtraRow()
-        if (hadExtraRow != hasExtraRow) {
-            if (hadExtraRow) {
-                notifyItemRemoved(super.getItemCount())
-            } else {
-                notifyItemInserted(super.getItemCount())
-            }
-        } else if (hasExtraRow && previousState != requestState) {
-            notifyItemChanged(itemCount - 1)
-        }
+    override fun onBindViewHolder(holder: TweetViewHolder, position: Int) {
+        val item = getItem(position) ?: return
+        holder.bind(item)
     }
 }
 
@@ -99,21 +42,6 @@ class TweetViewHolder(
     }
 }
 
-class NetworkStateViewHolder(
-    private val binding: ItemRequestStateBinding,
-    private val eventListener: TweetItemEventListener,
-    private val lifecycleOwner: LifecycleOwner
-) : RecyclerView.ViewHolder(binding.root) {
-
-    fun bind(listId: Long, state: RequestState?) {
-        binding.listId = listId
-        binding.state = state ?: Loading
-        binding.eventListener = eventListener
-        binding.lifecycleOwner = lifecycleOwner
-        binding.executePendingBindings()
-    }
-}
-
 object TweetItemDiff : DiffUtil.ItemCallback<Tweet>() {
 
     override fun areItemsTheSame(
@@ -124,6 +52,6 @@ object TweetItemDiff : DiffUtil.ItemCallback<Tweet>() {
     }
 
     override fun areContentsTheSame(oldItem: Tweet, newItem: Tweet): Boolean {
-        return oldItem == newItem
+        return oldItem.id == newItem.id
     }
 }

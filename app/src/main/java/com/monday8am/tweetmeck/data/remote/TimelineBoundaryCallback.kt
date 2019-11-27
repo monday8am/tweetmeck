@@ -10,7 +10,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class TimelineBoundaryCallback(
     private val listId: Long,
@@ -42,8 +41,6 @@ class TimelineBoundaryCallback(
                 }
             }
         }
-
-        Timber.d("Authorized to run onZeroItemsLoaded! $value")
     }
 
     override fun onItemAtEndLoaded(itemAtEnd: Tweet) {
@@ -64,8 +61,6 @@ class TimelineBoundaryCallback(
                 }
             }
         }
-
-        Timber.d("Authorized to run onItemAtEndLoaded! $value")
     }
 
     override fun onItemAtFrontLoaded(itemAtFront: Tweet) {

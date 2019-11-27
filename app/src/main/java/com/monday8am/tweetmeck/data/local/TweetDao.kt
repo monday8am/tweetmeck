@@ -3,7 +3,6 @@ package com.monday8am.tweetmeck.data.local
 import androidx.paging.DataSource
 import androidx.room.*
 import com.monday8am.tweetmeck.data.models.Tweet
-import timber.log.Timber
 
 @Dao
 interface TweetDao {
@@ -11,19 +10,15 @@ interface TweetDao {
     @Query("SELECT * FROM tweets WHERE id = :id")
     suspend fun getItemById(id: Long): Tweet?
 
-    @Query("SELECT * FROM tweets WHERE list_id = :listId ORDER BY index_in_response ASC")
+    @Query("SELECT * FROM tweets WHERE list_id = :listId ORDER BY id DESC")
     fun getTweetsByListId(listId: Long): DataSource.Factory<Int, Tweet>
+
+    @Query("SELECT COUNT(*) FROM tweets WHERE list_id = :listId")
+    suspend fun countTweetsByListId(listId: Long): Int
 
     @Transaction
     suspend fun insertTweetsFromList(listId: Long, tweets: List<Tweet>) {
-        Timber.d("Original size! ${tweets.size}")
-        val tmpIndex = getNextIndexInTweetList(listId)
-        val startIndex = tmpIndex ?: 0
-        Timber.d("Index to insert List! $startIndex but original is $tmpIndex")
-        val items = tweets.mapIndexed { index, child ->
-            return@mapIndexed child.copy(indexInResponse = startIndex + index,
-                                         listId = listId)
-        }
+        val items = tweets.map { it.copy(listId = listId) }
         insert(items)
     }
 
@@ -32,9 +27,6 @@ interface TweetDao {
         deleteByList(listId)
         insertTweetsFromList(listId, tweets)
     }
-
-    @Query("SELECT MAX(index_in_response) + 1 FROM tweets WHERE list_id = :listId")
-    suspend fun getNextIndexInTweetList(listId: Long): Int?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(items: List<Tweet>)

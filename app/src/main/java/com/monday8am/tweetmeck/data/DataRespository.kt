@@ -37,7 +37,7 @@ class DataRepositoryImpl(
 ) : DataRepository {
 
     private val pageSize = 20
-    private val prefetchDistance = 10
+    private val prefetchDistance = 20
 
     private var cachedLists: List<TwitterList>? = null
 
@@ -78,7 +78,6 @@ class DataRepositoryImpl(
             .setInitialLoadSizeHint(pageSize * 2)
             .setPageSize(pageSize)
             .setPrefetchDistance(prefetchDistance)
-            .setEnablePlaceholders(false)
             .build()
 
         val boundaryCallback = TimelineBoundaryCallback(

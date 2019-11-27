@@ -61,7 +61,7 @@ class TweetListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TweetListAdapter(listId, viewModel, viewLifecycleOwner)
+        adapter = TweetListAdapter(viewModel, viewLifecycleOwner)
 
         binding.recyclerview.apply {
             adapter = this@TweetListFragment.adapter
@@ -77,7 +77,6 @@ class TweetListFragment : Fragment() {
 
         val content = viewModel.getTimelineContent(listId)
         content.pagedList.observe(this, Observer<PagedList<Tweet>> {
-            Timber.d("items loaded! ${it.loadedCount}")
             adapter.submitList(it) {
                 // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
                 // item added to the end of the list as an anchor during initial load.
@@ -91,7 +90,6 @@ class TweetListFragment : Fragment() {
 
         content.loadMoreState.observe(this, Observer {
             Timber.d("Request state! $it")
-            adapter.setRequestState(it)
         })
     }
 }

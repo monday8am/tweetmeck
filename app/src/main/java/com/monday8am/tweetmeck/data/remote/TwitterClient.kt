@@ -1,6 +1,5 @@
 package com.monday8am.tweetmeck.data.remote
 
-import com.monday8am.tweetmeck.BuildConfig.apiSecret
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.local.SharedPreferencesService
 import com.monday8am.tweetmeck.data.models.Tweet
@@ -12,15 +11,17 @@ import jp.nephy.penicillin.core.session.ApiClient
 import jp.nephy.penicillin.core.session.config.account
 import jp.nephy.penicillin.core.session.config.application
 import jp.nephy.penicillin.core.session.config.token
-import jp.nephy.penicillin.endpoints.*
+import jp.nephy.penicillin.endpoints.lists
 import jp.nephy.penicillin.endpoints.lists.list
+import jp.nephy.penicillin.endpoints.oauth
 import jp.nephy.penicillin.endpoints.oauth.accessToken
 import jp.nephy.penicillin.endpoints.oauth.authenticateUrl
 import jp.nephy.penicillin.endpoints.oauth.requestToken
+import jp.nephy.penicillin.endpoints.timeline
 import jp.nephy.penicillin.endpoints.timeline.listTimeline
+import jp.nephy.penicillin.endpoints.users
 import jp.nephy.penicillin.endpoints.users.showByUserId
 import jp.nephy.penicillin.extensions.await
-import timber.log.Timber
 
 interface TwitterClient {
     suspend fun getRequestToken(): RequestToken
@@ -28,7 +29,7 @@ interface TwitterClient {
     suspend fun getAccessToken(requestToken: RequestToken, oAuthVerifier: String): AccessToken
     suspend fun getUser(id: Long): TwitterUser
     suspend fun getLists(): List<TwitterList>
-    suspend fun getListTimeline(listId: Long, sinceTweetId: Long? = null, count: Int): Result<List<Tweet>>
+    suspend fun getListTimeline(listId: Long, maxTweetId: Long? = null, count: Int): Result<List<Tweet>>
 }
 
 data class OAuthToken(val token: String, val secret: String)
@@ -83,14 +84,13 @@ class TwitterClientImpl(
 
     override suspend fun getListTimeline(
         listId: Long,
-        sinceTweetId: Long?,
+        maxTweetId: Long?,
         count: Int
     ): Result<List<Tweet>> {
         return try {
             val response = client.timeline.listTimeline(listId,
-                                                        count = count + 10,
-                                                        sinceId = sinceTweetId).await()
-            Timber.d("Result from network: ${response.results.size}")
+                                                        count = count,
+                                                        maxId = maxTweetId).await()
             Result.Success(response.results.take(count).map { Tweet.from(it) })
         } catch (e: Exception) {
             Result.Error(e)
