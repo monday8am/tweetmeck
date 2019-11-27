@@ -25,7 +25,7 @@ sealed class Result<out R> {
 val Result<*>.succeeded
     get() = this is Result.Success && data != null
 
-typealias RequestState = Result<Long>
+typealias RequestState = Result<Boolean>
 
 val Result<*>.Loaded
     get() = this is Result.Success

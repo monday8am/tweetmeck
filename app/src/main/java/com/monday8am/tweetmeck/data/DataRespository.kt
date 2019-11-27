@@ -9,12 +9,10 @@ import com.monday8am.tweetmeck.data.local.TwitterDatabase
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.models.TwitterUser
+import com.monday8am.tweetmeck.data.remote.PagingRequestHelper
 import com.monday8am.tweetmeck.data.remote.TimelineBoundaryCallback
 import com.monday8am.tweetmeck.data.remote.TwitterClient
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import timber.log.Timber
 
 interface DataRepository {
@@ -64,7 +62,22 @@ class DataRepositoryImpl(
         return withContext(ioDispatcher) {
             when (val result = remoteClient.getListTimeline(listId, count = pageSize * 2)) {
                 is Success -> {
-                    db.tweetDao().refreshTweetsFromList(listId, result.data)
+                    db.twitterUserDao().insert(result.data.map { it.user })
+                    db.tweetDao().refreshTweetsFromList(listId, result.data.map { it.tweet })
+                    Success(true)
+                }
+                is Error -> Error(result.exception)
+                else -> Error(Exception("Wrong state at refresh operation"))
+            }
+        }
+    }
+
+    private suspend fun loadMoreForTimeline(listId: Long, maxTweetId: Long): Result<Boolean> {
+        return withContext(ioDispatcher) {
+            when (val result = remoteClient.getListTimeline(listId, maxTweetId = maxTweetId, count = pageSize * 2)) {
+                is Success -> {
+                        db.twitterUserDao().insert( result.data.map { it.user })
+                        db.tweetDao().insert(result.data.map { it.tweet })
                     Success(true)
                 }
                 is Error -> Error(result.exception)
@@ -82,17 +95,17 @@ class DataRepositoryImpl(
 
         val boundaryCallback = TimelineBoundaryCallback(
             listId = listId,
-            remoteSource = remoteClient,
-            localSource = db,
             scope = scope,
-            networkPageSize = pageSize * 2
+            refreshCallback = ::refreshTimeline,
+            loadMoreCallback = ::loadMoreForTimeline
         )
+
         val livePagedList = db.tweetDao().getTweetsByListId(listId).toLiveData(
                                 config = pagedListConfig,
                                 boundaryCallback = boundaryCallback)
         return TimelineContent(
             pagedList = livePagedList,
-            loadMoreState = boundaryCallback.networkState
+            loadMoreState = boundaryCallback.requestState
         )
     }
 

@@ -17,15 +17,9 @@ interface TweetDao {
     suspend fun countTweetsByListId(listId: Long): Int
 
     @Transaction
-    suspend fun insertTweetsFromList(listId: Long, tweets: List<Tweet>) {
-        val items = tweets.map { it.copy(listId = listId) }
-        insert(items)
-    }
-
-    @Transaction
     suspend fun refreshTweetsFromList(listId: Long, tweets: List<Tweet>) {
         deleteByList(listId)
-        insertTweetsFromList(listId, tweets)
+        insert(tweets)
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
