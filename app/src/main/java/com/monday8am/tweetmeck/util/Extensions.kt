@@ -4,9 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
-import com.monday8am.tweetmeck.TweetmeckApplication
 
 /**
  * Implementation of lazy that is not thread safe. Useful when you know what thread you will be

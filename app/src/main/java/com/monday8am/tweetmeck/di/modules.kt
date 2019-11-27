@@ -20,7 +20,7 @@ import org.koin.dsl.module
 val appModule = module {
     single { TwitterDatabase.create(androidContext()) }
     single<SharedPreferencesService> { SharedPreferencesServiceImpl(androidContext()) }
-    single<TwitterClient> { TwitterClientImpl(BuildConfig.apiKey, BuildConfig.apiSecret, get(), BuildConfig.callbackUrl)}
+    single<TwitterClient> { TwitterClientImpl(BuildConfig.apiKey, BuildConfig.apiSecret, get(), BuildConfig.callbackUrl) }
 
     factory { get<TwitterDatabase>().tweetDao() }
     factory { get<TwitterDatabase>().twitterListDao() }

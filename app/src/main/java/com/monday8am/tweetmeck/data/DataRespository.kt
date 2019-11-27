@@ -20,6 +20,7 @@ import timber.log.Timber
 interface DataRepository {
     suspend fun getUser(forceUpdate: Boolean = false): Result<TwitterUser>
     suspend fun getLists(forceUpdate: Boolean = false): Result<List<TwitterList>>
+    suspend fun refreshTimeline(listId: Long): Result<Boolean>
     fun getListTimeline(listId: Long, scope: CoroutineScope): TimelineContent
     suspend fun deleteCachedData()
 }
@@ -34,6 +35,9 @@ class DataRepositoryImpl(
     private val db: TwitterDatabase,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : DataRepository {
+
+    private val pageSize = 20
+    private val prefetchDistance = 10
 
     private var cachedLists: List<TwitterList>? = null
 
@@ -56,14 +60,25 @@ class DataRepositoryImpl(
         return Error(Exception("Not implemented!"))
     }
 
-    override fun getListTimeline(listId: Long, scope: CoroutineScope): TimelineContent {
-        val networkPageSize = 20
-        val pageSize = 20
+    override suspend fun refreshTimeline(listId: Long): Result<Boolean> {
+        return withContext(ioDispatcher) {
+            when (val result = remoteClient.getListTimeline(listId, count = pageSize * 2)) {
+                is Success -> {
+                    db.tweetDao().refreshTweetsFromList(listId, result.data)
+                    Success(true)
+                }
+                is Error -> Error(result.exception)
+                else -> Error(Exception("Wrong state at refresh operation"))
+            }
+        }
+    }
 
+    override fun getListTimeline(listId: Long, scope: CoroutineScope): TimelineContent {
         val pagedListConfig = PagedList.Config.Builder()
             .setInitialLoadSizeHint(pageSize * 2)
             .setPageSize(pageSize)
-            .setPrefetchDistance(10)
+            .setPrefetchDistance(prefetchDistance)
+            .setEnablePlaceholders(false)
             .build()
 
         val boundaryCallback = TimelineBoundaryCallback(
@@ -71,15 +86,14 @@ class DataRepositoryImpl(
             remoteSource = remoteClient,
             localSource = db,
             scope = scope,
-            networkPageSize = networkPageSize
+            networkPageSize = pageSize * 2
         )
         val livePagedList = db.tweetDao().getTweetsByListId(listId).toLiveData(
                                 config = pagedListConfig,
                                 boundaryCallback = boundaryCallback)
         return TimelineContent(
             pagedList = livePagedList,
-            loadMoreState = boundaryCallback.networkState,
-            refreshState = boundaryCallback.networkState
+            loadMoreState = boundaryCallback.networkState
         )
     }
 
@@ -109,15 +123,9 @@ class DataRepositoryImpl(
             Error(Exception("Error fetching from remote and local: ${e.message}"))
         }
     }
-
-    private suspend fun insertResultIntoDb(listId: Long, content: List<Tweet>) {
-        withContext(ioDispatcher) {
-            db.tweetDao().insertTweetsFromList(listId, content)
-        }
-    }
 }
 
 data class TimelineContent(
     val pagedList: LiveData<PagedList<Tweet>>,
-    val loadMoreState: LiveData<RequestState>,
-    val refreshState: LiveData<RequestState>)
+    val loadMoreState: LiveData<RequestState>
+)

@@ -24,11 +24,28 @@ class TweetListAdapter(
 
     private var requestState: RequestState? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TweetViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        /*
         val binding = ItemTweetBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return TweetViewHolder(
             binding, eventListener, lifecycleOwner
         )
+         */
+        return when (viewType) {
+            R.layout.item_tweet -> {
+                val binding = ItemTweetBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                TweetViewHolder(
+                    binding, eventListener, lifecycleOwner
+                )
+            }
+            R.layout.item_request_state -> {
+                val binding = ItemRequestStateBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                NetworkStateViewHolder(
+                    binding, eventListener, lifecycleOwner
+                )
+            }
+            else -> throw IllegalArgumentException("unknown view type $viewType")
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -38,14 +55,6 @@ class TweetListAdapter(
                 (holder as TweetViewHolder).bind(item)
             }
             R.layout.item_request_state -> (holder as NetworkStateViewHolder).bind(listId, requestState)
-        }
-    }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
-        if (payloads.isNotEmpty()) {
-            Timber.d("onBindViewHolder payload update!")
-        } else {
-            onBindViewHolder(holder, position)
         }
     }
 

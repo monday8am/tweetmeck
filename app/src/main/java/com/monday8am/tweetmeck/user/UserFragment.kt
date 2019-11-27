@@ -16,7 +16,7 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 class UserFragment : Fragment() {
 
     private lateinit var binding: SettingsFragmentBinding
-    private val authViewModel : AuthViewModel by sharedViewModel()
+    private val authViewModel: AuthViewModel by sharedViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,

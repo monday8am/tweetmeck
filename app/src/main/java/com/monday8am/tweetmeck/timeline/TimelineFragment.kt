@@ -16,13 +16,12 @@ import com.monday8am.tweetmeck.databinding.TimelineFragmentBinding
 import com.monday8am.tweetmeck.timeline.tweet.TweetListFragment
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import java.lang.Exception
 
 class TimelineFragment : Fragment() {
 
     private lateinit var binding: TimelineFragmentBinding
     private lateinit var viewPager2: ViewPager2
-    private val viewModel : TimelineViewModel by viewModel()
+    private val viewModel: TimelineViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,6 +65,13 @@ class TimelineFragment : Fragment() {
                 return items.count()
             }
         }
+
+        viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                viewModel.onChangedDisplayedTimeline(items[position].id)
+            }
+        })
 
         // Attach tabs scrolling to viewPager after its adapter is defined
         TabLayoutMediator(tabs, viewPager2) { tab, position ->

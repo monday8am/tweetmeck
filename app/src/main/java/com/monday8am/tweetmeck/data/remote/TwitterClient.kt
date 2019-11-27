@@ -20,6 +20,7 @@ import jp.nephy.penicillin.endpoints.oauth.requestToken
 import jp.nephy.penicillin.endpoints.timeline.listTimeline
 import jp.nephy.penicillin.endpoints.users.showByUserId
 import jp.nephy.penicillin.extensions.await
+import timber.log.Timber
 
 interface TwitterClient {
     suspend fun getRequestToken(): RequestToken
@@ -27,7 +28,7 @@ interface TwitterClient {
     suspend fun getAccessToken(requestToken: RequestToken, oAuthVerifier: String): AccessToken
     suspend fun getUser(id: Long): TwitterUser
     suspend fun getLists(): List<TwitterList>
-    suspend fun getListTimeline(listId: Long, sinceTweetId: Long? = null, count: Int = 30): Result<List<Tweet>>
+    suspend fun getListTimeline(listId: Long, sinceTweetId: Long? = null, count: Int): Result<List<Tweet>>
 }
 
 data class OAuthToken(val token: String, val secret: String)
@@ -80,12 +81,17 @@ class TwitterClientImpl(
         return response.results.map { TwitterList.from(it) }
     }
 
-    override suspend fun getListTimeline(listId: Long,
-                                         sinceTweetId: Long?,
-                                         count: Int): Result<List<Tweet>> {
+    override suspend fun getListTimeline(
+        listId: Long,
+        sinceTweetId: Long?,
+        count: Int
+    ): Result<List<Tweet>> {
         return try {
-            val response = client.timeline.listTimeline(listId, count = count, sinceId = sinceTweetId).await()
-            Result.Success(response.results.map { Tweet.from(it) })
+            val response = client.timeline.listTimeline(listId,
+                                                        count = count + 10,
+                                                        sinceId = sinceTweetId).await()
+            Timber.d("Result from network: ${response.results.size}")
+            Result.Success(response.results.take(count).map { Tweet.from(it) })
         } catch (e: Exception) {
             Result.Error(e)
         }

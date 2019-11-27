@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.monday8am.tweetmeck.data.DataRepository
+import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.Result.Error
 import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.TimelineContent
@@ -32,6 +33,7 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
     }
 
     private var timelines: MutableMap<Long, TimelineContent> = mutableMapOf()
+    private var currentTimelineId: Long = -1
 
     init {
         loadLists(true)
@@ -60,7 +62,13 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
     }
 
     fun onSwipeRefresh() {
-        Timber.d("OnSwipe refresh!")
+        viewModelScope.launch {
+            swipeRefreshResult.value = dataRepository.refreshTimeline(currentTimelineId)
+        }
+    }
+
+    fun onChangedDisplayedTimeline(listId: Long) {
+        currentTimelineId = listId
     }
 
     override fun openTweetDetails(tweetId: Long) {
