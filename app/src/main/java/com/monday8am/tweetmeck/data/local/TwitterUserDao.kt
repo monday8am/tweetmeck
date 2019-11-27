@@ -15,6 +15,9 @@ interface TwitterUserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: TwitterUser): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(items: List<TwitterUser>)
+
     @Query("DELETE FROM users")
     suspend fun deleteAll()
 }

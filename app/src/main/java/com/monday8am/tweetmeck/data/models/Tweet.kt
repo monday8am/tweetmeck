@@ -1,9 +1,17 @@
 package com.monday8am.tweetmeck.data.models
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import jp.nephy.penicillin.models.Status
+
+data class TimelineUser(
+    @ColumnInfo(name = "user_id") val id: Long,
+    @ColumnInfo(name = "user_name")val name: String,
+    @ColumnInfo(name = "screen_name") val screenName: String,
+    @ColumnInfo(name = "profile_image_url") val profileImageUrl: String
+)
 
 @Entity(tableName = "tweets")
 data class Tweet(
@@ -22,7 +30,8 @@ data class Tweet(
     @ColumnInfo(name = "in_reply_to_user_id_str") val inReplyToUserIdStr: String?,
 
     @ColumnInfo(name = "list_id") val listId: Long,
-    @ColumnInfo(name = "user_id") val userId: Long,
+    @Embedded val timelineUser: TimelineUser,
+
     @ColumnInfo(name = "quoted_status_id") val quotedStatusId: Long?,
     @ColumnInfo(name = "is_quote_status") val isQuoteStatus: Boolean,
     @ColumnInfo(name = "retweet_count") val retweetCount: Int,
@@ -36,7 +45,7 @@ data class Tweet(
 
 ) {
     companion object {
-        fun from(dto: Status, listId: Long = -1): Tweet {
+        fun from(dto: Status, listId: Long): Tweet {
             return Tweet(
                 dto.id,
                 dto.idStr,
@@ -50,8 +59,13 @@ data class Tweet(
                 dto.inReplyToStatusIdStr,
                 dto.inReplyToUserId,
                 dto.inReplyToUserIdStr,
-                dto.user.id,
                 listId,
+                TimelineUser(
+                    dto.user.id,
+                    dto.user.name,
+                    dto.user.screenName,
+                    dto.user.profileImageUrl
+                ),
                 dto.quotedStatusId,
                 dto.isQuoteStatus,
                 dto.retweetCount,
