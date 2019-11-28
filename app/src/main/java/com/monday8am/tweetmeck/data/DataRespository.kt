@@ -16,10 +16,11 @@ import kotlinx.coroutines.*
 import timber.log.Timber
 
 interface DataRepository {
-    suspend fun getUser(forceUpdate: Boolean = false): Result<TwitterUser>
+    suspend fun getTweet(tweetId: Long): Result<Tweet>
+    suspend fun getUser(userId: Long): Result<TwitterUser>
     suspend fun getLists(forceUpdate: Boolean = false): Result<List<TwitterList>>
     suspend fun refreshTimeline(listId: Long): Result<Boolean>
-    fun getListTimeline(listId: Long, scope: CoroutineScope): TimelineContent
+    fun getTimeline(listId: Long, scope: CoroutineScope): TimelineContent
     suspend fun deleteCachedData()
 }
 
@@ -36,7 +37,6 @@ class DataRepositoryImpl(
 
     private val pageSize = 20
     private val prefetchDistance = 20
-
     private var cachedLists: List<TwitterList>? = null
 
     override suspend fun getLists(forceUpdate: Boolean): Result<List<TwitterList>> {
@@ -52,10 +52,6 @@ class DataRepositoryImpl(
             }
             return@withContext newTasks
         }
-    }
-
-    override suspend fun getUser(forceUpdate: Boolean): Result<TwitterUser> {
-        return Error(Exception("Not implemented!"))
     }
 
     override suspend fun refreshTimeline(listId: Long): Result<Boolean> {
@@ -86,7 +82,7 @@ class DataRepositoryImpl(
         }
     }
 
-    override fun getListTimeline(listId: Long, scope: CoroutineScope): TimelineContent {
+    override fun getTimeline(listId: Long, scope: CoroutineScope): TimelineContent {
         val pagedListConfig = PagedList.Config.Builder()
             .setInitialLoadSizeHint(pageSize * 2)
             .setPageSize(pageSize)
@@ -109,9 +105,32 @@ class DataRepositoryImpl(
         )
     }
 
+    override suspend fun getTweet(tweetId: Long): Result<Tweet> =
+        getItemFromDb(tweetId, db.tweetDao()::getItemById
+    )
+
+    override suspend fun getUser(userId: Long): Result<TwitterUser> =
+        getItemFromDb(userId, db.twitterUserDao()::getItemById
+    )
+
     override suspend fun deleteCachedData() {
         withContext(ioDispatcher) {
             db.twitterListDao().deleteAll()
+        }
+    }
+
+    private suspend fun <T>getItemFromDb(itemId: Long, dbCall: suspend (Long) -> T?): Result<T> {
+        return withContext(ioDispatcher) {
+            try {
+                val value: T? = dbCall.invoke(itemId)
+                if (value != null) {
+                    Success(value)
+                } else {
+                    Error(Exception("Item not found with id: $itemId"))
+                }
+            } catch (e: Exception) {
+                Error(e)
+            }
         }
     }
 

@@ -53,7 +53,7 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
 
     fun getTimelineContent(listId: Long): TimelineContent {
         return timelines.getOrPut(listId, {
-            dataRepository.getListTimeline(listId, viewModelScope)
+            dataRepository.getTimeline(listId, viewModelScope)
         })
     }
 
