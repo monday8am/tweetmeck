@@ -5,7 +5,7 @@
             android:id="@+id/timeline_dest"
             android:title="@string/timeline_screen_title" />
         <item
-            android:id="@+id/settings_dest"
+            android:id="@+id/user_dest"
             android:title="@string/settings_screen_title" />
     </group>
 </menu>

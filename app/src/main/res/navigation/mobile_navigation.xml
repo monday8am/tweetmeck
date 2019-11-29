@@ -21,22 +21,38 @@
     </fragment>
     <fragment
         android:id="@+id/timeline_dest"
-        android:name="com.monday8am.tweetmeck.timeline.TimelineFragment"
+        android:name="com.monday8am.tweetmeck.home.HomeFragment"
         android:label="Timeline"
-        tools:layout="@layout/timeline_fragment" />
-    <fragment
-        android:id="@+id/settings_dest"
-        android:name="com.monday8am.tweetmeck.user.UserFragment"
-        android:label="@string/settings_screen_title"
-        tools:layout="@layout/settings_fragment" >
+        tools:layout="@layout/home_fragment" >
         <action
-            android:id="@+id/action_settings_dest_to_login_dest"
-            app:destination="@id/login_dest" />
+            android:id="@+id/action_timeline_dest_to_user_dest"
+            app:destination="@id/user_dest" />
+        <action
+            android:id="@+id/action_timeline_dest_to_tweet_dest"
+            app:destination="@id/tweet_dest" />
+    </fragment>
+    <fragment
+        android:id="@+id/user_dest"
+        android:name="com.monday8am.tweetmeck.user.UserFragment"
+        android:label="@string/user_screen_title"
+        tools:layout="@layout/settings_fragment" >
+        <argument
+            android:name="userId"
+            app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/auth_dest"
         android:name="com.monday8am.tweetmeck.login.AuthWebViewFragment"
         android:label="fragment_auth_web_view"
         tools:layout="@layout/fragment_auth_web_view" />
+    <fragment
+        android:id="@+id/tweet_dest"
+        android:name="com.monday8am.tweetmeck.tweet.TweetFragment"
+        android:label="@string/tweet_screen_title"
+        tools:layout="@layout/tweet_fragment" >
+        <argument
+            android:name="tweetId"
+            app:argType="long" />
+    </fragment>
 
 </navigation>

@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.user
+package com.monday8am.tweetmeck.tweet
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,16 +6,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.Result
-import com.monday8am.tweetmeck.data.models.TwitterUser
+import com.monday8am.tweetmeck.data.models.Tweet
 import kotlinx.coroutines.launch
 
-class UserViewModel(
-    private val userId: Long,
+class TweetViewModel(
+    private val tweetId: Long,
     private val dataRepository: DataRepository
 ) : ViewModel() {
 
-    private val _user = MutableLiveData<Result<TwitterUser>>()
-    val user: LiveData<Result<TwitterUser>> = _user
+    private val _tweet = MutableLiveData<Result<Tweet>>()
+    val tweet: LiveData<Result<Tweet>> = _tweet
 
     init {
         getTweetContent()
@@ -23,8 +23,8 @@ class UserViewModel(
 
     private fun getTweetContent() {
         viewModelScope.launch {
-            _user.value = Result.Loading
-            _user.value = dataRepository.getUser(userId)
+            _tweet.value = Result.Loading
+            _tweet.value = dataRepository.getTweet(tweetId)
         }
     }
 }

@@ -9,7 +9,6 @@ import com.monday8am.tweetmeck.data.local.TwitterDatabase
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.models.TwitterUser
-import com.monday8am.tweetmeck.data.remote.PagingRequestHelper
 import com.monday8am.tweetmeck.data.remote.TimelineBoundaryCallback
 import com.monday8am.tweetmeck.data.remote.TwitterClient
 import kotlinx.coroutines.*
@@ -72,7 +71,7 @@ class DataRepositoryImpl(
         return withContext(ioDispatcher) {
             when (val result = remoteClient.getListTimeline(listId, maxTweetId = maxTweetId, count = pageSize * 2)) {
                 is Success -> {
-                        db.twitterUserDao().insert( result.data.map { it.user })
+                        db.twitterUserDao().insert(result.data.map { it.user })
                         db.tweetDao().insert(result.data.map { it.tweet })
                     Success(true)
                 }
@@ -119,7 +118,7 @@ class DataRepositoryImpl(
         }
     }
 
-    private suspend fun <T>getItemFromDb(itemId: Long, dbCall: suspend (Long) -> T?): Result<T> {
+    private suspend fun <T> getItemFromDb(itemId: Long, dbCall: suspend (Long) -> T?): Result<T> {
         return withContext(ioDispatcher) {
             try {
                 val value: T? = dbCall.invoke(itemId)

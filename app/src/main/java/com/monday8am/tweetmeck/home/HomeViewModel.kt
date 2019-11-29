@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.timeline
+package com.monday8am.tweetmeck.home
 
 import android.net.Uri
 import androidx.lifecycle.LiveData
@@ -16,7 +16,7 @@ import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(), TweetItemEventListener {
+class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), TweetItemEventListener {
 
     private val _twitterLists = MutableLiveData<List<TwitterList>>()
     val twitterLists: LiveData<List<TwitterList>> = _twitterLists

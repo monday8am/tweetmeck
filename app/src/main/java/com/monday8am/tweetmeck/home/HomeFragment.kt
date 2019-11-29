@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.timeline
+package com.monday8am.tweetmeck.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,25 +12,25 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.data.models.TwitterList
-import com.monday8am.tweetmeck.databinding.TimelineFragmentBinding
-import com.monday8am.tweetmeck.timeline.tweet.TweetListFragment
+import com.monday8am.tweetmeck.databinding.HomeFragmentBinding
+import com.monday8am.tweetmeck.home.timeline.TimelineFragment
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
-class TimelineFragment : Fragment() {
+class HomeFragment : Fragment() {
 
-    private lateinit var binding: TimelineFragmentBinding
+    private lateinit var binding: HomeFragmentBinding
     private lateinit var viewPager2: ViewPager2
-    private val viewModel: TimelineViewModel by viewModel()
+    private val viewModel: HomeViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = TimelineFragmentBinding.inflate(inflater, container, false).apply {
+        binding = HomeFragmentBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
-            viewModel = this@TimelineFragment.viewModel
+            viewModel = this@HomeFragment.viewModel
         }
         viewPager2 = binding.viewpager2
         return binding.root
@@ -58,7 +58,7 @@ class TimelineFragment : Fragment() {
 
         viewPager2.adapter = object : FragmentStateAdapter(this) {
             override fun createFragment(position: Int): Fragment {
-                return TweetListFragment.newInstance(items[position].id)
+                return TimelineFragment.newInstance(items[position].id)
             }
 
             override fun getItemCount(): Int {

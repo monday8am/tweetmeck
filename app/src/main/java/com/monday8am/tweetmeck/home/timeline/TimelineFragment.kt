@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.timeline.tweet
+package com.monday8am.tweetmeck.home.timeline
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,32 +13,32 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.FragmentTweetListBinding
-import com.monday8am.tweetmeck.timeline.TimelineViewModel
+import com.monday8am.tweetmeck.home.HomeViewModel
 import com.monday8am.tweetmeck.util.lazyFast
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.getSharedViewModel
 import timber.log.Timber
 
-class TweetListFragment : Fragment() {
+class TimelineFragment : Fragment() {
 
     companion object {
         private const val ARG_LIST_ID = "arg.TWEET_LIST_ID"
 
         @JvmStatic
         fun newInstance(listId: Long) =
-            TweetListFragment().apply {
+            TimelineFragment().apply {
                 arguments = Bundle().apply {
                     putLong(ARG_LIST_ID, listId)
                 }
             }
     }
 
-    private lateinit var adapter: TweetListAdapter
+    private lateinit var adapter: TimelineAdapter
     private lateinit var binding: FragmentTweetListBinding
     private val tweetViewPool: RecyclerView.RecycledViewPool by inject()
 
     @Suppress("UNCHECKED_CAST")
-    private lateinit var viewModel: TimelineViewModel
+    private lateinit var viewModel: HomeViewModel
 
     private val listId: Long by lazyFast {
         val args = arguments ?: throw IllegalStateException("Missing arguments!")
@@ -53,7 +53,7 @@ class TweetListFragment : Fragment() {
         viewModel = getSharedViewModel(from = { parentFragment as ViewModelStoreOwner })
         binding = FragmentTweetListBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
-            viewModel = this@TweetListFragment.viewModel
+            viewModel = this@TimelineFragment.viewModel
         }
         return binding.root
     }
@@ -61,10 +61,10 @@ class TweetListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TweetListAdapter(viewModel, viewLifecycleOwner)
+        adapter = TimelineAdapter(viewModel, viewLifecycleOwner)
 
         binding.recyclerview.apply {
-            adapter = this@TweetListFragment.adapter
+            adapter = this@TimelineFragment.adapter
             (layoutManager as LinearLayoutManager).recycleChildrenOnDetach = true
             (itemAnimator as DefaultItemAnimator).run {
                 supportsChangeAnimations = false
