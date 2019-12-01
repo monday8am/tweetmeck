@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: "androidx.navigation.safeargs.kotlin"
 
 def apiKeyPropertiesFile = rootProject.file("apikey.properties");
 def apiKeyProperties = new Properties()
@@ -84,5 +85,5 @@ dependencies {
     // Extra
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation "org.koin:koin-android:$rootProject.koinVersion"
-    implementation "org.koin:koin-android-viewmodel:$rootProject.koinVersion"
+    implementation "org.koin:koin-androidx-viewmodel:$rootProject.koinVersion"
 }

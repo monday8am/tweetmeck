@@ -35,7 +35,7 @@
         android:id="@+id/user_dest"
         android:name="com.monday8am.tweetmeck.user.UserFragment"
         android:label="@string/user_screen_title"
-        tools:layout="@layout/settings_fragment" >
+        tools:layout="@layout/user_fragment" >
         <argument
             android:name="userId"
             app:argType="long" />

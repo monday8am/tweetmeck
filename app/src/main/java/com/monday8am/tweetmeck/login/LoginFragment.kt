@@ -9,7 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.databinding.LoginFragmentBinding
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class LoginFragment : Fragment() {
 

@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout>
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.monday8am.tweetmeck.tweet.TweetViewModel" />
+    </data>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".tweet.TweetFragment">
+    tools:context=".user.UserFragment">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello" />
+        android:id="@+id/logout_textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@{viewmodel.tweet.fullContent}"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        tools:text="Tweet content!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.30" />
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

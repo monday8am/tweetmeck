@@ -14,7 +14,8 @@ import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.databinding.HomeFragmentBinding
 import com.monday8am.tweetmeck.home.timeline.TimelineFragment
-import org.koin.android.viewmodel.ext.android.viewModel
+import com.monday8am.tweetmeck.util.Event
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class HomeFragment : Fragment() {
@@ -41,6 +42,12 @@ class HomeFragment : Fragment() {
 
         viewModel.twitterLists.observe(viewLifecycleOwner, Observer<List<TwitterList>> { lists ->
             bindContent(view, lists)
+        })
+
+        viewModel.navigateToTweetDetails.observe(viewLifecycleOwner, Observer<Event<Long>> { tweetId ->
+            tweetId.getContentIfNotHandled()?.let {
+                // this.findNavController().navigate(HomeFragmentDirections)
+            }
         })
     }
 

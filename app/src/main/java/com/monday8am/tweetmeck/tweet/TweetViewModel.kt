@@ -14,8 +14,14 @@ class TweetViewModel(
     private val dataRepository: DataRepository
 ) : ViewModel() {
 
-    private val _tweet = MutableLiveData<Result<Tweet>>()
-    val tweet: LiveData<Result<Tweet>> = _tweet
+    private val _tweet = MutableLiveData<Tweet>()
+    val tweet: LiveData<Tweet> = _tweet
+
+    private val _dataLoading = MutableLiveData<Boolean>()
+    val dataLoading: LiveData<Boolean> = _dataLoading
+
+    private val _errorMsg = MutableLiveData<String>()
+    val errorMsg: LiveData<String> = _errorMsg
 
     init {
         getTweetContent()
@@ -23,8 +29,13 @@ class TweetViewModel(
 
     private fun getTweetContent() {
         viewModelScope.launch {
-            _tweet.value = Result.Loading
-            _tweet.value = dataRepository.getTweet(tweetId)
+            _dataLoading.value = true
+            when (val result = dataRepository.getTweet(tweetId)) {
+                is Result.Success -> _tweet.value = result.data
+                is Result.Error -> _errorMsg.value = result.exception.toString()
+                else -> _dataLoading.value = true
+            }
+            _dataLoading.value = false
         }
     }
 }

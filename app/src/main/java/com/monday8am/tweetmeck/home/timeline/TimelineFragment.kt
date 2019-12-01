@@ -16,7 +16,7 @@ import com.monday8am.tweetmeck.databinding.FragmentTweetListBinding
 import com.monday8am.tweetmeck.home.HomeViewModel
 import com.monday8am.tweetmeck.util.lazyFast
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.getSharedViewModel
+import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
 import timber.log.Timber
 
 class TimelineFragment : Fragment() {

@@ -5,44 +5,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
-import com.monday8am.tweetmeck.R
-import com.monday8am.tweetmeck.databinding.SettingsFragmentBinding
-import com.monday8am.tweetmeck.login.AuthState
+import androidx.navigation.fragment.navArgs
+import com.monday8am.tweetmeck.databinding.UserFragmentBinding
 import com.monday8am.tweetmeck.login.AuthViewModel
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.core.parameter.parametersOf
 
 class UserFragment : Fragment() {
 
-    private lateinit var binding: SettingsFragmentBinding
+    private val navArgs: UserFragmentArgs by navArgs()
     private val authViewModel: AuthViewModel by sharedViewModel()
+    private lateinit var userViewModel: UserViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = SettingsFragmentBinding.inflate(layoutInflater)
-        binding.logoutBtn.setOnClickListener {
-            authViewModel.logout()
+        userViewModel = getViewModel { parametersOf(navArgs.userId) }
+        val binding = UserFragmentBinding.inflate(inflater, container, false).apply {
+            lifecycleOwner = viewLifecycleOwner
+            viewmodel = this@UserFragment.userViewModel
+            authViewModel = this@UserFragment.authViewModel
         }
         return binding.root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        authViewModel.authState.observe(viewLifecycleOwner, Observer<AuthState> { state ->
-            when (state) {
-                is AuthState.NotLogged -> {
-                    this.findNavController().navigate(R.id.action_settings_dest_to_login_dest)
-                }
-                else -> {
-                    binding.logoutBtn.alpha = 1.0f
-                    binding.logoutBtn.isEnabled = true
-                }
-            }
-        })
     }
 }

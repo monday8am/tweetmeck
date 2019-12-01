@@ -46,18 +46,6 @@
                       </LayoutPositions>
                     </value>
                   </entry>
-                  <entry key="settings_dest">
-                    <value>
-                      <LayoutPositions>
-                        <option name="myPosition">
-                          <Point>
-                            <option name="x" value="269" />
-                            <option name="y" value="257" />
-                          </Point>
-                        </option>
-                      </LayoutPositions>
-                    </value>
-                  </entry>
                   <entry key="timeline_dest">
                     <value>
                       <LayoutPositions>
@@ -67,16 +55,42 @@
                             <option name="y" value="395" />
                           </Point>
                         </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_timeline_dest_to_tweet_dest">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_timeline_dest_to_user_dest">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
+                        </option>
                       </LayoutPositions>
                     </value>
                   </entry>
-                  <entry key="tweetFragment">
+                  <entry key="tweet_dest">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="271" />
-                            <option name="y" value="609" />
+                            <option name="x" value="325" />
+                            <option name="y" value="203" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="user_dest">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="292" />
+                            <option name="y" value="707" />
                           </Point>
                         </option>
                       </LayoutPositions>

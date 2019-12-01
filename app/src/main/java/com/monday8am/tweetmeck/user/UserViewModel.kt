@@ -14,17 +14,28 @@ class UserViewModel(
     private val dataRepository: DataRepository
 ) : ViewModel() {
 
-    private val _user = MutableLiveData<Result<TwitterUser>>()
-    val user: LiveData<Result<TwitterUser>> = _user
+    private val _user = MutableLiveData<TwitterUser>()
+    val user: LiveData<TwitterUser> = _user
+
+    private val _dataLoading = MutableLiveData<Boolean>()
+    val dataLoading: LiveData<Boolean> = _dataLoading
+
+    private val _errorMsg = MutableLiveData<String>()
+    val errorMsg: LiveData<String> = _errorMsg
 
     init {
-        getTweetContent()
+        getUserContent()
     }
 
-    private fun getTweetContent() {
+    private fun getUserContent() {
         viewModelScope.launch {
-            _user.value = Result.Loading
-            _user.value = dataRepository.getUser(userId)
+            _dataLoading.value = true
+            when (val result = dataRepository.getUser(userId)) {
+                is Result.Success -> _user.value = result.data
+                is Result.Error -> _errorMsg.value = result.exception.toString()
+                else -> _dataLoading.value = true
+            }
+            _dataLoading.value = false
         }
     }
 }

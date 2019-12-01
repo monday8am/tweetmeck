@@ -15,7 +15,7 @@ import com.monday8am.tweetmeck.login.AuthViewModel
 import com.monday8am.tweetmeck.tweet.TweetViewModel
 import com.monday8am.tweetmeck.user.UserViewModel
 import org.koin.android.ext.koin.androidContext
-import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
