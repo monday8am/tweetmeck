@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -46,7 +47,13 @@ class HomeFragment : Fragment() {
 
         viewModel.navigateToTweetDetails.observe(viewLifecycleOwner, Observer<Event<Long>> { tweetId ->
             tweetId.getContentIfNotHandled()?.let {
-                // this.findNavController().navigate(HomeFragmentDirections)
+                this.findNavController().navigate(HomeFragmentDirections.actionTimelineDestToTweetDest(it))
+            }
+        })
+
+        viewModel.navigateToUserDetails.observe(viewLifecycleOwner, Observer<Event<Long>> { userId ->
+            userId.getContentIfNotHandled()?.let {
+                this.findNavController().navigate(HomeFragmentDirections.actionTimelineDestToUserDest(it))
             }
         })
     }

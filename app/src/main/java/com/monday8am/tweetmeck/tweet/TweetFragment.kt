@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.monday8am.tweetmeck.databinding.TweetFragmentBinding
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -27,6 +28,11 @@ class TweetFragment : Fragment() {
             lifecycleOwner = viewLifecycleOwner
             viewmodel = this@TweetFragment.viewModel
         }
+
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+
         return binding.root
     }
 }

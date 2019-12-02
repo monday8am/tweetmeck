@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.monday8am.tweetmeck.databinding.UserFragmentBinding
 import com.monday8am.tweetmeck.login.AuthViewModel
@@ -29,6 +30,11 @@ class UserFragment : Fragment() {
             viewmodel = this@UserFragment.userViewModel
             authViewModel = this@UserFragment.authViewModel
         }
+
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+
         return binding.root
     }
 }
