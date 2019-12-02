@@ -11,7 +11,7 @@
 
         <variable
             name="eventListener"
-            type="com.monday8am.tweetmeck.timeline.TweetItemEventListener" />
+            type="com.monday8am.tweetmeck.home.TweetItemEventListener" />
     </data>
 
 <LinearLayout

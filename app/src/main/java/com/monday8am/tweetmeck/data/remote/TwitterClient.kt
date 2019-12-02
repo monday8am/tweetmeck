@@ -22,7 +22,6 @@ import jp.nephy.penicillin.endpoints.timeline.listTimeline
 import jp.nephy.penicillin.endpoints.users
 import jp.nephy.penicillin.endpoints.users.showByUserId
 import jp.nephy.penicillin.extensions.await
-import jp.nephy.penicillin.models.User
 
 interface TwitterClient {
     suspend fun getRequestToken(): RequestToken
@@ -30,10 +29,12 @@ interface TwitterClient {
     suspend fun getAccessToken(requestToken: RequestToken, oAuthVerifier: String): AccessToken
     suspend fun getUser(id: Long): TwitterUser
     suspend fun getLists(): List<TwitterList>
-    suspend fun getListTimeline(listId: Long,
-                                sinceTweetId: Long? = null,
-                                maxTweetId: Long? = null,
-                                count: Int?): Result<List<TweetContent>>
+    suspend fun getListTimeline(
+        listId: Long,
+        sinceTweetId: Long? = null,
+        maxTweetId: Long? = null,
+        count: Int?
+    ): Result<List<TweetContent>>
 }
 
 data class OAuthToken(val token: String, val secret: String)
@@ -42,8 +43,10 @@ typealias RequestToken = OAuthToken
 
 typealias AccessToken = OAuthToken
 
-data class TweetContent(val tweet: Tweet,
-                        val user: TwitterUser)
+data class TweetContent(
+    val tweet: Tweet,
+    val user: TwitterUser
+)
 
 class TwitterClientImpl(
     private val apiKey: String,

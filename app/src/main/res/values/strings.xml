@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Tweetmeck</string>
+    <string name="navigate_up" translation-description="Arrow at the top left of the screen for navigation">Navigate up</string>
 
     <string name="login_screen_title">Login</string>
-    <string name="settings_screen_title">Settings</string>
     <string name="login_info">Enter your login information!</string>
     <string name="twitter_username">Twitter username</string>
     <string name="login_on_twitter">Login on Twitter</string>
@@ -17,6 +17,12 @@
     <string name="timeline_screen_title">Timeline</string>
     <string name="timeline_no_tweets">No tweets in this list</string>
     <string name="retry">Retry</string>
+
+    <!-- User -->
+    <string name="user_screen_title">User</string>
+
+    <!-- Single Tweet -->
+    <string name="tweet_screen_title">Conversation</string>
 
     <!-- Accessibility -->
     <string name="a11y_star" translation_description="Star button" >Bookmark</string>

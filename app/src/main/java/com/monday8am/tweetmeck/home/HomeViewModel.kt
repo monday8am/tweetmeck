@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.timeline
+package com.monday8am.tweetmeck.home
 
 import android.net.Uri
 import androidx.lifecycle.LiveData
@@ -10,13 +10,13 @@ import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.Result.Error
 import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.TimelineContent
-import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
+import com.monday8am.tweetmeck.util.Event
 import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(), TweetItemEventListener {
+class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), TweetItemEventListener {
 
     private val _twitterLists = MutableLiveData<List<TwitterList>>()
     val twitterLists: LiveData<List<TwitterList>> = _twitterLists
@@ -34,6 +34,12 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
 
     private var timelines: MutableMap<Long, TimelineContent> = mutableMapOf()
     private var currentTimelineId: Long = -1
+
+    private val _navigateToTweetDetails = MutableLiveData<Event<Long>>()
+    val navigateToTweetDetails: LiveData<Event<Long>> = _navigateToTweetDetails
+
+    private val _navigateToUserDetails = MutableLiveData<Event<Long>>()
+    val navigateToUserDetails: LiveData<Event<Long>> = _navigateToUserDetails
 
     init {
         loadLists(true)
@@ -53,7 +59,7 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
 
     fun getTimelineContent(listId: Long): TimelineContent {
         return timelines.getOrPut(listId, {
-            dataRepository.getListTimeline(listId, viewModelScope)
+            dataRepository.getTimeline(listId, viewModelScope)
         })
     }
 
@@ -72,11 +78,11 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
     }
 
     override fun openTweetDetails(tweetId: Long) {
-        Timber.d("show tweet!s $tweetId")
+        _navigateToTweetDetails.value = Event(tweetId)
     }
 
-    override fun onUserClicked(tweet: Tweet) {
-        Timber.d("user tapped")
+    override fun openUserDetails(userId: Long) {
+        _navigateToUserDetails.value = Event(userId)
     }
 
     override fun retryLoadMore(listId: Long) {
@@ -89,6 +95,6 @@ class TimelineViewModel(private val dataRepository: DataRepository) : ViewModel(
  */
 interface TweetItemEventListener {
     fun openTweetDetails(tweetId: Long)
-    fun onUserClicked(tweet: Tweet)
+    fun openUserDetails(userId: Long)
     fun retryLoadMore(listId: Long)
 }

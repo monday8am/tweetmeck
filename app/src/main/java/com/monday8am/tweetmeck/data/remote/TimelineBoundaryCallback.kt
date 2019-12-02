@@ -4,11 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.models.Tweet
+import java.lang.Exception
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class TimelineBoundaryCallback(
     private val listId: Long,
@@ -25,7 +25,7 @@ class TimelineBoundaryCallback(
             scope.launch {
                 requestState.value = Result.Loading
                 val result = refreshCallback(listId)
-                when(result) {
+                when (result) {
                     is Result.Success -> it.recordSuccess()
                     is Result.Error -> it.recordFailure(result.exception)
                     else -> it.recordFailure(Exception("Wrong state at TimelineBoundaryCallback!"))
@@ -40,7 +40,7 @@ class TimelineBoundaryCallback(
             scope.launch {
                 requestState.value = Result.Loading
                 val result = loadMoreCallback(listId, itemAtEnd.id)
-                when(result) {
+                when (result) {
                     is Result.Success -> it.recordSuccess()
                     is Result.Error -> it.recordFailure(result.exception)
                     else -> it.recordFailure(Exception("Wrong state at TimelineBoundaryCallback!"))

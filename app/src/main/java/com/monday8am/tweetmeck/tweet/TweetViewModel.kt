@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.user
+package com.monday8am.tweetmeck.tweet
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,16 +6,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.Result
-import com.monday8am.tweetmeck.data.models.TwitterUser
+import com.monday8am.tweetmeck.data.models.Tweet
 import kotlinx.coroutines.launch
 
-class UserViewModel(
-    private val userId: Long,
+class TweetViewModel(
+    private val tweetId: Long,
     private val dataRepository: DataRepository
 ) : ViewModel() {
 
-    private val _user = MutableLiveData<TwitterUser>()
-    val user: LiveData<TwitterUser> = _user
+    private val _tweet = MutableLiveData<Tweet>()
+    val tweet: LiveData<Tweet> = _tweet
 
     private val _dataLoading = MutableLiveData<Boolean>()
     val dataLoading: LiveData<Boolean> = _dataLoading
@@ -24,14 +24,14 @@ class UserViewModel(
     val errorMsg: LiveData<String> = _errorMsg
 
     init {
-        getUserContent()
+        getTweetContent()
     }
 
-    private fun getUserContent() {
+    private fun getTweetContent() {
         viewModelScope.launch {
             _dataLoading.value = true
-            when (val result = dataRepository.getUser(userId)) {
-                is Result.Success -> _user.value = result.data
+            when (val result = dataRepository.getTweet(tweetId)) {
+                is Result.Success -> _tweet.value = result.data
                 is Result.Error -> _errorMsg.value = result.exception.toString()
                 else -> _dataLoading.value = true
             }

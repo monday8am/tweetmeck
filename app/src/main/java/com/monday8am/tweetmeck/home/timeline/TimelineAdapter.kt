@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.timeline.tweet
+package com.monday8am.tweetmeck.home.timeline
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,9 +8,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.ItemTweetBinding
-import com.monday8am.tweetmeck.timeline.TweetItemEventListener
+import com.monday8am.tweetmeck.home.TweetItemEventListener
 
-class TweetListAdapter(
+class TimelineAdapter(
     private val eventListener: TweetItemEventListener,
     private val lifecycleOwner: LifecycleOwner
 ) : PagedListAdapter<Tweet, TweetViewHolder>(TweetItemDiff) {

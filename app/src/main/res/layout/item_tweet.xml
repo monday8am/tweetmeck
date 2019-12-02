@@ -13,7 +13,7 @@ xmlns:tools="http://schemas.android.com/tools">
 
     <variable
         name="eventListener"
-        type="com.monday8am.tweetmeck.timeline.TweetItemEventListener" />
+        type="com.monday8am.tweetmeck.home.TweetItemEventListener" />
 
 </data>
 
@@ -25,6 +25,23 @@ xmlns:tools="http://schemas.android.com/tools">
     android:paddingEnd="@dimen/spacing_normal"
     android:paddingVertical="@dimen/spacing_normal"
     tools:targetApi="o">
+
+    <ImageView
+        android:id="@+id/profile_button"
+        android:layout_width="@dimen/a11y_min_touch_target"
+        android:layout_height="@dimen/a11y_min_touch_target"
+        android:layout_gravity="center_vertical|start"
+        android:contentDescription="@string/a11y_sign_in"
+        android:foreground="?selectableItemBackground"
+        android:onClick="@{() -> eventListener.openUserDetails(tweet.timelineUser.id)}"
+        android:padding="@dimen/spacing_micro"
+        app:clipToCircle="@{true}"
+        app:imageUrl="@{tweet.timelineUser.profileImageUrl}"
+        app:layout_constraintEnd_toStartOf="@id/keyline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:placeholder="@{@drawable/ic_account_circle}"
+        tools:background="@color/android_green" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/keyline"
@@ -52,7 +69,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:background="?selectableItemBackgroundBorderless"
         android:checked="@{tweet.retweeted}"
         android:contentDescription="@string/a11y_star"
-        android:onClick="@{() -> eventListener.onUserClicked(tweet)}"
+        android:onClick="@{() -> eventListener.openUserDetails(tweet.timelineUser.id)}"
         android:src="@drawable/asld_star_event"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
