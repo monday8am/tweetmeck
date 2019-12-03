@@ -4,10 +4,10 @@
     <!-- Base application theme. -->
     <style name="Base.AppTheme" parent="Theme.MaterialComponents.DayNight">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="colorSecondary">?colorPrimary</item>
-        <item name="colorOnSecondary">@color/color_on_secondary</item>
+        <item name="colorOnSecondary">@color/base3</item>
         <item name="colorControlLight">@color/color_control_light</item>
 
         <item name="android:windowLightStatusBar" tools:targetApi="m">@bool/use_light_status</item>
@@ -18,10 +18,7 @@
         <item name="toolbarStyle">@style/Widget.Tweetmeck.Toolbar</item>
         <item name="tabStyle">@style/Widget.Tweetmeck.Tabs</item>
 
-        <item name="android:textViewStyle">@style/Widget.Tweetmeck.TextView</item>
-
         <item name="sessionListKeyline">@dimen/session_keyline</item>
-
         <item name="materialAlertDialogTheme">@style/AlertDialog.Theme</item>
     </style>
 

@@ -17,6 +17,8 @@
 
 <resources>
     <array name="preloaded_fonts" translatable="false">
-        <item>@font/google_sans</item>
+        <item>@font/pt_sans</item>
+        <item>@font/pt_sans_bold</item>
+        <item>@font/pt_serif</item>
     </array>
 </resources>

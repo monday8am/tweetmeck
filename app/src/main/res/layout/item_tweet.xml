@@ -22,80 +22,66 @@ xmlns:tools="http://schemas.android.com/tools">
     android:layout_height="wrap_content"
     android:background="?selectableItemBackground"
     android:onClick="@{() -> eventListener.openTweetDetails(tweet.id)}"
-    android:paddingEnd="@dimen/spacing_normal"
+    android:paddingStart="@dimen/margin_normal"
+    android:paddingEnd="@dimen/margin_normal"
     android:paddingVertical="@dimen/spacing_normal"
     tools:targetApi="o">
 
-    <ImageView
-        android:id="@+id/profile_button"
-        android:layout_width="@dimen/a11y_min_touch_target"
-        android:layout_height="@dimen/a11y_min_touch_target"
-        android:layout_gravity="center_vertical|start"
-        android:contentDescription="@string/a11y_sign_in"
-        android:foreground="?selectableItemBackground"
+    <RelativeLayout
+        android:id="@+id/user_content"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tweet_image_size"
         android:onClick="@{() -> eventListener.openUserDetails(tweet.timelineUser.id)}"
-        android:padding="@dimen/spacing_micro"
-        app:clipToCircle="@{true}"
-        app:imageUrl="@{tweet.timelineUser.profileImageUrl}"
-        app:layout_constraintEnd_toStartOf="@id/keyline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:placeholder="@{@drawable/ic_account_circle}"
-        tools:background="@color/android_green" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/keyline"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="?sessionListKeyline" />
-
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@{tweet.timelineUser.name + ` ` + tweet.timelineUser.screenName}"
-        android:paddingBottom="@dimen/spacing_micro"
-        android:textAppearance="@style/TextAppearance.Tweetmeck.SessionTitle"
-        app:layout_constraintEnd_toStartOf="@+id/bookmark_session"
-        app:layout_constraintStart_toEndOf="@id/keyline"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="What's new in Android" />
-
-    <com.google.android.material.internal.CheckableImageButton
-        android:id="@+id/bookmark_session"
-        android:layout_width="@dimen/a11y_min_touch_target"
-        android:layout_height="@dimen/a11y_min_touch_target"
-        android:background="?selectableItemBackgroundBorderless"
-        android:checked="@{tweet.retweeted}"
-        android:contentDescription="@string/a11y_star"
-        android:onClick="@{() -> eventListener.openUserDetails(tweet.timelineUser.id)}"
-        android:src="@drawable/asld_star_event"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/livestream_icon"
-        android:layout_width="18dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="12dp"
-        android:importantForAccessibility="no"
-        android:scaleType="centerCrop"
-        app:layout_constraintEnd_toStartOf="@id/length_location"
-        app:layout_constraintStart_toEndOf="@id/keyline"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        app:srcCompat="@drawable/ic_livestreamed" />
+        <ImageView
+            android:id="@+id/profile_button"
+            android:layout_width="@dimen/tweet_image_size"
+            android:layout_height="@dimen/tweet_image_size"
+            android:layout_gravity="center_vertical|start"
+            android:contentDescription="@string/a11y_sign_in"
+            android:foreground="?selectableItemBackground"
+            app:clipToCircle="@{true}"
+            app:imageUrl="@{tweet.timelineUser.profileImageUrl}"
+            app:placeholder="@{@drawable/ic_account_circle}"
+            tools:background="@color/android_green" />
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/spacing_normal"
+            android:text="@{tweet.timelineUser.name}"
+            android:textAppearance="@style/TextAppearance.Tweetmeck.Subtitle2"
+            android:layout_toEndOf="@id/profile_button"
+            android:layout_alignParentTop="true"
+            tools:text="Angel Anton" />
+
+        <TextView
+            android:id="@+id/screen_name_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{tweet.timelineUser.screenName}"
+            android:textAppearance="@style/TextAppearance.Tweetmeck.Caption"
+            android:paddingStart="@dimen/spacing_normal"
+            android:layout_toEndOf="@id/profile_button"
+            android:layout_alignParentBottom="true"
+            tools:text="angel_anton | 12min" />
+    </RelativeLayout>
 
     <TextView
-        android:id="@+id/length_location"
+        android:id="@+id/content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.Tweetmeck.ListSecondary"
+        android:paddingTop="@dimen/spacing_normal"
         android:text="@{tweet.fullContent}"
-        app:layout_constraintEnd_toEndOf="@id/title"
-        app:layout_constraintStart_toEndOf="@id/livestream_icon"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        tools:text="1 hour / Amphitheatre" />
+        android:textAppearance="@style/TextAppearance.Tweetmeck.Body1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/user_content"
+        tools:text="What's new in Android" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
