@@ -22,6 +22,7 @@ import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.net.toUri
 import androidx.core.view.updateLayoutParams
@@ -33,6 +34,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.widget.CustomSwipeRefreshLayout
 import timber.log.Timber
+import java.text.DateFormat.getDateInstance
+import android.R
+import java.util.*
+
 
 @BindingAdapter("invisibleUnless")
 fun invisibleUnless(view: View, visible: Boolean) {
@@ -54,6 +59,19 @@ fun pageMargin(viewPager: ViewPager2, pageMargin: Float) {
     // TODO: find replacement to original viewPager pageMargin
     // viewPager.pageMargin = pageMargin.toInt()
 }
+
+@BindingAdapter("dateCreated")
+fun dateCreated(textView: TextView, stringDate: String) {
+    // TODO: find replacement to original viewPager pageMargin
+    // viewPager.pageMargin = pageMargin.toInt()
+
+    val date = getDateInstance().parse(stringDate)
+    val currentTime = Calendar.getInstance().time
+    val elapsed = currentTime.time - (date?.time ?: 0)
+
+
+}
+
 
 @BindingAdapter("clipToCircle")
 fun clipToCircle(view: View, clip: Boolean) {

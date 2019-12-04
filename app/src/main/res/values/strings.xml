@@ -17,6 +17,7 @@
     <string name="timeline_screen_title">Timeline</string>
     <string name="timeline_no_tweets">No tweets in this list</string>
     <string name="retry">Retry</string>
+    <string name="retweet">Retweet</string>
 
     <!-- User -->
     <string name="user_screen_title">User</string>
@@ -27,5 +28,7 @@
     <!-- Accessibility -->
     <string name="a11y_star" translation_description="Star button" >Bookmark</string>
     <string name="a11y_sign_in" translation_description="Sign in button" >Sign in</string>
+    <string name="likes">Likes</string>
+
 
 </resources>
