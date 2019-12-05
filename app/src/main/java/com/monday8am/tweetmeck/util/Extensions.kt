@@ -5,6 +5,16 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.*
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+
+fun String.toOffsetDateTime(): OffsetDateTime {
+    return try {
+        DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(this, OffsetDateTime::from)
+    } catch (e: Exception) {
+        OffsetDateTime.now()
+    }
+}
 
 /**
  * Implementation of lazy that is not thread safe. Useful when you know what thread you will be

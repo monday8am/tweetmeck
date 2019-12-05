@@ -3,6 +3,8 @@ package com.monday8am.tweetmeck.data.models
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.monday8am.tweetmeck.util.toOffsetDateTime
+import java.time.OffsetDateTime
 
 enum class ListVisibilityMode {
     Default,
@@ -13,7 +15,7 @@ enum class ListVisibilityMode {
 @Entity(tableName = "lists")
 data class TwitterList(
     @PrimaryKey val id: Long,
-    @ColumnInfo(name = "created_at") val createdAt: String,
+    @ColumnInfo(name = "created_at") val createdAt: OffsetDateTime,
     val description: String,
     val following: Boolean,
     @ColumnInfo(name = "full_name") val fullName: String,
@@ -30,7 +32,7 @@ data class TwitterList(
         fun from(dto: jp.nephy.penicillin.models.TwitterList): TwitterList {
             return TwitterList(
                 dto.id,
-                dto.createdAtRaw,
+                dto.createdAtRaw.toOffsetDateTime(),
                 dto.description,
                 dto.following,
                 dto.fullName,

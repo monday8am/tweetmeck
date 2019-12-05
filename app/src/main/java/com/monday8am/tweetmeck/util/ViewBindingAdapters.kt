@@ -34,9 +34,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.widget.CustomSwipeRefreshLayout
 import timber.log.Timber
-import java.text.DateFormat.getDateInstance
-import android.R
-import java.util.*
+import java.time.Duration
+import java.time.OffsetDateTime
 
 
 @BindingAdapter("invisibleUnless")
@@ -61,17 +60,10 @@ fun pageMargin(viewPager: ViewPager2, pageMargin: Float) {
 }
 
 @BindingAdapter("dateCreated")
-fun dateCreated(textView: TextView, stringDate: String) {
-    // TODO: find replacement to original viewPager pageMargin
-    // viewPager.pageMargin = pageMargin.toInt()
-
-    val date = getDateInstance().parse(stringDate)
-    val currentTime = Calendar.getInstance().time
-    val elapsed = currentTime.time - (date?.time ?: 0)
-
-
+fun dateCreated(textView: TextView, date: OffsetDateTime) {
+    val duration = Duration.between(OffsetDateTime.now(), date)
+    val str = duration.
 }
-
 
 @BindingAdapter("clipToCircle")
 fun clipToCircle(view: View, clip: Boolean) {
