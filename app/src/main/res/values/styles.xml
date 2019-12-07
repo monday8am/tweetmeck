@@ -194,6 +194,12 @@
     <style name="TextAppearance.Tweetmeck.Caption" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:fontFamily">@font/pt_sans_bold</item>
         <item name="android:textColor">@color/blue</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Tweetmeck.Tweet.Date" parent="TextAppearance.Tweetmeck.Caption">
+        <item name="android:fontFamily">@font/pt_sans</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
     <style name="TextAppearance.Tweetmeck.Body1" parent="@style/TextAppearance.AppCompat.Body1">

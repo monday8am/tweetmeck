@@ -36,6 +36,8 @@ import com.monday8am.tweetmeck.widget.CustomSwipeRefreshLayout
 import timber.log.Timber
 import java.time.Duration
 import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 
 @BindingAdapter("invisibleUnless")
@@ -62,7 +64,14 @@ fun pageMargin(viewPager: ViewPager2, pageMargin: Float) {
 @BindingAdapter("dateCreated")
 fun dateCreated(textView: TextView, date: OffsetDateTime) {
     val duration = Duration.between(OffsetDateTime.now(), date)
-    val str = duration.
+    Timber.d(OffsetDateTime.now().toString())
+    Timber.d(date.toString())
+    Timber.d(duration.toMillis().toString())
+    if (duration.toDays() < 2) {
+        textView.text = duration.toFormattedString()
+    } else {
+        textView.text  = date.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
+    }
 }
 
 @BindingAdapter("clipToCircle")

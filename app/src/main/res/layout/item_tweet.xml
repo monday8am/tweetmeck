@@ -60,15 +60,26 @@ xmlns:tools="http://schemas.android.com/tools">
             tools:text="Angel Anton" />
 
         <TextView
-            android:id="@+id/screen_name_date"
+            android:id="@+id/screen_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{tweet.timelineUser.screenName}"
+            android:text="@{tweet.timelineUser.screenName + `|`}"
             android:textAppearance="@style/TextAppearance.Tweetmeck.Caption"
             android:paddingStart="@dimen/spacing_normal"
             android:layout_toEndOf="@id/profile_button"
             android:layout_alignParentBottom="true"
-            tools:text="angel_anton | 12min" />
+            tools:text="angel_anton |" />
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:dateCreated="@{tweet.createdAt}"
+            android:textAppearance="@style/TextAppearance.Tweetmeck.Tweet.Date"
+            android:paddingStart="@dimen/spacing_micro"
+            android:layout_toEndOf="@id/screen_name"
+            android:layout_alignParentBottom="true"
+            tools:text="2h" />
     </RelativeLayout>
 
     <TextView
