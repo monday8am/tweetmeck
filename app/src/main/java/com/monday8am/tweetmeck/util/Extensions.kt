@@ -4,30 +4,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.*
-import java.time.Duration
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
-
-fun String.toOffsetDateTime(): OffsetDateTime {
-    return try {
-        DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(this, OffsetDateTime::from)
-    } catch (e: Exception) {
-        OffsetDateTime.now()
-    }
-}
-
-fun Duration.toFormattedString(): String {
-    return when (val minutes = this.toMinutes()) {
-        in 0..59 -> {
-            minutes.toString()
-        }
-        in 60..1440 -> {
-            "${(minutes/60)}h"
-        }
-        else -> "${(minutes/60 * 12)}d"
-    }
-}
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 
 /**
  * Implementation of lazy that is not thread safe. Useful when you know what thread you will be

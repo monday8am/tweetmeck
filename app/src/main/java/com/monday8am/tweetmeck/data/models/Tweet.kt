@@ -4,8 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.monday8am.tweetmeck.util.toOffsetDateTime
-import java.time.OffsetDateTime
+import com.monday8am.tweetmeck.util.TweetDateUtils
 import jp.nephy.penicillin.models.Status
 
 data class TimelineUser(
@@ -19,7 +18,7 @@ data class TimelineUser(
 data class Tweet(
     @PrimaryKey val id: Long,
     @ColumnInfo(name = "id_str") val idStr: String,
-    @ColumnInfo(name = "created_at") val createdAt: OffsetDateTime,
+    @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "content") val content: String?,
     @ColumnInfo(name = "full_content") val fullContent: String?,
     val truncated: Boolean,
@@ -51,7 +50,7 @@ data class Tweet(
             return Tweet(
                 dto.id,
                 dto.idStr,
-                dto.createdAtRaw.toOffsetDateTime(),
+                TweetDateUtils.apiTimeToLong(dto.createdAtRaw),
                 dto.textRaw,
                 dto.fullTextRaw,
                 dto.truncated,

@@ -12,7 +12,7 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     defaultConfig {
         applicationId "com.monday8am.tweetmeck"
-        minSdkVersion 26
+        minSdkVersion 24
         targetSdkVersion rootProject.compileSdkVersion
         versionCode 1
         versionName "1.0"

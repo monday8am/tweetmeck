@@ -30,5 +30,25 @@
     <string name="a11y_sign_in" translation_description="Sign in button" >Sign in</string>
     <string name="likes">Likes</string>
 
+    <!--Date Format strings-->
+    <string name="tw__relative_date_format_short">MMM dd</string>
+    <string name="tw__relative_date_format_long">MM/dd/yy</string>
+    <!-- 1s / 5s -->
+    <plurals name="tw__time_secs">
+        <item quantity="one">1s</item>
+        <item quantity="other">%ds</item>
+    </plurals>
+    <!-- 1m / 5m -->
+    <plurals name="tw__time_mins">
+        <item quantity="one">1m</item>
+        <item quantity="other">%dm</item>
+    </plurals>
+    <!-- 1h / 5h -->
+    <plurals name="tw__time_hours">
+        <item quantity="one">1h</item>
+        <item quantity="other">%dh</item>
+    </plurals>
+
+
 
 </resources>
