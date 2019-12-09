@@ -8,7 +8,6 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 object TweetDateUtils {
 
     private val DATE_TIME_RFC822 = SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH)
@@ -20,7 +19,6 @@ object TweetDateUtils {
         } catch (e: ParseException) {
             INVALID_DATE
         }
-
     }
 
     fun isValidTimestamp(timestamp: String): Boolean {

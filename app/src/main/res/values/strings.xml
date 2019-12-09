@@ -49,6 +49,9 @@
         <item quantity="other">%dh</item>
     </plurals>
 
-
+    <!--Digit Format-->
+    <string name="tw__normal_format">%,d</string>
+    <string name="tw__thousand_format">%.1fk</string>
+    <string name="tw__million_format">%.1fm</string>
 
 </resources>

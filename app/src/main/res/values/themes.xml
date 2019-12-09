@@ -9,6 +9,7 @@
         <item name="colorSecondary">?colorPrimary</item>
         <item name="colorOnSecondary">@color/base3</item>
         <item name="colorControlLight">@color/color_control_light</item>
+        <item name="android:windowBackground">@color/base3</item>
 
         <item name="android:windowLightStatusBar" tools:targetApi="m">@bool/use_light_status</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">@bool/use_light_navigation</item>

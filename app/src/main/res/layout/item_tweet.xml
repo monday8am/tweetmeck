@@ -22,9 +22,7 @@ xmlns:tools="http://schemas.android.com/tools">
     android:layout_height="wrap_content"
     android:background="?selectableItemBackground"
     android:onClick="@{() -> eventListener.openTweetDetails(tweet.id)}"
-    android:paddingStart="@dimen/margin_normal"
-    android:paddingEnd="@dimen/margin_normal"
-    android:paddingVertical="@dimen/spacing_normal"
+    android:padding="@dimen/margin_normal"
     tools:targetApi="o">
 
     <RelativeLayout
@@ -37,12 +35,20 @@ xmlns:tools="http://schemas.android.com/tools">
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
+            android:layout_width="@dimen/tweet_image_size"
+            android:layout_height="@dimen/tweet_image_size"
+            android:layout_gravity="center_vertical|start"
+            android:contentDescription="@string/a11y_sign_in"
+            android:background="@drawable/ic_profile_bg" />
+
+        <ImageView
             android:id="@+id/profile_button"
             android:layout_width="@dimen/tweet_image_size"
             android:layout_height="@dimen/tweet_image_size"
             android:layout_gravity="center_vertical|start"
             android:contentDescription="@string/a11y_sign_in"
             android:foreground="?selectableItemBackground"
+            android:padding="@dimen/tweet_image_border"
             app:clipToCircle="@{true}"
             app:imageUrl="@{tweet.timelineUser.profileImageUrl}"
             app:placeholder="@{@drawable/ic_account_circle}"
@@ -86,7 +92,8 @@ xmlns:tools="http://schemas.android.com/tools">
         android:id="@+id/content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/spacing_normal"
+        android:paddingTop="@dimen/margin_normal"
+        android:paddingBottom="@dimen/margin_normal"
         android:text="@{tweet.fullContent}"
         android:textAppearance="@style/TextAppearance.Tweetmeck.Body1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -99,12 +106,12 @@ xmlns:tools="http://schemas.android.com/tools">
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:paddingTop="@dimen/spacing_normal"
         android:drawablePadding="@dimen/spacing_micro"
         android:drawableStart="@drawable/ic_retweet"
         android:textAppearance="@style/TextAppearance.Tweetmeck.Body2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/content"
+        app:quantity="@{tweet.retweetCount}"
         tools:text="20K" />
 
     <TextView
@@ -112,13 +119,13 @@ xmlns:tools="http://schemas.android.com/tools">
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:paddingTop="@dimen/spacing_normal"
         android:drawableStart="@drawable/ic_like"
         android:drawablePadding="@dimen/spacing_micro"
         android:textAppearance="@style/TextAppearance.Tweetmeck.Body2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/content"
+        app:quantity="@{tweet.favoriteCount}"
         tools:text="30K" />
 
     <TextView
@@ -126,7 +133,6 @@ xmlns:tools="http://schemas.android.com/tools">
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:paddingTop="@dimen/spacing_normal"
         android:drawableStart="@drawable/ic_replies"
         android:drawablePadding="@dimen/spacing_micro"
         android:textAppearance="@style/TextAppearance.Tweetmeck.Body2"

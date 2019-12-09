@@ -35,7 +35,6 @@ import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.widget.CustomSwipeRefreshLayout
 import timber.log.Timber
 
-
 @BindingAdapter("invisibleUnless")
 fun invisibleUnless(view: View, visible: Boolean) {
     view.visibility = if (visible) VISIBLE else INVISIBLE
@@ -60,6 +59,26 @@ fun pageMargin(viewPager: ViewPager2, pageMargin: Float) {
 @BindingAdapter("dateCreated")
 fun dateCreated(textView: TextView, createdAt: Long) {
     textView.text = TweetDateUtils.getRelativeTimeString(textView.resources, System.currentTimeMillis(), createdAt)
+}
+
+@BindingAdapter("quantity")
+fun quantity(textView: TextView, total: Int) {
+    when (total.toString().count()) {
+        in 1..4 -> {
+            if (total > 0) {
+                val format = textView.resources.getString(R.string.tw__normal_format)
+                textView.text = String.format(format, total)
+            }
+        }
+        in 4..6 -> {
+            val format = textView.resources.getString(R.string.tw__thousand_format)
+            textView.text = String.format(format, total.toFloat() / 1000)
+        }
+        else -> {
+            val format = textView.resources.getString(R.string.tw__million_format)
+            textView.text = String.format(format, total.toFloat() / 1000000)
+        }
+    }
 }
 
 @BindingAdapter("clipToCircle")

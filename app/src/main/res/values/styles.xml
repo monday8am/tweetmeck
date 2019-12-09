@@ -210,7 +210,7 @@
 
     <style name="TextAppearance.Tweetmeck.Body2" parent="@style/TextAppearance.AppCompat.Body2">
         <item name="android:textColor">@color/base01</item>
-        <item name="android:fontFamily">@font/pt_serif</item>
+        <item name="android:fontFamily">@font/pt_sans</item>
     </style>
 
     <style name="Widget.Tweetmeck.SessionDetailTitle">
