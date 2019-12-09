@@ -3,11 +3,12 @@ package com.monday8am.tweetmeck.data.models
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.monday8am.tweetmeck.util.TweetDateUtils
 
 @Entity(tableName = "users")
 data class TwitterUser(
     @PrimaryKey val id: Long,
-    @ColumnInfo(name = "created_at") val createdAtRaw: String,
+    @ColumnInfo(name = "created_at") val createdAt: Long,
     val name: String,
     @ColumnInfo(name = "screen_name") val screenName: String,
     val location: String,
@@ -34,7 +35,7 @@ data class TwitterUser(
         fun from(dto: jp.nephy.penicillin.models.User): TwitterUser {
             return TwitterUser(
                 dto.id,
-                dto.createdAtRaw,
+                TweetDateUtils.apiTimeToLong(dto.createdAtRaw),
                 dto.name,
                 dto.screenName,
                 dto.location,

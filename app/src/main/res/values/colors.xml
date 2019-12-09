@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
+    <!-- solarized light -->
+    <color name="base3">#FDF6E3</color>
+    <color name="base2">#EEE8D5</color>
+    <color name="base1">#93A1A1</color>
+    <color name="base0">#839496</color>
+    <color name="base00">#657B83</color>
+    <color name="base01">#586E75</color>
+    <color name="base02">#073642</color>
+    <color name="base03">#002B36</color>
+
+    <color name="yellow">#B58900</color>
+    <color name="orange">#CB4B16</color>
+    <color name="red">#DC322F</color>
+    <color name="magenta">#D33682</color>
+    <color name="violet">#6C71C4</color>
+    <color name="blue">#268BD2</color>
+    <color name="cyan">#2AA198</color>
+    <color name="green">#859900</color>
+    <color name="white">#ffffff</color>
+
     <!-- primary palette -->
-    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimary">@color/base02</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-
-    <color name="white">#fff</color>
-    <color name="grey_800">#424242</color>
-    <color name="grey_600">#747474</color>
-    <color name="spacer_grey">#e0e0e0</color>
-    <color name="white_90">#e6ffffff</color>
 
     <!-- Android colors-->
     <color name="android_green">#3ddc84</color>
@@ -36,9 +50,9 @@
     <!-- Used for detail/speaker header background and other generic placeholder backgrounds -->
     <color name="generic_placeholder_background">#10000000</color>
 
-    <color name="color_primary">@color/android_blue</color>
+    <color name="color_primary">@color/blue</color>
     <color name="color_primary_dark">@color/android_navy</color>
-    <color name="color_on_secondary">#fff</color>
+    <color name="color_on_secondary">@color/base3</color>
 
     <color name="info_event_card_logo_background">@color/android_blue_light</color>
 
@@ -54,11 +68,10 @@
     <color name="nav_bar_scrim">@color/system_ui_scrim_black</color>
 
     <integer-array name="swipe_refresh">
-        <item>@color/android_blue</item>
-        <item>@color/android_orange</item>
-        <item>@color/ads_gray</item>
-        <item>@color/android_green</item>
-        <item>@color/android_green_dark</item>
+        <item>@color/blue</item>
+        <item>@color/magenta</item>
+        <item>@color/base1</item>
+        <item>@color/base2</item>
+        <item>@color/base3</item>
     </integer-array>
-
 </resources>

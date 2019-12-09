@@ -17,10 +17,10 @@
 
 <vector
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="32dp"
-    android:height="32dp"
-    android:viewportWidth="32"
-    android:viewportHeight="32"
+    android:width="36dp"
+    android:height="36dp"
+    android:viewportWidth="36"
+    android:viewportHeight="36"
     android:tint="?colorPrimary">
     <path
         android:fillColor="#fff"

@@ -22,6 +22,7 @@ import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.net.toUri
 import androidx.core.view.updateLayoutParams
@@ -53,6 +54,31 @@ fun fabVisibility(fab: FloatingActionButton, visible: Boolean) {
 fun pageMargin(viewPager: ViewPager2, pageMargin: Float) {
     // TODO: find replacement to original viewPager pageMargin
     // viewPager.pageMargin = pageMargin.toInt()
+}
+
+@BindingAdapter("dateCreated")
+fun dateCreated(textView: TextView, createdAt: Long) {
+    textView.text = TweetDateUtils.getRelativeTimeString(textView.resources, System.currentTimeMillis(), createdAt)
+}
+
+@BindingAdapter("quantity")
+fun quantity(textView: TextView, total: Int) {
+    when (total.toString().count()) {
+        in 1..4 -> {
+            if (total > 0) {
+                val format = textView.resources.getString(R.string.tw__normal_format)
+                textView.text = String.format(format, total)
+            }
+        }
+        in 4..6 -> {
+            val format = textView.resources.getString(R.string.tw__thousand_format)
+            textView.text = String.format(format, total.toFloat() / 1000)
+        }
+        else -> {
+            val format = textView.resources.getString(R.string.tw__million_format)
+            textView.text = String.format(format, total.toFloat() / 1000000)
+        }
+    }
 }
 
 @BindingAdapter("clipToCircle")

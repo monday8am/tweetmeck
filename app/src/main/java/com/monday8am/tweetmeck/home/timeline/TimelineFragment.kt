@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.data.models.Tweet
@@ -62,6 +63,11 @@ class TimelineFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         adapter = TimelineAdapter(viewModel, viewLifecycleOwner)
+
+        binding.recyclerview.addItemDecoration(DividerItemDecoration(
+            binding.recyclerview.context,
+            DividerItemDecoration.VERTICAL
+        ))
 
         binding.recyclerview.apply {
             adapter = this@TimelineFragment.adapter
