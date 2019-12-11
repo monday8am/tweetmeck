@@ -12,6 +12,10 @@ xmlns:tools="http://schemas.android.com/tools">
         type="com.monday8am.tweetmeck.data.models.Tweet" />
 
     <variable
+        name="textCreator"
+        type="com.monday8am.tweetmeck.home.timeline.TimelineTextCreator" />
+
+    <variable
         name="eventListener"
         type="com.monday8am.tweetmeck.home.TweetItemEventListener" />
 
@@ -94,7 +98,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/margin_normal"
         android:paddingBottom="@dimen/margin_normal"
-        android:text="@{tweet.fullContent}"
+        android:text="@{textCreator.getTweetDisplayText(tweet, eventListener)}"
         android:textAppearance="@style/TextAppearance.Tweetmeck.Body1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

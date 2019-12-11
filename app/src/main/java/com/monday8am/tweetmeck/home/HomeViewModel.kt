@@ -77,6 +77,8 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), T
         currentTimelineId = listId
     }
 
+    // Tweet actions:
+
     override fun openTweetDetails(tweetId: Long) {
         _navigateToTweetDetails.value = Event(tweetId)
     }
@@ -85,8 +87,24 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), T
         _navigateToUserDetails.value = Event(userId)
     }
 
+    override fun openUserDetails(userIdStr: String) {
+        Timber.d("open user details: %s", userIdStr)
+    }
+
     override fun retryLoadMore(listId: Long) {
         Timber.d("retry load more!!")
+    }
+
+    override fun openUrl(url: String) {
+        Timber.d("open URL: %s", url)
+    }
+
+    override fun searchForTag(tag: String) {
+        Timber.d("search for TAG: %s", tag)
+    }
+
+    override fun searchForSymbol(symbol: String) {
+        Timber.d("search for Symbol: %s", symbol)
     }
 }
 
@@ -96,5 +114,9 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), T
 interface TweetItemEventListener {
     fun openTweetDetails(tweetId: Long)
     fun openUserDetails(userId: Long)
+    fun openUserDetails(userIdStr: String)
+    fun openUrl(url: String)
+    fun searchForTag(tag: String)
+    fun searchForSymbol(symbol: String)
     fun retryLoadMore(listId: Long)
 }

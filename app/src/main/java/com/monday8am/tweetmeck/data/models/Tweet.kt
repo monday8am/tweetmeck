@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.monday8am.tweetmeck.data.models.entities.UrlEntity
 import com.monday8am.tweetmeck.util.TweetDateUtils
 import jp.nephy.penicillin.models.Status
 
@@ -23,6 +24,8 @@ data class Tweet(
     @ColumnInfo(name = "full_content") val fullContent: String?,
     val truncated: Boolean,
     val source: String,
+
+    @ColumnInfo(name = "entities") val entities: List<UrlEntity>,
 
     @ColumnInfo(name = "in_reply_to_screen_name") val inReplyToScreenName: String?,
     @ColumnInfo(name = "in_reply_to_status_id") val inReplyToStatusId: Long?,
@@ -47,14 +50,26 @@ data class Tweet(
 ) {
     companion object {
         fun from(dto: Status, listId: Long): Tweet {
+            val unescapedContent = TweetUtils.unescapeTweetContent(dto.fullTextRaw ?: "")
+            val subrogatedIndexes = TweetUtils.getHighSurrogateIndices(unescapedContent.first)
+            val entities = (
+                    dto.entities.hashtags.map { UrlEntity.from(it) } +
+                    dto.entities.urls.map { UrlEntity.from(it) } +
+                    dto.entities.userMentions.map { UrlEntity.from(it) } +
+                    dto.entities.symbols.map { UrlEntity.from(it) })
+                .sortByStartIndex()
+                .adjustIndicesForEscapedChars(unescapedContent.second)
+                .adjustEntitiesWithOffsets(subrogatedIndexes)
+
             return Tweet(
                 dto.id,
                 dto.idStr,
                 TweetDateUtils.apiTimeToLong(dto.createdAtRaw),
                 dto.textRaw,
-                dto.fullTextRaw,
+                unescapedContent.first,
                 dto.truncated,
                 dto.source,
+                entities,
                 dto.inReplyToScreenName,
                 dto.inReplyToStatusId,
                 dto.inReplyToStatusIdStr,
