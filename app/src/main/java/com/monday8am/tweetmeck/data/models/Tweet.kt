@@ -12,7 +12,8 @@ data class TimelineUser(
     @ColumnInfo(name = "user_id") val id: Long,
     @ColumnInfo(name = "user_name")val name: String,
     @ColumnInfo(name = "screen_name") val screenName: String,
-    @ColumnInfo(name = "profile_image_url") val profileImageUrl: String
+    @ColumnInfo(name = "profile_image_url") val profileImageUrl: String,
+    @ColumnInfo(name = "verified") val verified: Boolean
 )
 
 @Entity(tableName = "tweets")
@@ -61,6 +62,8 @@ data class Tweet(
                 .adjustIndicesForEscapedChars(unescapedContent.second)
                 .adjustEntitiesWithOffsets(subrogatedIndexes)
 
+            dto.retweetedStatus
+
             return Tweet(
                 dto.id,
                 dto.idStr,
@@ -80,7 +83,8 @@ data class Tweet(
                     dto.user.id,
                     dto.user.name,
                     dto.user.screenName,
-                    dto.user.profileImageUrl
+                    dto.user.profileImageUrl,
+                    dto.user.verified
                 ),
                 dto.quotedStatusId,
                 dto.isQuoteStatus,

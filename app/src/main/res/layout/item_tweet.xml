@@ -64,6 +64,8 @@ xmlns:tools="http://schemas.android.com/tools">
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/spacing_normal"
             android:text="@{tweet.timelineUser.name}"
+            android:drawableEnd="@{tweet.timelineUser.verified ? @drawable/ic_verified : null}"
+            android:drawablePadding="@dimen/spacing_micro"
             android:textAppearance="@style/TextAppearance.Tweetmeck.Subtitle2"
             android:layout_toEndOf="@id/profile_button"
             android:layout_alignParentTop="true"
@@ -73,13 +75,14 @@ xmlns:tools="http://schemas.android.com/tools">
             android:id="@+id/screen_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{tweet.timelineUser.screenName + `|`}"
+            android:text="@{tweet.timelineUser.screenName + ` |`}"
             android:textAppearance="@style/TextAppearance.Tweetmeck.Caption"
             android:paddingStart="@dimen/spacing_normal"
             android:layout_toEndOf="@id/profile_button"
             android:layout_alignParentBottom="true"
             tools:text="angel_anton |" />
 
+        <!-- TODO remove this text and create a spannable with both styles -->
         <TextView
             android:id="@+id/date"
             android:layout_width="wrap_content"
