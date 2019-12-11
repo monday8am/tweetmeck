@@ -13,7 +13,6 @@ object TweetTextUtils {
         }
     }
 
-
      * Shifts indices by 1 since the Twitter REST Api does not count them correctly for our language
      * runtime.
      *

@@ -23,8 +23,8 @@ object TweetUtils {
      * potentially inflammatory (see twitter.com/unknown for an example).
      *
      * @param screenName The screen name to build the url with
-     * @param tweetId    The id to build the url with
-     * @return           Can be null, otherwise a resolvable permalink to a Tweet.
+     * @param tweetId The id to build the url with
+     * @return Can be null, otherwise a resolvable permalink to a Tweet.
      */
     fun getPermalink(screenName: String, tweetId: Long): Uri? {
         if (tweetId <= 0) {
@@ -42,7 +42,7 @@ object TweetUtils {
      * Builds a permalink for the profile of a given screen name
      *
      * @param screenName The screen name to build the url with
-     * @return           Can be null, otherwise a resolvable permalink to a Profile.
+     * @return Can be null, otherwise a resolvable permalink to a Profile.
      */
     fun getProfilePermalink(screenName: String): String {
         return if (screenName.isEmpty()) {
@@ -75,6 +75,13 @@ object TweetUtils {
         return Pair(result.unescaped, result.indices)
     }
 
+    /**
+     * Adjusts entity indices for supplementary characters (Emoji being the most common example) in
+     * UTF-8 (ones outside of U+0000 to U+FFFF range) are represented as a pair of char values, the
+     * first from the high-surrogates range, and the second from the low-surrogates range.
+     *
+     * @param content The content of the tweet
+     */
     fun getHighSurrogateIndices(content: String): List<Int> {
         val highSurrogateIndices = mutableListOf<Int>()
         val len = content.length - 1
@@ -134,7 +141,7 @@ fun List<UrlEntity>.adjustIndicesForEscapedChars(indices: List<IntArray>): List<
         result.add(
             entity.copy(
                 start = entity.start - (diff + inDiff),
-                end =  entity.end - (diff + inDiff)
+                end = entity.end - (diff + inDiff)
             )
         )
     }
@@ -161,7 +168,7 @@ fun List<UrlEntity>.adjustEntitiesWithOffsets(indices: List<Int>): List<UrlEntit
         result.add(
             entity.copy(
                 start = entity.start + offset,
-                end =  entity.end + offset
+                end = entity.end + offset
             )
         )
     }

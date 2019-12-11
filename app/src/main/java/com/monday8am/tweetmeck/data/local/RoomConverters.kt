@@ -28,10 +28,10 @@ object RoomConverters {
     @JvmStatic
     fun fromUrlEntities(entities: List<UrlEntity>): String {
         return entities.map { it.toEntityString() }.fold("", { accumulator, newItem ->
-            if(accumulator.isEmpty()) {
+            if (accumulator.isEmpty()) {
                 newItem
             } else {
-                "${accumulator}${separator}${newItem}"
+                "${accumulator}${separator}$newItem"
             }
         })
     }

@@ -1,5 +1,6 @@
 package com.monday8am.tweetmeck.home.timeline
 
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
@@ -12,13 +13,17 @@ import com.monday8am.tweetmeck.home.TweetItemEventListener
 
 class TimelineAdapter(
     private val eventListener: TweetItemEventListener,
-    private val lifecycleOwner: LifecycleOwner
+    private val lifecycleOwner: LifecycleOwner,
+    private val textCreator: TimelineTextCreator
 ) : PagedListAdapter<Tweet, TweetViewHolder>(TweetItemDiff) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TweetViewHolder {
         val binding = ItemTweetBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        // set clickable links!
+        binding.content.linksClickable= true
+        binding.content.movementMethod = LinkMovementMethod.getInstance()
         return TweetViewHolder(
-            binding, eventListener, lifecycleOwner
+            binding, textCreator, eventListener, lifecycleOwner
         )
     }
 
@@ -30,12 +35,14 @@ class TimelineAdapter(
 
 class TweetViewHolder(
     private val binding: ItemTweetBinding,
+    private val textCreator: TimelineTextCreator,
     private val eventListener: TweetItemEventListener,
     private val lifecycleOwner: LifecycleOwner
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(tweet: Tweet) {
         binding.tweet = tweet
+        binding.textCreator = textCreator
         binding.eventListener = eventListener
         binding.lifecycleOwner = lifecycleOwner
         binding.executePendingBindings()

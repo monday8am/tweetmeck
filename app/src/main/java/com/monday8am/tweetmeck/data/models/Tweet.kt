@@ -6,7 +6,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.monday8am.tweetmeck.data.models.entities.UrlEntity
 import com.monday8am.tweetmeck.util.TweetDateUtils
-import com.monday8am.tweetmeck.util.TweetTextUtils
 import jp.nephy.penicillin.models.Status
 
 data class TimelineUser(
@@ -54,8 +53,8 @@ data class Tweet(
             val unescapedContent = TweetUtils.unescapeTweetContent(dto.fullTextRaw ?: "")
             val subrogatedIndexes = TweetUtils.getHighSurrogateIndices(unescapedContent.first)
             val entities = (
-                    dto.entities.hashtags.map { UrlEntity.from(it)} +
-                    dto.entities.urls.map { UrlEntity.from(it)} +
+                    dto.entities.hashtags.map { UrlEntity.from(it) } +
+                    dto.entities.urls.map { UrlEntity.from(it) } +
                     dto.entities.userMentions.map { UrlEntity.from(it) } +
                     dto.entities.symbols.map { UrlEntity.from(it) })
                 .sortByStartIndex()

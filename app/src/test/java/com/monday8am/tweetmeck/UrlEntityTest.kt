@@ -5,7 +5,6 @@ import com.monday8am.tweetmeck.data.models.entities.UrlEntity
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-
 class UrlEntityTest {
 
     @Test
