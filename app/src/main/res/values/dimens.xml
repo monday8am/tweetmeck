@@ -31,7 +31,7 @@
     <dimen name="onboarding_margins">48dp</dimen>
     <dimen name="onboarding_animation_padding">8dp</dimen>
 
-    <dimen name="a11y_min_touch_target">48dp</dimen>
+    <dimen name="a11y_min_touch_target">36dp</dimen>
 
     <dimen name="app_bar_height">200dp</dimen>
     <dimen name="appbar_elevation">5dp</dimen>
@@ -57,7 +57,8 @@
 
     <!-- timeline -->
     <dimen name="tweet_image_size">36dp</dimen>
-    <dimen name="tweet_image_border">2dp</dimen>
+    <dimen name="tweet_image_border">1dp</dimen>
+    <dimen name="appbar_profile_image">24dp</dimen>
 
     <!-- per android.view.ViewGroup.LayoutParams -->
     <item name="match_parent" format="integer" type="dimen">-1</item>

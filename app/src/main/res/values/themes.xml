@@ -24,8 +24,8 @@
     </style>
 
     <style name="AppTheme" parent="Base.AppTheme">
-        <item name="android:statusBarColor">@color/status_bar_scrim</item>
-        <item name="android:navigationBarColor">@color/nav_bar_scrim</item>
+        <item name="android:statusBarColor">@color/base2</item>
+        <item name="android:navigationBarColor">@color/base2</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
