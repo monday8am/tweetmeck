@@ -49,7 +49,7 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), T
         viewModelScope.launch {
             _dataLoading.value = true
             when (val result = dataRepository.getLists(forceUpload)) {
-                is Success -> _twitterLists.value = result.data.take(1)
+                is Success -> _twitterLists.value = result.data.take(3)
                 is Error -> Timber.d("Error loading lists: ${result.exception.message}")
                 else -> Timber.d("Wrong result state!")
             }

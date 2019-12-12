@@ -1,28 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright 2018 Google LLC
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~     https://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<vector
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="36dp"
-    android:height="36dp"
-    android:viewportWidth="36"
-    android:viewportHeight="36"
-    android:tint="?colorPrimary">
-    <path
-        android:fillColor="#fff"
-        android:pathData="M16,6a10,10 0,1 0,0 20,10 10,0 0,0 0,-20zM11.07,22.28c0.43,-0.9 3.05,-1.78 4.93,-1.78s4.51,0.88 4.93,1.78a7.9,7.9 0,0 1,-9.86 0zM22.36,20.83c-1.43,-1.74 -4.9,-2.33 -6.36,-2.33s-4.93,0.59 -6.36,2.33A8.01,8.01 0,1 1,24 16c0,1.82 -0.62,3.49 -1.64,4.83zM16,10a3.5,3.5 0,0 0,-3.5 3.5A3.5,3.5 0,0 0,16 17a3.5,3.5 0,0 0,3.5 -3.5A3.5,3.5 0,0 0,16 10zM16,15a1.5,1.5 0,1 1,0 -3,1.5 1.5,0 0,1 0,3z" />
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="26dp"
+    android:height="26dp"
+    android:viewportWidth="26"
+    android:viewportHeight="26">
+  <path
+      android:pathData="M8.7957,13.0013C9.896,12.5719 11.2974,12.3571 13,12.3571C14.7026,12.3571 16.104,12.5719 17.2043,13.0013L17.2043,13.0013C18.7394,13.6004 19.75,15.0797 19.75,16.7275L19.75,17.3571C19.75,18.5407 18.8007,19.5 17.6184,19.5L8.3816,19.5C7.2042,19.5 6.25,18.5379 6.25,17.3571L6.25,16.7275C6.25,15.0797 7.2606,13.6004 8.7957,13.0013ZM16.1974,8.0714C16.1974,9.65 14.7429,10.9286 13.3553,10.9286L12.6447,10.9286C11.0816,10.9286 9.8026,9.6493 9.8026,8.0714L9.8026,7.7143C9.8026,5.9393 11.2343,4.5 13,4.5C14.7657,4.5 16.1974,5.9393 16.1974,7.7143L16.1974,8.0714Z"
+      android:strokeWidth="1"
+      android:fillColor="@color/base01"
+      android:fillType="evenOdd"
+      android:strokeColor="#00000000"/>
+  <path
+      android:pathData="M13,13m-12,0a12,12 0,1 1,24 0a12,12 0,1 1,-24 0"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/base01"
+      android:fillType="evenOdd"/>
 </vector>
