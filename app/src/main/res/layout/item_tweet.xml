@@ -29,6 +29,21 @@ xmlns:tools="http://schemas.android.com/tools">
     android:padding="@dimen/margin_normal"
     tools:targetApi="o">
 
+    <TextView
+        android:id="@+id/user_retweeted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@{textCreator.getUserRetweetText(tweet)}"
+        android:textAppearance="@style/TextAppearance.Tweetmeck.Tweet.Retweeted"
+        android:layout_marginStart="@dimen/margin_small"
+        android:paddingBottom="@dimen/margin_small"
+        android:drawableStart="@drawable/ic_retweeted_small"
+        android:drawablePadding="@dimen/spacing_micro"
+        app:goneUnless="@{tweet.retweetedByScreenName != null}"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Angel Anton retweeted:" />
+
     <RelativeLayout
         android:id="@+id/user_content"
         android:layout_width="match_parent"
@@ -36,7 +51,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:onClick="@{() -> eventListener.openUserDetails(tweet.timelineUser.id)}"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/user_retweeted">
 
         <ImageView
             android:layout_width="@dimen/tweet_image_size"
@@ -75,24 +90,13 @@ xmlns:tools="http://schemas.android.com/tools">
             android:id="@+id/screen_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{tweet.timelineUser.screenName + ` |`}"
+            android:text="@{textCreator.getUserDateText(tweet)}"
             android:textAppearance="@style/TextAppearance.Tweetmeck.Caption"
             android:paddingStart="@dimen/spacing_normal"
             android:layout_toEndOf="@id/profile_button"
             android:layout_alignParentBottom="true"
-            tools:text="angel_anton |" />
+            tools:text="angel_anton | 23 min" />
 
-        <!-- TODO remove this text and create a spannable with both styles -->
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:dateCreated="@{tweet.createdAt}"
-            android:textAppearance="@style/TextAppearance.Tweetmeck.Tweet.Date"
-            android:paddingStart="@dimen/spacing_micro"
-            android:layout_toEndOf="@id/screen_name"
-            android:layout_alignParentBottom="true"
-            tools:text="2h" />
     </RelativeLayout>
 
     <TextView

@@ -58,7 +58,6 @@ fun pageMargin(viewPager: ViewPager2, pageMargin: Float) {
 
 @BindingAdapter("dateCreated")
 fun dateCreated(textView: TextView, createdAt: Long) {
-    textView.text = TweetDateUtils.getRelativeTimeString(textView.resources, System.currentTimeMillis(), createdAt)
 }
 
 @BindingAdapter("quantity")

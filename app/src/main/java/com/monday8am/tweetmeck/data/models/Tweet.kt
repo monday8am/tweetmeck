@@ -19,26 +19,30 @@ data class TimelineUser(
 @Entity(tableName = "tweets")
 data class Tweet(
     @PrimaryKey val id: Long,
-    @ColumnInfo(name = "id_str") val idStr: String,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "content") val content: String?,
     @ColumnInfo(name = "full_content") val fullContent: String?,
     val truncated: Boolean,
     val source: String,
 
-    @ColumnInfo(name = "entities") val entities: List<UrlEntity>,
-
-    @ColumnInfo(name = "in_reply_to_screen_name") val inReplyToScreenName: String?,
-    @ColumnInfo(name = "in_reply_to_status_id") val inReplyToStatusId: Long?,
-    @ColumnInfo(name = "in_reply_to_status_id_str") val inReplyToStatusIdStr: String?,
-    @ColumnInfo(name = "in_reply_to_user_id") val inReplyToUserId: Long?,
-    @ColumnInfo(name = "in_reply_to_user_id_str") val inReplyToUserIdStr: String?,
-
     @ColumnInfo(name = "list_id") val listId: Long,
     @Embedded val timelineUser: TimelineUser,
+    @ColumnInfo(name = "entities") val entities: List<UrlEntity>,
 
+    // reply tweet!
+    @ColumnInfo(name = "in_reply_to_screen_name") val inReplyToScreenName: String?,
+    @ColumnInfo(name = "in_reply_to_status_id") val inReplyToStatusId: Long?,
+    @ColumnInfo(name = "in_reply_to_user_id") val inReplyToUserId: Long?,
+
+    // retweeted tweet
+    @ColumnInfo(name = "retweeted_by_screen_name") val retweetedByScreenName: String?,
+    @ColumnInfo(name = "retweeted_status_id") val retweetedStatusId: Long?,
+    @ColumnInfo(name = "retweeted_by_user_id") val retweetedByUserId: Long?,
+
+    // quoted tweet!
     @ColumnInfo(name = "quoted_status_id") val quotedStatusId: Long?,
     @ColumnInfo(name = "is_quote_status") val isQuoteStatus: Boolean,
+
     @ColumnInfo(name = "retweet_count") val retweetCount: Int,
     @ColumnInfo(name = "favorite_count") val favoriteCount: Int,
 
@@ -50,50 +54,65 @@ data class Tweet(
 
 ) {
     companion object {
-        fun from(dto: Status, listId: Long): Tweet {
-            val unescapedContent = TweetUtils.unescapeTweetContent(dto.fullTextRaw ?: "")
-            val subrogatedIndexes = TweetUtils.getHighSurrogateIndices(unescapedContent.first)
-            val entities = (
-                    dto.entities.hashtags.map { UrlEntity.from(it) } +
-                    dto.entities.urls.map { UrlEntity.from(it) } +
-                    dto.entities.userMentions.map { UrlEntity.from(it) } +
-                    dto.entities.symbols.map { UrlEntity.from(it) })
-                .sortByStartIndex()
-                .adjustIndicesForEscapedChars(unescapedContent.second)
-                .adjustEntitiesWithOffsets(subrogatedIndexes)
-
-            dto.retweetedStatus
+        fun from(dtoStatus: Status, listId: Long): Tweet {
+            val isRetweet = dtoStatus.retweetedStatus != null
+            val status = dtoStatus.retweetedStatus ?: dtoStatus
+            val unescapedContent = getUnescapedContent(status)
 
             return Tweet(
-                dto.id,
-                dto.idStr,
-                TweetDateUtils.apiTimeToLong(dto.createdAtRaw),
-                dto.textRaw,
-                unescapedContent.first,
-                dto.truncated,
-                dto.source,
-                entities,
-                dto.inReplyToScreenName,
-                dto.inReplyToStatusId,
-                dto.inReplyToStatusIdStr,
-                dto.inReplyToUserId,
-                dto.inReplyToUserIdStr,
-                listId,
-                TimelineUser(
-                    dto.user.id,
-                    dto.user.name,
-                    dto.user.screenName,
-                    dto.user.profileImageUrl,
-                    dto.user.verified
-                ),
-                dto.quotedStatusId,
-                dto.isQuoteStatus,
-                dto.retweetCount,
-                dto.favoriteCount,
-                dto.favorited,
-                dto.retweeted,
-                false,
-                dto.langRaw)
+                id = dtoStatus.id,
+                createdAt = TweetDateUtils.apiTimeToLong(dtoStatus.createdAtRaw),
+                content = status.textRaw,
+                fullContent = unescapedContent.first,
+                truncated = status.truncated,
+                source = status.source,
+                listId = listId,
+                timelineUser = getTimelineUser(status),
+                entities = getEntities(status, unescapedContent),
+
+                inReplyToScreenName = status.inReplyToScreenName,
+                inReplyToStatusId = status.inReplyToStatusId,
+                inReplyToUserId = status.inReplyToUserId,
+
+                retweetedByScreenName = if (isRetweet) dtoStatus.user.screenName else null,
+                retweetedByUserId = if (isRetweet) dtoStatus.user.id else null,
+                retweetedStatusId = if (isRetweet) dtoStatus.retweetedStatus?.id else null,
+
+                quotedStatusId = status.quotedStatusId,
+                isQuoteStatus = status.isQuoteStatus,
+                retweetCount = status.retweetCount,
+                favoriteCount = status.favoriteCount,
+
+                favorited = status.favorited,
+                retweeted = status.retweeted,
+
+                possiblySensitive = false,
+                langRaw = status.langRaw)
+        }
+
+        private fun getTimelineUser(tweet: Status): TimelineUser {
+            return TimelineUser(
+                tweet.user.id,
+                tweet.user.name,
+                tweet.user.screenName,
+                tweet.user.profileImageUrl,
+                tweet.user.verified
+            )
+        }
+
+        private fun getUnescapedContent(tweet: Status): Pair<String, List<IntArray>> {
+            return TweetUtils.unescapeTweetContent(tweet.fullTextRaw ?: "")
+        }
+
+        private fun getEntities(tweet: Status, unescapedContent: Pair<String, List<IntArray>>): List<UrlEntity> {
+            val subrogatedIndexes = TweetUtils.getHighSurrogateIndices(unescapedContent.first)
+            return (tweet.entities.hashtags.map { UrlEntity.from(it) } +
+                    tweet.entities.urls.map { UrlEntity.from(it) } +
+                    tweet.entities.userMentions.map { UrlEntity.from(it) } +
+                    tweet.entities.symbols.map { UrlEntity.from(it) })
+                    .sortByStartIndex()
+                    .adjustIndicesForEscapedChars(unescapedContent.second)
+                    .adjustEntitiesWithOffsets(subrogatedIndexes)
         }
     }
 }

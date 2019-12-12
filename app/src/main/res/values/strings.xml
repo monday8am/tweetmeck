@@ -18,6 +18,7 @@
     <string name="timeline_no_tweets">No tweets in this list</string>
     <string name="retry">Retry</string>
     <string name="retweet">Retweet</string>
+    <string name="retweeted">&#160;retweeted:</string>
 
     <!-- User -->
     <string name="user_screen_title">User</string>
