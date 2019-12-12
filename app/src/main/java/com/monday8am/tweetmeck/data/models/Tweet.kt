@@ -13,9 +13,7 @@ data class TimelineUser(
     @ColumnInfo(name = "user_name")val name: String,
     @ColumnInfo(name = "screen_name") val screenName: String,
     @ColumnInfo(name = "profile_image_url") val profileImageUrl: String,
-    @ColumnInfo(name = "verified") val verified: Boolean,
-    @ColumnInfo(name = "retweeted_by_id") val retweetedById: Long? = null,
-    @ColumnInfo(name = "retweeted_by_screen_name") val retweetedByScreenName: String? = null
+    @ColumnInfo(name = "verified") val verified: Boolean
 )
 
 @Entity(tableName = "tweets")
@@ -27,17 +25,24 @@ data class Tweet(
     val truncated: Boolean,
     val source: String,
 
+    @ColumnInfo(name = "list_id") val listId: Long,
+    @Embedded val timelineUser: TimelineUser,
     @ColumnInfo(name = "entities") val entities: List<UrlEntity>,
 
+    // reply tweet!
     @ColumnInfo(name = "in_reply_to_screen_name") val inReplyToScreenName: String?,
     @ColumnInfo(name = "in_reply_to_status_id") val inReplyToStatusId: Long?,
     @ColumnInfo(name = "in_reply_to_user_id") val inReplyToUserId: Long?,
 
-    @ColumnInfo(name = "list_id") val listId: Long,
-    @Embedded val timelineUser: TimelineUser,
+    // retweeted tweet
+    @ColumnInfo(name = "retweeted_by_screen_name") val retweetedByScreenName: String?,
+    @ColumnInfo(name = "retweeted_status_id") val retweetedStatusId: Long?,
+    @ColumnInfo(name = "retweeted_by_user_id") val retweetedByUserId: Long?,
 
+    // quoted tweet!
     @ColumnInfo(name = "quoted_status_id") val quotedStatusId: Long?,
     @ColumnInfo(name = "is_quote_status") val isQuoteStatus: Boolean,
+
     @ColumnInfo(name = "retweet_count") val retweetCount: Int,
     @ColumnInfo(name = "favorite_count") val favoriteCount: Int,
 
@@ -50,47 +55,49 @@ data class Tweet(
 ) {
     companion object {
         fun from(dtoStatus: Status, listId: Long): Tweet {
+            val isRetweet = dtoStatus.retweetedStatus != null
             val status = dtoStatus.retweetedStatus ?: dtoStatus
             val unescapedContent = getUnescapedContent(status)
 
             return Tweet(
-                dtoStatus.id,
-                TweetDateUtils.apiTimeToLong(dtoStatus.createdAtRaw),
-                status.textRaw,
-                unescapedContent.first,
-                status.truncated,
-                status.source,
-                getEntities(status, unescapedContent),
-                status.inReplyToScreenName,
-                status.inReplyToStatusId,
-                status.inReplyToUserId,
-                listId,
-                getTimelineUser(status, dtoStatus),
-                status.quotedStatusId,
-                status.isQuoteStatus,
-                status.retweetCount,
-                status.favoriteCount,
-                status.favorited,
-                status.retweeted,
-                false,
-                status.langRaw)
+                id = dtoStatus.id,
+                createdAt = TweetDateUtils.apiTimeToLong(dtoStatus.createdAtRaw),
+                content = status.textRaw,
+                fullContent = unescapedContent.first,
+                truncated = status.truncated,
+                source = status.source,
+                listId = listId,
+                timelineUser = getTimelineUser(status),
+                entities = getEntities(status, unescapedContent),
+
+                inReplyToScreenName = status.inReplyToScreenName,
+                inReplyToStatusId = status.inReplyToStatusId,
+                inReplyToUserId = status.inReplyToUserId,
+
+                retweetedByScreenName = if (isRetweet) dtoStatus.user.screenName else null,
+                retweetedByUserId = if (isRetweet) dtoStatus.user.id else null,
+                retweetedStatusId = if (isRetweet) dtoStatus.retweetedStatus?.id else null,
+
+                quotedStatusId = status.quotedStatusId,
+                isQuoteStatus = status.isQuoteStatus,
+                retweetCount = status.retweetCount,
+                favoriteCount = status.favoriteCount,
+
+                favorited = status.favorited,
+                retweeted = status.retweeted,
+
+                possiblySensitive = false,
+                langRaw = status.langRaw)
         }
 
-        private fun getTimelineUser(tweet: Status, originalTweet: Status): TimelineUser {
-            var user = TimelineUser(
+        private fun getTimelineUser(tweet: Status): TimelineUser {
+            return TimelineUser(
                 tweet.user.id,
                 tweet.user.name,
                 tweet.user.screenName,
                 tweet.user.profileImageUrl,
                 tweet.user.verified
             )
-
-            if (tweet.id != originalTweet.id) {
-                user = user.copy(retweetedById = originalTweet.user.id,
-                                 retweetedByScreenName = originalTweet.user.screenName)
-            }
-
-            return user
         }
 
         private fun getUnescapedContent(tweet: Status): Pair<String, List<IntArray>> {
