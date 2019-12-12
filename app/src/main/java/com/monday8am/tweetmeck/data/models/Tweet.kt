@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.monday8am.tweetmeck.data.models.entities.MediaEntity
 import com.monday8am.tweetmeck.data.models.entities.UrlEntity
 import com.monday8am.tweetmeck.util.TweetDateUtils
 import jp.nephy.penicillin.models.Status
@@ -27,7 +28,8 @@ data class Tweet(
 
     @ColumnInfo(name = "list_id") val listId: Long,
     @Embedded val timelineUser: TimelineUser,
-    @ColumnInfo(name = "entities") val entities: List<UrlEntity>,
+    @ColumnInfo(name = "url_entities") val urlEntities: List<UrlEntity>,
+    @ColumnInfo(name = "media_entities") val mediaEntities: List<MediaEntity>,
 
     // reply tweet!
     @ColumnInfo(name = "in_reply_to_screen_name") val inReplyToScreenName: String?,
@@ -58,6 +60,7 @@ data class Tweet(
             val isRetweet = dtoStatus.retweetedStatus != null
             val status = dtoStatus.retweetedStatus ?: dtoStatus
             val unescapedContent = getUnescapedContent(status)
+            val indices = TweetUtils.getHighSurrogateIndices(unescapedContent.first)
 
             return Tweet(
                 id = dtoStatus.id,
@@ -68,7 +71,8 @@ data class Tweet(
                 source = status.source,
                 listId = listId,
                 timelineUser = getTimelineUser(status),
-                entities = getEntities(status, unescapedContent),
+                urlEntities = getUrlEntities(status, unescapedContent, indices),
+                mediaEntities = getMediaEntities(status),
 
                 inReplyToScreenName = status.inReplyToScreenName,
                 inReplyToStatusId = status.inReplyToStatusId,
@@ -104,8 +108,9 @@ data class Tweet(
             return TweetUtils.unescapeTweetContent(tweet.fullTextRaw ?: "")
         }
 
-        private fun getEntities(tweet: Status, unescapedContent: Pair<String, List<IntArray>>): List<UrlEntity> {
-            val subrogatedIndexes = TweetUtils.getHighSurrogateIndices(unescapedContent.first)
+        private fun getUrlEntities(tweet: Status,
+                                   unescapedContent: Pair<String, List<IntArray>>,
+                                   subrogatedIndexes: List<Int>): List<UrlEntity> {
             return (tweet.entities.hashtags.map { UrlEntity.from(it) } +
                     tweet.entities.urls.map { UrlEntity.from(it) } +
                     tweet.entities.userMentions.map { UrlEntity.from(it) } +
@@ -114,5 +119,14 @@ data class Tweet(
                     .adjustIndicesForEscapedChars(unescapedContent.second)
                     .adjustEntitiesWithOffsets(subrogatedIndexes)
         }
+
+        private fun getMediaEntities(tweet: Status): List<MediaEntity> {
+            return tweet.entities.media.map { UrlEntity.from(it) }
+                .sortByStartIndex()
+                .adjustIndicesForEscapedChars(unescapedContent.second)
+                .adjustEntitiesWithOffsets(subrogatedIndexes)
+        }
+
+
     }
 }

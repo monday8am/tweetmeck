@@ -40,7 +40,7 @@ class TimelineTextCreator(private val context: Context) {
         var len: Int
         var start: Int
         var end: Int
-        for (url in tweet.entities) {
+        for (url in tweet.urlEntities) {
             start = url.start - offset
             end = url.end - offset
             if (end > spannable.length) {
