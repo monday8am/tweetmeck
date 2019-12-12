@@ -13,6 +13,7 @@ import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.entities.EntityLinkType
 import com.monday8am.tweetmeck.home.TweetItemEventListener
 import com.monday8am.tweetmeck.util.TweetDateUtils
+import timber.log.Timber
 
 class TimelineTextCreator(private val context: Context) {
 
@@ -42,6 +43,10 @@ class TimelineTextCreator(private val context: Context) {
         for (url in tweet.entities) {
             start = url.start - offset
             end = url.end - offset
+            if (end > spannable.length) {
+                end = spannable.length
+                Timber.d("Error in link offset!")
+            }
             if (start >= 0 && end <= spannable.length) {
                 if (url.displayUrl.isNotEmpty()) {
                     spannable.replace(start, end, url.displayUrl)
@@ -76,6 +81,8 @@ class TimelineTextCreator(private val context: Context) {
                         }
                     spannable.setSpan(span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }
+            } else {
+                Timber.e("Error displaying URL entity")
             }
         }
         return spannable
