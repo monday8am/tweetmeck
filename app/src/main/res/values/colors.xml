@@ -22,7 +22,7 @@
     <color name="white">#ffffff</color>
 
     <!-- primary palette -->
-    <color name="colorPrimary">@color/base02</color>
+    <color name="colorPrimary">@color/base2</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
 

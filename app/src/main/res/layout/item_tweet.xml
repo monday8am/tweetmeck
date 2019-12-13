@@ -25,7 +25,6 @@ xmlns:tools="http://schemas.android.com/tools">
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?selectableItemBackground"
-    android:onClick="@{() -> eventListener.openTweetDetails(tweet.id)}"
     android:padding="@dimen/margin_normal"
     tools:targetApi="o">
 
@@ -96,21 +95,39 @@ xmlns:tools="http://schemas.android.com/tools">
             android:layout_toEndOf="@id/profile_button"
             android:layout_alignParentBottom="true"
             tools:text="angel_anton | 23 min" />
-
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/content"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:paddingTop="@dimen/margin_normal"
         android:paddingBottom="@dimen/margin_normal"
-        android:text="@{textCreator.getTweetDisplayText(tweet, eventListener)}"
-        android:textAppearance="@style/TextAppearance.Tweetmeck.Body1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_content"
-        tools:text="What's new in Android" />
+        app:layout_constraintTop_toBottomOf="@+id/user_content">
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{textCreator.getTweetDisplayText(tweet, eventListener)}"
+            android:textAppearance="@style/TextAppearance.Tweetmeck.Body1"
+            tools:text="What's new in Android" />
+        <Button
+            android:onClick="@{() -> eventListener.openTweetDetails(tweet.id)}"
+            style="@style/Widget.Tweetmeck.ImageButton"
+            android:id="@+id/media_btn"
+            app:goneUnless="@{tweet.mediaEntities.size > 0}"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/image_btn_height"
+            android:gravity="center"
+            android:text="@string/image_btn"
+            android:drawableLeft="@drawable/ic_image"
+            android:drawablePadding="@dimen/spacing_micro"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/content" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/retweet_btn"
@@ -121,7 +138,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:drawableStart="@{tweet.retweeted ? @drawable/ic_retweet_selected : @drawable/ic_retweet}"
         android:textAppearance="@style/TextAppearance.Tweetmeck.Body2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/content"
+        app:layout_constraintTop_toBottomOf="@+id/main_content"
         app:quantity="@{tweet.retweetCount}"
         tools:text="20K" />
 
@@ -135,7 +152,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:textAppearance="@style/TextAppearance.Tweetmeck.Body2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/content"
+        app:layout_constraintTop_toBottomOf="@+id/main_content"
         app:quantity="@{tweet.favoriteCount}"
         tools:text="30K" />
 
@@ -148,7 +165,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:drawablePadding="@dimen/spacing_micro"
         android:textAppearance="@style/TextAppearance.Tweetmeck.Body2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/content"
+        app:layout_constraintTop_toBottomOf="@+id/main_content"
         tools:text="15K" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

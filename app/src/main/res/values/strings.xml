@@ -19,6 +19,7 @@
     <string name="retry">Retry</string>
     <string name="retweet">Retweet</string>
     <string name="retweeted">&#160;retweeted:</string>
+    <string name="image_btn">Image</string>
 
     <!-- User -->
     <string name="user_screen_title">User</string>
