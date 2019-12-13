@@ -2,6 +2,7 @@ package com.monday8am.tweetmeck.data.local
 
 import androidx.room.TypeConverter
 import com.monday8am.tweetmeck.data.models.ListVisibilityMode
+import com.monday8am.tweetmeck.data.models.entities.MediaEntity
 import com.monday8am.tweetmeck.data.models.entities.UrlEntity
 
 object RoomConverters {
@@ -27,6 +28,26 @@ object RoomConverters {
     @TypeConverter
     @JvmStatic
     fun fromUrlEntities(entities: List<UrlEntity>): String {
+        return entities.map { it.toEntityString() }.fold("", { accumulator, newItem ->
+            if (accumulator.isEmpty()) {
+                newItem
+            } else {
+                "${accumulator}${separator}$newItem"
+            }
+        })
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun toMediaEntities(str: String): List<MediaEntity> {
+        if (str.isEmpty())
+            return listOf()
+        return str.split(separator).map { MediaEntity.fromEntityString(it) }
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun fromMediaEntities(entities: List<MediaEntity>): String {
         return entities.map { it.toEntityString() }.fold("", { accumulator, newItem ->
             if (accumulator.isEmpty()) {
                 newItem

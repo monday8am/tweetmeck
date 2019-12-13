@@ -59,6 +59,7 @@
     <dimen name="tweet_image_size">36dp</dimen>
     <dimen name="tweet_image_border">1dp</dimen>
     <dimen name="appbar_profile_image">24dp</dimen>
+    <dimen name="image_btn_height">40dp</dimen>
 
     <!-- per android.view.ViewGroup.LayoutParams -->
     <item name="match_parent" format="integer" type="dimen">-1</item>

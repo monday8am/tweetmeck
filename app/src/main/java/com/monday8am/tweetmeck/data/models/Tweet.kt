@@ -60,18 +60,18 @@ data class Tweet(
             val isRetweet = dtoStatus.retweetedStatus != null
             val status = dtoStatus.retweetedStatus ?: dtoStatus
             val unescapedContent = getUnescapedContent(status)
-            val indices = TweetUtils.getHighSurrogateIndices(unescapedContent.first)
+            val content = getContentWithoutMedia(unescapedContent.first, status.entities.media)
 
             return Tweet(
                 id = dtoStatus.id,
                 createdAt = TweetDateUtils.apiTimeToLong(dtoStatus.createdAtRaw),
                 content = status.textRaw,
-                fullContent = unescapedContent.first,
+                fullContent = content,
                 truncated = status.truncated,
                 source = status.source,
                 listId = listId,
                 timelineUser = getTimelineUser(status),
-                urlEntities = getUrlEntities(status, unescapedContent, indices),
+                urlEntities = getUrlEntities(status, unescapedContent),
                 mediaEntities = getMediaEntities(status),
 
                 inReplyToScreenName = status.inReplyToScreenName,
@@ -108,9 +108,11 @@ data class Tweet(
             return TweetUtils.unescapeTweetContent(tweet.fullTextRaw ?: "")
         }
 
-        private fun getUrlEntities(tweet: Status,
-                                   unescapedContent: Pair<String, List<IntArray>>,
-                                   subrogatedIndexes: List<Int>): List<UrlEntity> {
+        private fun getUrlEntities(
+            tweet: Status,
+            unescapedContent: Pair<String, List<IntArray>>
+        ): List<UrlEntity> {
+            val subrogatedIndexes = TweetUtils.getHighSurrogateIndices(unescapedContent.first)
             return (tweet.entities.hashtags.map { UrlEntity.from(it) } +
                     tweet.entities.urls.map { UrlEntity.from(it) } +
                     tweet.entities.userMentions.map { UrlEntity.from(it) } +
@@ -121,12 +123,18 @@ data class Tweet(
         }
 
         private fun getMediaEntities(tweet: Status): List<MediaEntity> {
-            return tweet.entities.media.map { UrlEntity.from(it) }
-                .sortByStartIndex()
-                .adjustIndicesForEscapedChars(unescapedContent.second)
-                .adjustEntitiesWithOffsets(subrogatedIndexes)
+            return tweet.extendedEntities?.media?.map { MediaEntity.from(it) } ?: listOf()
         }
 
-
+        private fun getContentWithoutMedia(
+            content: String,
+            entities: List<jp.nephy.penicillin.models.entities.MediaEntity>
+        ): String {
+            return if (entities.isNotEmpty()) {
+                content.replace(entities.first().url, "", ignoreCase = true)
+            } else {
+                content
+            }
+        }
     }
 }
