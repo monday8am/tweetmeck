@@ -150,6 +150,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:drawableStart="@{tweet.favorited ? @drawable/ic_like_selected : @drawable/ic_like}"
         android:drawablePadding="@dimen/spacing_micro"
         android:textAppearance="@style/TextAppearance.Tweetmeck.Body2"
+        android:onClick="@{() -> eventListener.likeTweet(tweet)}"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_content"

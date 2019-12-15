@@ -23,6 +23,9 @@ interface TweetDao {
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(item: Tweet)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(items: List<Tweet>)
 
     @Query("DELETE FROM tweets WHERE list_id = :listId")
