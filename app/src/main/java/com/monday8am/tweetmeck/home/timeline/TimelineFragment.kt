@@ -15,8 +15,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.FragmentTweetListBinding
 import com.monday8am.tweetmeck.home.HomeViewModel
+import com.monday8am.tweetmeck.home.TimelinePoolProvider
 import com.monday8am.tweetmeck.util.lazyFast
-import org.koin.android.ext.android.inject
+import org.koin.androidx.scope.currentScope
 import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
 import timber.log.Timber
 
@@ -36,7 +37,9 @@ class TimelineFragment : Fragment() {
 
     private lateinit var adapter: TimelineAdapter
     private lateinit var binding: FragmentTweetListBinding
-    private val tweetViewPool: RecyclerView.RecycledViewPool by inject()
+    private val viewPoolProvider: TimelinePoolProvider? by lazy {
+        parentFragment?.currentScope?.get<TimelinePoolProvider>()
+    }
 
     @Suppress("UNCHECKED_CAST")
     private lateinit var viewModel: HomeViewModel
@@ -52,6 +55,7 @@ class TimelineFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         viewModel = getSharedViewModel(from = { parentFragment as ViewModelStoreOwner })
+
         binding = FragmentTweetListBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = this@TimelineFragment.viewModel
@@ -71,6 +75,7 @@ class TimelineFragment : Fragment() {
 
         binding.recyclerview.apply {
             adapter = this@TimelineFragment.adapter
+            setRecycledViewPool(viewPoolProvider?.tweetItemPool)
             (layoutManager as LinearLayoutManager).recycleChildrenOnDetach = true
             (itemAnimator as DefaultItemAnimator).run {
                 supportsChangeAnimations = false

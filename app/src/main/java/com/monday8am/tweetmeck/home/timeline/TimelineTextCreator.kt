@@ -45,7 +45,7 @@ class TimelineTextCreator(private val context: Context) {
             end = url.end - offset
             if (end > spannable.length) {
                 end = spannable.length
-                Timber.d("Error in link offset!")
+                Timber.d("Error in link offset: ${tweet.id} ${tweet.timelineUser.screenName} ${tweet.id}")
             }
             if (start >= 0 && end <= spannable.length) {
                 if (url.displayUrl.isNotEmpty()) {
