@@ -11,22 +11,27 @@ import jp.nephy.penicillin.core.session.ApiClient
 import jp.nephy.penicillin.core.session.config.account
 import jp.nephy.penicillin.core.session.config.application
 import jp.nephy.penicillin.core.session.config.token
-import jp.nephy.penicillin.endpoints.lists
+import jp.nephy.penicillin.endpoints.*
+import jp.nephy.penicillin.endpoints.favorites.create
+import jp.nephy.penicillin.endpoints.favorites.destroy
 import jp.nephy.penicillin.endpoints.lists.list
-import jp.nephy.penicillin.endpoints.oauth
 import jp.nephy.penicillin.endpoints.oauth.accessToken
 import jp.nephy.penicillin.endpoints.oauth.authenticateUrl
 import jp.nephy.penicillin.endpoints.oauth.requestToken
-import jp.nephy.penicillin.endpoints.timeline
 import jp.nephy.penicillin.endpoints.timeline.listTimeline
-import jp.nephy.penicillin.endpoints.users
 import jp.nephy.penicillin.endpoints.users.showByUserId
 import jp.nephy.penicillin.extensions.await
 
 interface TwitterClient {
+    // Auth
     suspend fun getRequestToken(): RequestToken
     suspend fun getAuthUrl(requestToken: RequestToken): String
     suspend fun getAccessToken(requestToken: RequestToken, oAuthVerifier: String): AccessToken
+
+    // Tweet operations
+    suspend fun likeTweet(id: Long, value: Boolean): Result<Tweet>
+
+    // Get content
     suspend fun getUser(id: Long): TwitterUser
     suspend fun getLists(): List<TwitterList>
     suspend fun getListTimeline(
@@ -108,6 +113,19 @@ class TwitterClientImpl(
                 val user = TwitterUser.from(it.user)
                 return@map TweetContent(tweet, user)
             })
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    override suspend fun likeTweet(id: Long, value: Boolean): Result<Tweet> {
+        return try {
+            val response = if (value) {
+                client.favorites.create(id).await()
+            } else {
+                client.favorites.destroy(id).await()
+            }
+            Result.Success(Tweet.from(response.result, -1))
         } catch (e: Exception) {
             Result.Error(e)
         }

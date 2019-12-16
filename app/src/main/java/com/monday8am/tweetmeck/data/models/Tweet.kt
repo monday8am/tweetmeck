@@ -138,3 +138,7 @@ data class Tweet(
         }
     }
 }
+
+fun Tweet.isCached(): Boolean {
+    return this.listId != -1L
+}

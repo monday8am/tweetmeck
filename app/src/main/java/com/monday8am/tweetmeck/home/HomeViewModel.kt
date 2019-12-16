@@ -10,6 +10,7 @@ import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.Result.Error
 import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.TimelineContent
+import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.util.Event
 import com.monday8am.tweetmeck.util.map
@@ -23,6 +24,9 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), T
 
     private val _dataLoading = MutableLiveData<Boolean>()
     val dataLoading: LiveData<Boolean> = _dataLoading
+
+    private val _error = MutableLiveData<String>()
+    val error: LiveData<String> = _error
 
     private val _currentUserImageUri = MutableLiveData<Uri>()
     val currentUserImageUri: LiveData<Uri> = _currentUserImageUri
@@ -95,6 +99,15 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), T
         Timber.d("retry load more!!")
     }
 
+    override fun likeTweet(tweet: Tweet) {
+        viewModelScope.launch {
+            when (val result = dataRepository.likeTweet(tweet)) {
+                is Error -> _error.value = result.exception.message
+                else -> Timber.d("Tweet updated correctly!")
+            }
+        }
+    }
+
     override fun openUrl(url: String) {
         Timber.d("open URL: %s", url)
     }
@@ -119,4 +132,5 @@ interface TweetItemEventListener {
     fun searchForTag(tag: String)
     fun searchForSymbol(symbol: String)
     fun retryLoadMore(listId: Long)
+    fun likeTweet(tweet: Tweet)
 }
