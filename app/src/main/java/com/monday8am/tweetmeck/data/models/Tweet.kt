@@ -17,91 +17,103 @@ data class TimelineUser(
     @ColumnInfo(name = "verified") val verified: Boolean
 )
 
+data class CommonTweetContent(
+    @ColumnInfo(name = "created_at") val createdAt: Long,
+    @ColumnInfo(name = "full_text") val fullText: String,
+    @Embedded val user: TimelineUser,
+    @ColumnInfo(name = "url_entities") val urlEntities: List<UrlEntity>,
+    @ColumnInfo(name = "media_entities") val mediaEntities: List<MediaEntity>,
+    @ColumnInfo(name = "retweet_count") val retweetCount: Int,
+    @ColumnInfo(name = "favorite_count") val favoriteCount: Int,
+    val favorited: Boolean,
+    val retweeted: Boolean
+)
+
 @Entity(tableName = "tweets")
 data class Tweet(
     @PrimaryKey val id: Long,
-    @ColumnInfo(name = "created_at") val createdAt: Long,
-    @ColumnInfo(name = "content") val content: String?,
-    @ColumnInfo(name = "full_content") val fullContent: String?,
+    @Embedded val content: CommonTweetContent,
+
+    @ColumnInfo(name = "retweeted_id") val retweetedId: Long?,
+    @Embedded(prefix = "retweeted_") val retweetedContent: CommonTweetContent?,
+
+    @ColumnInfo(name = "quoted_id") val quotedId: Long?,
+    @Embedded(prefix = "quoted_") val quotedContent: CommonTweetContent?,
+
     val truncated: Boolean,
     val source: String,
-
     @ColumnInfo(name = "list_id") val listId: Long,
-    @Embedded val timelineUser: TimelineUser,
-    @ColumnInfo(name = "url_entities") val urlEntities: List<UrlEntity>,
-    @ColumnInfo(name = "media_entities") val mediaEntities: List<MediaEntity>,
-
-    // reply tweet!
     @ColumnInfo(name = "in_reply_to_screen_name") val inReplyToScreenName: String?,
     @ColumnInfo(name = "in_reply_to_status_id") val inReplyToStatusId: Long?,
-    @ColumnInfo(name = "in_reply_to_user_id") val inReplyToUserId: Long?,
+    @ColumnInfo(name = "in_reply_to_user_id") val inReplyToUserId: Long?
+    ) {
 
-    // retweeted tweet
-    @ColumnInfo(name = "retweeted_by_screen_name") val retweetedByScreenName: String?,
-    @ColumnInfo(name = "retweeted_status_id") val retweetedStatusId: Long?,
-    @ColumnInfo(name = "retweeted_by_user_id") val retweetedByUserId: Long?,
+    val isCached: Boolean
+        get() {
+            return listId != -1L
+        }
 
-    // quoted tweet!
-    @ColumnInfo(name = "quoted_status_id") val quotedStatusId: Long?,
-    @ColumnInfo(name = "is_quote_status") val isQuoteStatus: Boolean,
+    val hasQuote: Boolean
+        get() {
+            return quotedContent != null
+        }
 
-    @ColumnInfo(name = "retweet_count") val retweetCount: Int,
-    @ColumnInfo(name = "favorite_count") val favoriteCount: Int,
+    val user: TimelineUser
+        get() {
+            return retweetedContent?.user ?: content.user
+        }
 
-    val favorited: Boolean,
-    val retweeted: Boolean,
+    val favoriteCount: Int
+        get() {
+            return retweetedContent?.favoriteCount ?: content.favoriteCount
+        }
 
-    @ColumnInfo(name = "possibly_sensitive") val possiblySensitive: Boolean,
-    @ColumnInfo(name = "lang_raw") val langRaw: String
+    val retweetCount: Int
+        get() {
+            return retweetedContent?.retweetCount ?: content.retweetCount
+        }
 
-) {
     companion object {
-        fun from(dtoStatus: Status, listId: Long): Tweet {
-            val isRetweet = dtoStatus.retweetedStatus != null
-            val status = dtoStatus.retweetedStatus ?: dtoStatus
-            val unescapedContent = getUnescapedContent(status)
-            val content = getContentWithoutMedia(unescapedContent.first, status.entities.media)
-
+        fun from(status: Status, listId: Long): Tweet {
             return Tweet(
-                id = dtoStatus.id,
-                createdAt = TweetDateUtils.apiTimeToLong(dtoStatus.createdAtRaw),
-                content = status.textRaw,
-                fullContent = content,
+                id = status.id,
+                content = getTweetContent(status)!!,
+                retweetedId = status.retweetedStatus?.id,
+                retweetedContent = getTweetContent(status.retweetedStatus),
+                quotedId = status.quotedStatus?.id,
+                quotedContent = getTweetContent(status.quotedStatus),
                 truncated = status.truncated,
                 source = status.source,
                 listId = listId,
-                timelineUser = getTimelineUser(status),
-                urlEntities = getUrlEntities(status, unescapedContent),
-                mediaEntities = getMediaEntities(status),
-
                 inReplyToScreenName = status.inReplyToScreenName,
                 inReplyToStatusId = status.inReplyToStatusId,
-                inReplyToUserId = status.inReplyToUserId,
-
-                retweetedByScreenName = if (isRetweet) dtoStatus.user.screenName else null,
-                retweetedByUserId = if (isRetweet) dtoStatus.user.id else null,
-                retweetedStatusId = if (isRetweet) dtoStatus.retweetedStatus?.id else null,
-
-                quotedStatusId = status.quotedStatusId,
-                isQuoteStatus = status.isQuoteStatus,
-                retweetCount = status.retweetCount,
-                favoriteCount = status.favoriteCount,
-
-                favorited = status.favorited,
-                retweeted = status.retweeted,
-
-                possiblySensitive = false,
-                langRaw = status.langRaw)
+                inReplyToUserId = status.inReplyToUserId)
         }
 
-        private fun getTimelineUser(tweet: Status): TimelineUser {
+        private fun getTimelineUser(status: Status): TimelineUser {
             return TimelineUser(
-                tweet.user.id,
-                tweet.user.name,
-                tweet.user.screenName,
-                tweet.user.profileImageUrl,
-                tweet.user.verified
+                status.user.id,
+                status.user.name,
+                status.user.screenName,
+                status.user.profileImageUrl,
+                status.user.verified
             )
+        }
+
+        private fun getTweetContent(dtoStatus: Status?): CommonTweetContent? {
+            val status = dtoStatus ?: return null
+            val unescapedContent = getUnescapedContent(status)
+
+            return CommonTweetContent(
+                createdAt = TweetDateUtils.apiTimeToLong(dtoStatus.createdAtRaw),
+                fullText = getTextWithoutMedia(unescapedContent.first, status.entities.media),
+                user = getTimelineUser(status),
+                urlEntities = getUrlEntities(status, unescapedContent),
+                mediaEntities = getMediaEntities(status),
+                retweetCount = status.retweetCount,
+                favoriteCount = status.favoriteCount,
+                favorited = status.favorited,
+                retweeted = status.retweeted)
         }
 
         private fun getUnescapedContent(tweet: Status): Pair<String, List<IntArray>> {
@@ -110,15 +122,15 @@ data class Tweet(
 
         private fun getUrlEntities(
             tweet: Status,
-            unescapedContent: Pair<String, List<IntArray>>
+            unescapedTweetContent: Pair<String, List<IntArray>>
         ): List<UrlEntity> {
-            val subrogatedIndexes = TweetUtils.getHighSurrogateIndices(unescapedContent.first)
+            val subrogatedIndexes = TweetUtils.getHighSurrogateIndices(unescapedTweetContent.first)
             return (tweet.entities.hashtags.map { UrlEntity.from(it) } +
                     tweet.entities.urls.map { UrlEntity.from(it) } +
                     tweet.entities.userMentions.map { UrlEntity.from(it) } +
                     tweet.entities.symbols.map { UrlEntity.from(it) })
                     .sortByStartIndex()
-                    .adjustIndicesForEscapedChars(unescapedContent.second)
+                    .adjustIndicesForEscapedChars(unescapedTweetContent.second)
                     .adjustEntitiesWithOffsets(subrogatedIndexes)
         }
 
@@ -126,7 +138,7 @@ data class Tweet(
             return tweet.extendedEntities?.media?.map { MediaEntity.from(it) } ?: listOf()
         }
 
-        private fun getContentWithoutMedia(
+        private fun getTextWithoutMedia(
             content: String,
             entities: List<jp.nephy.penicillin.models.entities.MediaEntity>
         ): String {
@@ -137,8 +149,4 @@ data class Tweet(
             }
         }
     }
-}
-
-fun Tweet.isCached(): Boolean {
-    return this.listId != -1L
 }
