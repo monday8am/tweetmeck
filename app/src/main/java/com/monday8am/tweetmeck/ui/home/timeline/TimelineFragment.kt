@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.home.timeline
+package com.monday8am.tweetmeck.ui.home.timeline
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.FragmentTweetListBinding
-import com.monday8am.tweetmeck.home.HomeViewModel
-import com.monday8am.tweetmeck.home.TimelinePoolProvider
+import com.monday8am.tweetmeck.ui.home.HomeViewModel
+import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider
 import com.monday8am.tweetmeck.util.lazyFast
 import org.koin.androidx.scope.currentScope
 import org.koin.androidx.viewmodel.ext.android.getSharedViewModel

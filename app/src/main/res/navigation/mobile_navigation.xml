@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/login_dest"
-        android:name="com.monday8am.tweetmeck.login.LoginFragment"
+        android:name="com.monday8am.tweetmeck.ui.login.LoginFragment"
         android:label="@string/login_info"
         tools:layout="@layout/login_fragment">
         <action
@@ -21,7 +21,7 @@
     </fragment>
     <fragment
         android:id="@+id/timeline_dest"
-        android:name="com.monday8am.tweetmeck.home.HomeFragment"
+        android:name="com.monday8am.tweetmeck.ui.home.HomeFragment"
         android:label="Timeline"
         tools:layout="@layout/home_fragment" >
         <action
@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/user_dest"
-        android:name="com.monday8am.tweetmeck.user.UserFragment"
+        android:name="com.monday8am.tweetmeck.ui.user.UserFragment"
         android:label="@string/user_screen_title"
         tools:layout="@layout/user_fragment" >
         <argument
@@ -42,12 +42,12 @@
     </fragment>
     <fragment
         android:id="@+id/auth_dest"
-        android:name="com.monday8am.tweetmeck.login.AuthWebViewFragment"
+        android:name="com.monday8am.tweetmeck.ui.login.AuthWebViewFragment"
         android:label="fragment_auth_web_view"
         tools:layout="@layout/fragment_auth_web_view" />
     <fragment
         android:id="@+id/tweet_dest"
-        android:name="com.monday8am.tweetmeck.tweet.TweetFragment"
+        android:name="com.monday8am.tweetmeck.ui.tweet.TweetFragment"
         android:label="@string/tweet_screen_title"
         tools:layout="@layout/tweet_fragment" >
         <argument

@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.home
+package com.monday8am.tweetmeck.ui.home
 
 import android.net.Uri
 import androidx.lifecycle.LiveData

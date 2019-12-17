@@ -4,7 +4,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.monday8am.tweetmeck.home.HomeViewModel" />
+            type="com.monday8am.tweetmeck.ui.home.HomeViewModel" />
     </data>
 
     <com.google.android.material.appbar.AppBarLayout

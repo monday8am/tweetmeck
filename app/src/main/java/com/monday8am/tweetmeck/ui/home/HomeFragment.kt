@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.home
+package com.monday8am.tweetmeck.ui.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,7 +14,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.databinding.HomeFragmentBinding
-import com.monday8am.tweetmeck.home.timeline.TimelineFragment
+import com.monday8am.tweetmeck.ui.home.timeline.TimelineFragment
 import com.monday8am.tweetmeck.util.Event
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber

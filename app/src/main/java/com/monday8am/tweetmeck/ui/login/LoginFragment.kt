@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.login
+package com.monday8am.tweetmeck.ui.login
 
 import android.os.Bundle
 import android.view.LayoutInflater

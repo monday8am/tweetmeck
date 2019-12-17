@@ -13,11 +13,11 @@ xmlns:tools="http://schemas.android.com/tools">
 
     <variable
         name="textCreator"
-        type="com.monday8am.tweetmeck.home.timeline.TimelineTextCreator" />
+        type="com.monday8am.tweetmeck.ui.home.timeline.TimelineTextCreator" />
 
     <variable
         name="eventListener"
-        type="com.monday8am.tweetmeck.home.TweetItemEventListener" />
+        type="com.monday8am.tweetmeck.ui.home.TweetItemEventListener" />
 
 </data>
 
