@@ -9,10 +9,12 @@ import com.monday8am.tweetmeck.data.local.TwitterDatabase
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.models.TwitterUser
-import com.monday8am.tweetmeck.data.models.isCached
 import com.monday8am.tweetmeck.data.remote.TimelineBoundaryCallback
 import com.monday8am.tweetmeck.data.remote.TwitterClient
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 interface DataRepository {
@@ -71,20 +73,20 @@ class DataRepositoryImpl(
 
     override suspend fun likeTweet(tweet: Tweet): Result<Boolean> {
         return withContext(ioDispatcher) {
-            var newTweet = tweet.copy(
-                favorited = !tweet.favorited,
-                favoriteCount = if(!tweet.favorited) tweet.favoriteCount + 1 else tweet.favoriteCount - 1)
+            val newTweet = tweet.setFavorite(!tweet.tweetContent.favorited)
 
             // update cache first to refresh view faster
-            if (tweet.isCached()) {
+            if (tweet.isCached) {
                 db.tweetDao().insert(newTweet)
             }
 
-            when (val result = remoteClient.likeTweet(tweet.id, newTweet.favorited)) {
+            when (val result = remoteClient.likeTweet(tweet.id, newTweet.tweetContent.favorited)) {
                 is Success -> {
-                    if (tweet.isCached()) {
-                        newTweet = newTweet.copy(retweetCount = result.data.retweetCount)
-                        db.tweetDao().insert(newTweet)
+                    if (tweet.isCached) {
+                        db.tweetDao().insert(
+                            newTweet.setRetweetCount(result.data.tweetContent.retweetCount)
+                                    .setFavorite(result.data.tweetContent.favorited)
+                        )
                     }
                     Success(true)
                 }

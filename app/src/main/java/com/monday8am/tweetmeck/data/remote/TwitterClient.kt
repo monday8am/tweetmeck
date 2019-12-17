@@ -39,7 +39,7 @@ interface TwitterClient {
         sinceTweetId: Long? = null,
         maxTweetId: Long? = null,
         count: Int?
-    ): Result<List<TweetContent>>
+    ): Result<List<TweetWithUser>>
 }
 
 data class OAuthToken(val token: String, val secret: String)
@@ -48,7 +48,7 @@ typealias RequestToken = OAuthToken
 
 typealias AccessToken = OAuthToken
 
-data class TweetContent(
+data class TweetWithUser(
     val tweet: Tweet,
     val user: TwitterUser
 )
@@ -102,7 +102,7 @@ class TwitterClientImpl(
         sinceTweetId: Long?,
         maxTweetId: Long?,
         count: Int?
-    ): Result<List<TweetContent>> {
+    ): Result<List<TweetWithUser>> {
         return try {
             val response = client.timeline.listTimeline(listId,
                                                         count = count,
@@ -111,7 +111,7 @@ class TwitterClientImpl(
             Result.Success(response.results.map {
                 val tweet = Tweet.from(it, listId)
                 val user = TwitterUser.from(it.user)
-                return@map TweetContent(tweet, user)
+                return@map TweetWithUser(tweet, user)
             })
         } catch (e: Exception) {
             Result.Error(e)
