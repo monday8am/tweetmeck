@@ -17,7 +17,8 @@ data class TimelineUser(
     @ColumnInfo(name = "verified") val verified: Boolean
 )
 
-data class CommonTweetContent(
+data class TweetContent(
+    @ColumnInfo(name = "id") val id: Long,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "full_text") val fullText: String,
     @Embedded val user: TimelineUser,
@@ -32,13 +33,9 @@ data class CommonTweetContent(
 @Entity(tableName = "tweets")
 data class Tweet(
     @PrimaryKey val id: Long,
-    @Embedded val content: CommonTweetContent,
-
-    @ColumnInfo(name = "retweeted_id") val retweetedId: Long?,
-    @Embedded(prefix = "retweeted_") val retweetedContent: CommonTweetContent?,
-
-    @ColumnInfo(name = "quoted_id") val quotedId: Long?,
-    @Embedded(prefix = "quoted_") val quotedContent: CommonTweetContent?,
+    @Embedded(prefix = "main_") val content: TweetContent,
+    @Embedded(prefix = "retweeted_") val retweetedContent: TweetContent?,
+    @Embedded(prefix = "quoted_") val quotedContent: TweetContent?,
 
     val truncated: Boolean,
     val source: String,
@@ -46,7 +43,12 @@ data class Tweet(
     @ColumnInfo(name = "in_reply_to_screen_name") val inReplyToScreenName: String?,
     @ColumnInfo(name = "in_reply_to_status_id") val inReplyToStatusId: Long?,
     @ColumnInfo(name = "in_reply_to_user_id") val inReplyToUserId: Long?
-    ) {
+) {
+
+    val tweetContent: TweetContent
+        get() {
+            return retweetedContent ?: content
+        }
 
     val isCached: Boolean
         get() {
@@ -58,30 +60,40 @@ data class Tweet(
             return quotedContent != null
         }
 
-    val user: TimelineUser
+    val hasRetweeted: Boolean
         get() {
-            return retweetedContent?.user ?: content.user
+            return retweetedContent != null
         }
 
-    val favoriteCount: Int
-        get() {
-            return retweetedContent?.favoriteCount ?: content.favoriteCount
+    fun setFavorite(newValue: Boolean): Tweet {
+        return if (retweetedContent != null) {
+            this.copy(retweetedContent = setFavorite(retweetedContent, newValue))
+        } else {
+            this.copy(content = setFavorite(content, newValue))
         }
+    }
 
-    val retweetCount: Int
-        get() {
-            return retweetedContent?.retweetCount ?: content.retweetCount
+    fun setRetweetCount(newValue: Int): Tweet {
+        return if (retweetedContent != null) {
+            this.copy(retweetedContent = retweetedContent.copy(retweetCount = newValue))
+        } else {
+            this.copy(content = content.copy(retweetCount = newValue))
         }
+    }
+
+    private fun setFavorite(content: TweetContent, newValue: Boolean): TweetContent {
+        return content.copy(
+            favorited = newValue,
+            favoriteCount = if (newValue) content.favoriteCount + 1 else content.favoriteCount - 1)
+    }
 
     companion object {
         fun from(status: Status, listId: Long): Tweet {
             return Tweet(
                 id = status.id,
                 content = getTweetContent(status)!!,
-                retweetedId = status.retweetedStatus?.id,
                 retweetedContent = getTweetContent(status.retweetedStatus),
-                quotedId = status.quotedStatus?.id,
-                quotedContent = getTweetContent(status.quotedStatus),
+                quotedContent = getTweetContent(status.quotedStatus ?: status.retweetedStatus?.quotedStatus),
                 truncated = status.truncated,
                 source = status.source,
                 listId = listId,
@@ -100,13 +112,14 @@ data class Tweet(
             )
         }
 
-        private fun getTweetContent(dtoStatus: Status?): CommonTweetContent? {
+        private fun getTweetContent(dtoStatus: Status?): TweetContent? {
             val status = dtoStatus ?: return null
             val unescapedContent = getUnescapedContent(status)
 
-            return CommonTweetContent(
+            return TweetContent(
+                id = status.id,
                 createdAt = TweetDateUtils.apiTimeToLong(dtoStatus.createdAtRaw),
-                fullText = getTextWithoutMedia(unescapedContent.first, status.entities.media),
+                fullText = getTextWithoutUrls(unescapedContent.first, status),
                 user = getTimelineUser(status),
                 urlEntities = getUrlEntities(status, unescapedContent),
                 mediaEntities = getMediaEntities(status),
@@ -121,14 +134,20 @@ data class Tweet(
         }
 
         private fun getUrlEntities(
-            tweet: Status,
+            status: Status,
             unescapedTweetContent: Pair<String, List<IntArray>>
         ): List<UrlEntity> {
             val subrogatedIndexes = TweetUtils.getHighSurrogateIndices(unescapedTweetContent.first)
-            return (tweet.entities.hashtags.map { UrlEntity.from(it) } +
-                    tweet.entities.urls.map { UrlEntity.from(it) } +
-                    tweet.entities.userMentions.map { UrlEntity.from(it) } +
-                    tweet.entities.symbols.map { UrlEntity.from(it) })
+            var urls = status.entities.urls.map { UrlEntity.from(it) }
+
+            if (status.quotedStatus != null) {
+                urls = urls.take(urls.size - 1)
+            }
+
+            return (status.entities.hashtags.map { UrlEntity.from(it) } +
+                    urls +
+                    status.entities.userMentions.map { UrlEntity.from(it) } +
+                    status.entities.symbols.map { UrlEntity.from(it) })
                     .sortByStartIndex()
                     .adjustIndicesForEscapedChars(unescapedTweetContent.second)
                     .adjustEntitiesWithOffsets(subrogatedIndexes)
@@ -138,15 +157,20 @@ data class Tweet(
             return tweet.extendedEntities?.media?.map { MediaEntity.from(it) } ?: listOf()
         }
 
-        private fun getTextWithoutMedia(
+        private fun getTextWithoutUrls(
             content: String,
-            entities: List<jp.nephy.penicillin.models.entities.MediaEntity>
+            status: Status
         ): String {
-            return if (entities.isNotEmpty()) {
-                content.replace(entities.first().url, "", ignoreCase = true)
-            } else {
-                content
+            var result = content
+            if (status.entities.media.isNotEmpty()) {
+                result = result.replace(status.entities.media.first().url, "", ignoreCase = true)
             }
+
+            if (status.quotedStatus != null) {
+                result = result.replace(status.entities.urls.last().url, "", ignoreCase = true)
+            }
+
+            return result.trimEnd()
         }
     }
 }

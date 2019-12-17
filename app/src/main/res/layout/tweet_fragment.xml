@@ -38,7 +38,7 @@
         android:id="@+id/logout_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@{viewmodel.tweet.fullContent}"
+        android:text="@{viewmodel.tweet.content.fullText}"
         android:textAlignment="center"
         android:textSize="18sp"
         tools:text="Tweet content!"

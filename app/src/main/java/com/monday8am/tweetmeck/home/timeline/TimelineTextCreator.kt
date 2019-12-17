@@ -10,6 +10,7 @@ import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.data.models.Tweet
+import com.monday8am.tweetmeck.data.models.TweetContent
 import com.monday8am.tweetmeck.data.models.entities.EntityLinkType
 import com.monday8am.tweetmeck.home.TweetItemEventListener
 import com.monday8am.tweetmeck.util.TweetDateUtils
@@ -18,35 +19,39 @@ import timber.log.Timber
 class TimelineTextCreator(private val context: Context) {
 
     fun getUserRetweetText(tweet: Tweet): CharSequence {
-        val screenName = tweet.retweetedByScreenName ?: return ""
+        val screenName = tweet.content.user.screenName
         return buildSpannedString {
             bold { append(screenName) }
             append(context.getString(R.string.retweeted))
         }
     }
 
-    fun getUserDateText(tweet: Tweet): CharSequence {
-        val date = TweetDateUtils.getRelativeTimeString(context, System.currentTimeMillis(), tweet.createdAt)
+    fun getUserDateText(tweetContent: TweetContent?): CharSequence {
+        val content = tweetContent ?: return ""
+        val date = TweetDateUtils.getRelativeTimeString(context, System.currentTimeMillis(), content.createdAt)
         return buildSpannedString {
-            bold { append(tweet.timelineUser.screenName) }
+            bold { append(content.user.screenName) }
             append(" | $date")
         }
     }
 
-    fun getTweetDisplayText(tweet: Tweet, listener: TweetItemEventListener): CharSequence {
-        val spannable = SpannableStringBuilder(tweet.fullContent ?: "")
+    fun getTweetDisplayText(tweetContent: TweetContent?, listener: TweetItemEventListener): CharSequence {
+        val content = tweetContent ?: return ""
+        val spannable = SpannableStringBuilder(content.fullText)
 
         var offset = 0
         var len: Int
         var start: Int
         var end: Int
-        for (url in tweet.urlEntities) {
+        for (url in content.urlEntities) {
             start = url.start - offset
             end = url.end - offset
+            /*
             if (end > spannable.length) {
                 end = spannable.length
-                Timber.d("Error in link offset: ${tweet.id} ${tweet.timelineUser.screenName} ${tweet.id}")
+                Timber.d("Error in link offset: ${content.user.screenName}")
             }
+            */
             if (start >= 0 && end <= spannable.length) {
                 if (url.displayUrl.isNotEmpty()) {
                     spannable.replace(start, end, url.displayUrl)

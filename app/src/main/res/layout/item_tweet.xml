@@ -33,12 +33,13 @@ xmlns:tools="http://schemas.android.com/tools">
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@{textCreator.getUserRetweetText(tweet)}"
+        android:onClick="@{() -> eventListener.openUserDetails(tweet.content.user.id)}"
         android:textAppearance="@style/TextAppearance.Tweetmeck.Tweet.Retweeted"
         android:layout_marginStart="@dimen/margin_small"
         android:paddingBottom="@dimen/margin_small"
         android:drawableStart="@drawable/ic_retweeted_small"
         android:drawablePadding="@dimen/spacing_micro"
-        app:goneUnless="@{tweet.retweetedByScreenName != null}"
+        app:goneUnless="@{tweet.hasRetweeted}"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Angel Anton retweeted:" />
@@ -47,7 +48,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:id="@+id/user_content"
         android:layout_width="match_parent"
         android:layout_height="@dimen/tweet_image_size"
-        android:onClick="@{() -> eventListener.openUserDetails(tweet.timelineUser.id)}"
+        android:onClick="@{() -> eventListener.openUserDetails(tweet.tweetContent.user.id)}"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_retweeted">
@@ -68,7 +69,7 @@ xmlns:tools="http://schemas.android.com/tools">
             android:foreground="?selectableItemBackground"
             android:padding="@dimen/tweet_image_border"
             app:clipToCircle="@{true}"
-            app:imageUrl="@{tweet.timelineUser.profileImageUrl}"
+            app:imageUrl="@{tweet.tweetContent.user.profileImageUrl}"
             app:placeholder="@{@drawable/ic_account_circle}"
             tools:background="@color/android_green" />
 
@@ -77,8 +78,8 @@ xmlns:tools="http://schemas.android.com/tools">
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/spacing_normal"
-            android:text="@{tweet.timelineUser.name}"
-            android:drawableEnd="@{tweet.timelineUser.verified ? @drawable/ic_verified : null}"
+            android:text="@{tweet.tweetContent.user.name}"
+            android:drawableEnd="@{tweet.tweetContent.user.verified ? @drawable/ic_verified : null}"
             android:drawablePadding="@dimen/spacing_micro"
             android:textAppearance="@style/TextAppearance.Tweetmeck.Subtitle2"
             android:layout_toEndOf="@id/profile_button"
@@ -89,7 +90,7 @@ xmlns:tools="http://schemas.android.com/tools">
             android:id="@+id/screen_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{textCreator.getUserDateText(tweet)}"
+            android:text="@{textCreator.getUserDateText(tweet.tweetContent)}"
             android:textAppearance="@style/TextAppearance.Tweetmeck.Caption"
             android:paddingStart="@dimen/spacing_normal"
             android:layout_toEndOf="@id/profile_button"
@@ -107,18 +108,20 @@ xmlns:tools="http://schemas.android.com/tools">
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_content">
+
         <TextView
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{textCreator.getTweetDisplayText(tweet, eventListener)}"
+            android:text="@{textCreator.getTweetDisplayText(tweet.tweetContent, eventListener)}"
             android:textAppearance="@style/TextAppearance.Tweetmeck.Body1"
             tools:text="What's new in Android" />
+
         <Button
             android:onClick="@{() -> eventListener.openTweetDetails(tweet.id)}"
             style="@style/Widget.Tweetmeck.ImageButton"
             android:id="@+id/media_btn"
-            app:goneUnless="@{tweet.mediaEntities.size > 0}"
+            app:goneUnless="@{tweet.tweetContent.mediaEntities.size > 0}"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/image_btn_height"
             android:gravity="center"
@@ -127,6 +130,57 @@ xmlns:tools="http://schemas.android.com/tools">
             android:drawablePadding="@dimen/spacing_micro"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/content" />
+
+        <RelativeLayout
+            android:id="@+id/quoted_content"
+            android:paddingTop="@dimen/spacing_normal"
+            app:goneUnless="@{tweet.hasQuote}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/quoted_separator"
+                android:layout_width="@dimen/tweet_image_size"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:contentDescription="@string/a11y_sign_in"
+                android:background="@drawable/ic_quote_separator" />
+
+            <TextView
+                android:id="@+id/quoted_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{tweet.quotedContent.user.name}"
+                android:drawableEnd="@{tweet.quotedContent.user.verified ? @drawable/ic_verified : null}"
+                android:drawablePadding="@dimen/spacing_micro"
+                android:textAppearance="@style/TextAppearance.Tweetmeck.Subtitle2"
+                android:layout_toEndOf="@id/quoted_separator"
+                android:layout_alignParentTop="true"
+                tools:text="Angel Anton" />
+
+            <TextView
+                android:id="@+id/quoted_screen_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{textCreator.getUserDateText(tweet.quotedContent)}"
+                android:textAppearance="@style/TextAppearance.Tweetmeck.Caption"
+                android:paddingStart="@dimen/spacing_micro"
+                android:layout_alignBaseline="@+id/quoted_user_name"
+                android:layout_toEndOf="@id/quoted_user_name"
+                tools:text="angel_anton | 23 min" />
+
+            <TextView
+                android:id="@+id/quoted_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/spacing_micro"
+                android:text="@{textCreator.getTweetDisplayText(tweet.quotedContent, eventListener)}"
+                android:textAppearance="@style/TextAppearance.Tweetmeck.Body2"
+                android:layout_alignStart="@+id/quoted_user_name"
+                android:layout_below="@+id/quoted_user_name"
+                tools:text="What's new in Android" />
+        </RelativeLayout>
+
     </LinearLayout>
 
     <TextView
@@ -135,11 +189,11 @@ xmlns:tools="http://schemas.android.com/tools">
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:drawablePadding="@dimen/spacing_micro"
-        android:drawableStart="@{tweet.retweeted ? @drawable/ic_retweet_selected : @drawable/ic_retweet}"
+        android:drawableStart="@{tweet.tweetContent.retweeted ? @drawable/ic_retweet_selected : @drawable/ic_retweet}"
         android:textAppearance="@style/TextAppearance.Tweetmeck.Body2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_content"
-        app:quantity="@{tweet.retweetCount}"
+        app:quantity="@{tweet.tweetContent.retweetCount}"
         tools:text="20K" />
 
     <TextView
@@ -147,14 +201,14 @@ xmlns:tools="http://schemas.android.com/tools">
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:drawableStart="@{tweet.favorited ? @drawable/ic_like_selected : @drawable/ic_like}"
+        android:drawableStart="@{tweet.tweetContent.favorited ? @drawable/ic_like_selected : @drawable/ic_like}"
         android:drawablePadding="@dimen/spacing_micro"
         android:textAppearance="@style/TextAppearance.Tweetmeck.Body2"
         android:onClick="@{() -> eventListener.likeTweet(tweet)}"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_content"
-        app:quantity="@{tweet.favoriteCount}"
+        app:quantity="@{tweet.tweetContent.favoriteCount}"
         tools:text="30K" />
 
     <TextView
