@@ -4,19 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
     android:label="Login"
-    app:startDestination="@+id/login_dest">
+    app:startDestination="@+id/onboarding_dest">
 
     <fragment
-        android:id="@+id/login_dest"
-        android:name="com.monday8am.tweetmeck.ui.login.LoginFragment"
-        android:label="@string/login_info"
-        tools:layout="@layout/login_fragment">
+        android:id="@+id/onboarding_dest"
+        android:name="com.monday8am.tweetmeck.ui.onboarding.OnboardingFragment"
+        tools:layout="@layout/onboarding_fragment">
         <action
-            android:id="@+id/action_login_dest_to_auth_dest"
-            app:destination="@id/auth_dest"
-            app:popUpTo="@id/login_dest" />
-        <action
-            android:id="@+id/action_login_dest_to_timeline_dest"
+            android:id="@+id/action_onboarding_dest_to_timeline_dest"
             app:destination="@id/timeline_dest" />
     </fragment>
     <fragment
@@ -30,6 +25,12 @@
         <action
             android:id="@+id/action_timeline_dest_to_tweet_dest"
             app:destination="@id/tweet_dest" />
+        <action
+            android:id="@+id/action_timeline_dest_to_sign_in_dialog_dest"
+            app:destination="@id/sign_in_dialog_dest" />
+        <action
+            android:id="@+id/action_timeline_dest_to_auth_dest"
+            app:destination="@id/auth_dest" />
     </fragment>
     <fragment
         android:id="@+id/user_dest"
@@ -54,5 +55,8 @@
             android:name="tweetId"
             app:argType="long" />
     </fragment>
+    <dialog
+        android:id="@+id/sign_in_dialog_dest"
+        android:name="com.monday8am.tweetmeck.ui.login.SignInDialogFragment"/>
 
 </navigation>

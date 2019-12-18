@@ -25,8 +25,8 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), T
     private val _dataLoading = MutableLiveData<Boolean>()
     val dataLoading: LiveData<Boolean> = _dataLoading
 
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> = _error
+    private val _errorMessage = MutableLiveData<Event<String>>()
+    val errorMessage: LiveData<Event<String>> = _errorMessage
 
     private val _currentUserImageUri = MutableLiveData<Uri>()
     val currentUserImageUri: LiveData<Uri> = _currentUserImageUri
@@ -45,6 +45,9 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), T
     private val _navigateToUserDetails = MutableLiveData<Event<Long>>()
     val navigateToUserDetails: LiveData<Event<Long>> = _navigateToUserDetails
 
+    private val _navigateToSignInDialog = MutableLiveData<Event<Boolean>>()
+    val navigateToSignInDialog: LiveData<Event<Boolean>> = _navigateToSignInDialog
+
     init {
         loadLists(true)
     }
@@ -54,8 +57,8 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), T
             _dataLoading.value = true
             when (val result = dataRepository.getLists(forceUpload)) {
                 is Success -> _twitterLists.value = result.data
-                is Error -> Timber.d("Error loading lists: ${result.exception.message}")
-                else -> Timber.d("Wrong result state!")
+                is Error -> _errorMessage.value = Event(content = result.exception.message ?: "Unknown Error")
+                else -> _errorMessage.value = Event(content = "Unknown state error")
             }
             _dataLoading.value = false
         }
@@ -68,7 +71,7 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), T
     }
 
     fun onProfileClicked() {
-        Timber.d("OnProfile clicked!")
+        _navigateToSignInDialog.value = Event(_currentUserImageUri.value != null)
     }
 
     fun onSwipeRefresh() {
@@ -102,7 +105,7 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), T
     override fun likeTweet(tweet: Tweet) {
         viewModelScope.launch {
             when (val result = dataRepository.likeTweet(tweet)) {
-                is Error -> _error.value = result.exception.message
+                is Error -> _errorMessage.value = Event(content = result.exception.message ?: "Unknown Error")
                 else -> Timber.d("Tweet updated correctly!")
             }
         }

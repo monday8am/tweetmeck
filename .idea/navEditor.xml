@@ -13,30 +13,25 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="-45" />
-                            <option name="y" value="918" />
+                            <option name="x" value="51" />
+                            <option name="y" value="759" />
                           </Point>
                         </option>
                       </LayoutPositions>
                     </value>
                   </entry>
-                  <entry key="login_dest">
+                  <entry key="onboarding_dest">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="-303" />
-                            <option name="y" value="436" />
+                            <option name="x" value="12" />
+                            <option name="y" value="12" />
                           </Point>
                         </option>
                         <option name="myPositions">
                           <map>
-                            <entry key="action_login_dest_to_auth_dest">
-                              <value>
-                                <LayoutPositions />
-                              </value>
-                            </entry>
-                            <entry key="action_login_dest_to_timeline_dest">
+                            <entry key="action_onboarding_dest_to_timeline_dest">
                               <value>
                                 <LayoutPositions />
                               </value>
@@ -46,17 +41,39 @@
                       </LayoutPositions>
                     </value>
                   </entry>
+                  <entry key="sign_in_dialog_dest">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="-275" />
+                            <option name="y" value="753" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
                   <entry key="timeline_dest">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="32" />
-                            <option name="y" value="395" />
+                            <option name="x" value="-340" />
+                            <option name="y" value="290" />
                           </Point>
                         </option>
                         <option name="myPositions">
                           <map>
+                            <entry key="action_timeline_dest_to_auth_dest">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_timeline_dest_to_sign_in_dialog_dest">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_timeline_dest_to_tweet_dest">
                               <value>
                                 <LayoutPositions />
@@ -89,8 +106,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="292" />
-                            <option name="y" value="707" />
+                            <option name="x" value="354" />
+                            <option name="y" value="630" />
                           </Point>
                         </option>
                       </LayoutPositions>
