@@ -29,6 +29,9 @@
             android:id="@+id/action_timeline_dest_to_sign_in_dialog_dest"
             app:destination="@id/sign_in_dialog_dest" />
         <action
+            android:id="@+id/action_timeline_dest_to_sign_out_dialog_dest"
+            app:destination="@id/sign_out_dialog_dest" />
+        <action
             android:id="@+id/action_timeline_dest_to_auth_dest"
             app:destination="@id/auth_dest" />
     </fragment>
@@ -58,5 +61,8 @@
     <dialog
         android:id="@+id/sign_in_dialog_dest"
         android:name="com.monday8am.tweetmeck.ui.login.SignInDialogFragment"/>
+    <dialog
+        android:id="@+id/sign_out_dialog_dest"
+        android:name="com.monday8am.tweetmeck.ui.login.SignOutDialogFragment"/>
 
 </navigation>

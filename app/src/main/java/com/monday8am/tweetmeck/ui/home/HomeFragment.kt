@@ -55,19 +55,21 @@ class HomeFragment : Fragment() {
         })
 
         viewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
-            this.findNavController().navigate(HomeFragmentDirections.actionTimelineDestToTweetDest(tweetId))
+            findNavController().navigate(HomeFragmentDirections.actionTimelineDestToTweetDest(tweetId))
         })
 
         viewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { userId ->
-            this.findNavController().navigate(HomeFragmentDirections.actionTimelineDestToUserDest(userId))
+            findNavController().navigate(HomeFragmentDirections.actionTimelineDestToUserDest(userId))
         })
 
         viewModel.navigateToSignInDialog.observe(viewLifecycleOwner, EventObserver { isSigned ->
-            if (isSigned) {
-                this.findNavController().navigate(R.id.action_timeline_dest_to_sign_in_dialog_dest)
-            } else {
-                dialogDispatcher.openSignInDialog(requireActivity())
-            }
+            findNavController().navigate(
+                if (isSigned) {
+                    R.id.action_timeline_dest_to_sign_out_dialog_dest
+                } else {
+                    R.id.action_timeline_dest_to_sign_in_dialog_dest
+                }
+            )
         })
 
         authViewModel.authState.observe(viewLifecycleOwner, Observer<AuthState> { state ->
@@ -77,7 +79,7 @@ class HomeFragment : Fragment() {
                     // viewBinding.button.isEnabled = false
                     Timber.d("Loading")
                 }
-                is AuthState.WaitingForUserCredentials -> this.findNavController().navigate(R.id.action_timeline_dest_to_auth_dest)
+                is AuthState.WaitingForUserCredentials -> findNavController().navigate(R.id.action_timeline_dest_to_auth_dest)
                 is AuthState.Logged -> {
                     Timber.d("Logged")
                 }

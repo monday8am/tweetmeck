@@ -29,7 +29,8 @@ data class TwitterUser(
     @ColumnInfo(name = "default_profile_image") val defaultProfileImage: Boolean,
 
     val following: Boolean,
-    @ColumnInfo(name = "follow_request_sent") val followRequestSent: Boolean
+    @ColumnInfo(name = "follow_request_sent") val followRequestSent: Boolean,
+    @ColumnInfo(name = "logged_user") val loggedUser: Boolean = false
 ) {
     companion object {
         fun from(dto: jp.nephy.penicillin.models.User): TwitterUser {

@@ -26,7 +26,7 @@ interface TwitterClient {
     // Auth
     suspend fun getRequestToken(): RequestToken
     suspend fun getAuthUrl(requestToken: RequestToken): String
-    suspend fun getAccessToken(requestToken: RequestToken, oAuthVerifier: String): AccessToken
+    suspend fun getAccessToken(requestToken: RequestToken, oAuthVerifier: String): AuthResult
 
     // Tweet operations
     suspend fun likeTweet(id: Long, value: Boolean): Result<Tweet>
@@ -43,6 +43,8 @@ interface TwitterClient {
 }
 
 data class OAuthToken(val token: String, val secret: String)
+
+data class AuthResult(val accessToken: AccessToken, val userId: Long)
 
 typealias RequestToken = OAuthToken
 
@@ -80,11 +82,13 @@ class TwitterClientImpl(
     override suspend fun getAccessToken(
         requestToken: RequestToken,
         oAuthVerifier: String
-    ): AccessToken {
+    ): AuthResult {
         val response = client.oauth.accessToken(requestToken.token, requestToken.secret, oAuthVerifier)
         // recreate client but this time logged.
         client = getClient(response.accessToken, response.accessTokenSecret)
-        return AccessToken(response.accessToken, response.accessTokenSecret)
+        return AuthResult(
+            accessToken = AccessToken(response.accessToken, response.accessTokenSecret),
+            userId = response.userId)
     }
 
     override suspend fun getUser(id: Long): TwitterUser {

@@ -36,7 +36,7 @@ class SignOutDialogFragment : AppCompatDialogFragment() {
             .setMessage(R.string.dialog_sign_out_content)
             .setNegativeButton(R.string.not_now, null)
             .setPositiveButton(R.string.sign_out) { _, _ ->
-                viewModel.logout()
+                viewModel.triggerLogout()
             }
             .create()
     }

@@ -17,7 +17,18 @@ import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), TweetItemEventListener {
+interface AuthViewModelDelegate {
+    fun isLogged(): Boolean
+}
+
+class AuthViewModelImpl() : AuthViewModelDelegate {
+    override fun isLogged(): Boolean {
+        return true
+    }
+}
+
+class HomeViewModel(private val dataRepository: DataRepository) :
+    ViewModel(), TweetItemEventListener, AuthViewModelDelegate by AuthViewModelImpl() {
 
     private val _twitterLists = MutableLiveData<List<TwitterList>>()
     val twitterLists: LiveData<List<TwitterList>> = _twitterLists
