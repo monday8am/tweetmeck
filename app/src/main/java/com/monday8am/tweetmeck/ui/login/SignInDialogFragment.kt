@@ -20,7 +20,8 @@ class SignInDialogFragment : AppCompatDialogFragment() {
             .setMessage(R.string.dialog_sign_in_content)
             .setNegativeButton(R.string.not_now, null)
             .setPositiveButton(R.string.sign_in) { _, _ ->
-                viewModel.triggerAuth()
+                viewModel.triggerLogIn()
+                this.dismiss()
             }
             .create()
     }

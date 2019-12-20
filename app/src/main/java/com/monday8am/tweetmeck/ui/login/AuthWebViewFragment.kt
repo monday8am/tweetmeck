@@ -50,7 +50,7 @@ class AuthWebViewFragment : Fragment() {
                 view: WebView?,
                 request: WebResourceRequest?
             ): Boolean {
-                viewModel.setAuthResult(request?.url, null)
+                viewModel.setResult(request?.url, null)
                 return super.shouldOverrideUrlLoading(view, request)
             }
 
@@ -60,7 +60,7 @@ class AuthWebViewFragment : Fragment() {
                 error: WebResourceError?
             ) {
                 super.onReceivedError(view, request, error)
-                viewModel.setAuthResult(null, "Error authenticating user!")
+                viewModel.setResult(null, "Error authenticating user!")
             }
 
             override fun onReceivedSslError(
@@ -69,7 +69,7 @@ class AuthWebViewFragment : Fragment() {
                 error: SslError?
             ) {
                 super.onReceivedSslError(view, handler, error)
-                viewModel.setAuthResult(null, "SSL error authenticating user!")
+                viewModel.setResult(null, "SSL error authenticating user!")
             }
         }
 

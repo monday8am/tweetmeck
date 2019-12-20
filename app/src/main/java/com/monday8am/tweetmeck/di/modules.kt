@@ -15,6 +15,8 @@ import com.monday8am.tweetmeck.ui.home.HomeFragment
 import com.monday8am.tweetmeck.ui.home.HomeViewModel
 import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider
 import com.monday8am.tweetmeck.ui.login.AuthViewModel
+import com.monday8am.tweetmeck.ui.login.SignInViewModelDelegate
+import com.monday8am.tweetmeck.ui.login.SignInViewModelDelegateImpl
 import com.monday8am.tweetmeck.ui.onboarding.OnboardingViewModel
 import com.monday8am.tweetmeck.ui.tweet.TweetViewModel
 import com.monday8am.tweetmeck.ui.user.UserViewModel
@@ -32,11 +34,12 @@ val appModule = module {
     factory { get<TwitterDatabase>().twitterListDao() }
     factory { get<TwitterDatabase>().twitterUserDao() }
 
-    single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
+    single<AuthRepository> { AuthRepositoryImpl(get(), get(), get()) }
     single<DataRepository> { DataRepositoryImpl(get(), get()) }
+    single<SignInViewModelDelegate> { SignInViewModelDelegateImpl() }
 
     viewModel { OnboardingViewModel(get()) }
-    viewModel { AuthViewModel(get()) }
+    viewModel { AuthViewModel() }
     viewModel { HomeViewModel(get()) }
     viewModel { (userId: Long) -> UserViewModel(userId, get()) }
     viewModel { (tweetId: Long) -> TweetViewModel(tweetId, get()) }

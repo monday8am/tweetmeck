@@ -22,8 +22,8 @@ interface SignInViewModelDelegate {
     val currentUser: LiveData<TwitterUser?>
     val authState: LiveData<AuthState>
     suspend fun isLogged(): Boolean
-    suspend fun triggerAuth()
-    suspend fun setAuthResult(resultUri: Uri?, errorMsg: String? = null)
+    suspend fun startWebAuth()
+    suspend fun setWebAuthResult(resultUri: Uri?, errorMsg: String? = null)
     suspend fun logOut()
 }
 
@@ -33,7 +33,6 @@ class SignInViewModelDelegateImpl : SignInViewModelDelegate, KoinComponent {
     private val _authState = MutableLiveData<AuthState>()
 
     override val currentUser: LiveData<TwitterUser?>
-        get() = authRepository.loggedUserFlow()
 
     override val authState: LiveData<AuthState>
         get() = _authState
@@ -42,7 +41,12 @@ class SignInViewModelDelegateImpl : SignInViewModelDelegate, KoinComponent {
         return authRepository.isLogged()
     }
 
-    override suspend fun triggerAuth() {
+    init {
+        _authState.value = AuthState.Loading
+        currentUser = authRepository.loggedUserFlow()
+    }
+
+    override suspend fun startWebAuth() {
         _authState.value = AuthState.Loading
 
         when (val response = authRepository.getAuthUrl()) {
@@ -52,7 +56,7 @@ class SignInViewModelDelegateImpl : SignInViewModelDelegate, KoinComponent {
         }
     }
 
-    override suspend fun setAuthResult(resultUri: Uri?, errorMsg: String?) {
+    override suspend fun setWebAuthResult(resultUri: Uri?, errorMsg: String?) {
         when {
             resultUri != null -> {
                 _authState.value = AuthState.Loading

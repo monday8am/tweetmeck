@@ -1,6 +1,5 @@
 package com.monday8am.tweetmeck.ui.home
 
-import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,23 +11,15 @@ import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.TimelineContent
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
+import com.monday8am.tweetmeck.ui.login.SignInViewModelDelegate
+import com.monday8am.tweetmeck.ui.login.SignInViewModelDelegateImpl
 import com.monday8am.tweetmeck.util.Event
 import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-interface AuthViewModelDelegate {
-    fun isLogged(): Boolean
-}
-
-class AuthViewModelImpl() : AuthViewModelDelegate {
-    override fun isLogged(): Boolean {
-        return true
-    }
-}
-
 class HomeViewModel(private val dataRepository: DataRepository) :
-    ViewModel(), TweetItemEventListener, AuthViewModelDelegate by AuthViewModelImpl() {
+    ViewModel(), TweetItemEventListener, SignInViewModelDelegate by SignInViewModelDelegateImpl() {
 
     private val _twitterLists = MutableLiveData<List<TwitterList>>()
     val twitterLists: LiveData<List<TwitterList>> = _twitterLists
@@ -39,8 +30,7 @@ class HomeViewModel(private val dataRepository: DataRepository) :
     private val _errorMessage = MutableLiveData<Event<String>>()
     val errorMessage: LiveData<Event<String>> = _errorMessage
 
-    private val _currentUserImageUri = MutableLiveData<Uri>()
-    val currentUserImageUri: LiveData<Uri> = _currentUserImageUri
+    val currentUserImageUri: LiveData<String?> = currentUser.map { it?.profileImageUrl }
 
     private val swipeRefreshResult = MutableLiveData<Result<Boolean>>()
     val swipeRefreshing: LiveData<Boolean> = swipeRefreshResult.map {
@@ -82,7 +72,9 @@ class HomeViewModel(private val dataRepository: DataRepository) :
     }
 
     fun onProfileClicked() {
-        _navigateToSignInDialog.value = Event(_currentUserImageUri.value != null)
+        viewModelScope.launch {
+            _navigateToSignInDialog.value = Event(isLogged())
+        }
     }
 
     fun onSwipeRefresh() {

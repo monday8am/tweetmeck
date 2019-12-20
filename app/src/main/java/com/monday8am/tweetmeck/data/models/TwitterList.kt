@@ -3,7 +3,6 @@ package com.monday8am.tweetmeck.data.models
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.monday8am.tweetmeck.util.TweetDateUtils
 
 enum class ListVisibilityMode {
     Default,
@@ -25,23 +24,4 @@ data class TwitterList(
     @ColumnInfo(name = "subscriber_count") val subscriberCount: Int,
     val uri: String,
     @ColumnInfo(name = "user_id") val userId: Long
-) {
-
-    companion object {
-        fun from(dto: jp.nephy.penicillin.models.TwitterList): TwitterList {
-            return TwitterList(
-                dto.id,
-                TweetDateUtils.apiTimeToLong(dto.createdAtRaw),
-                dto.description,
-                dto.following,
-                dto.fullName,
-                dto.memberCount,
-                ListVisibilityMode.valueOf(dto.mode.name),
-                dto.name,
-                dto.slug,
-                dto.subscriberCount,
-                dto.uri,
-                dto.user.id)
-        }
-    }
-}
+)

@@ -6,6 +6,10 @@ import androidx.paging.toLiveData
 import com.monday8am.tweetmeck.data.Result.Error
 import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.local.TwitterDatabase
+import com.monday8am.tweetmeck.data.mappers.StatusToTweet
+import com.monday8am.tweetmeck.data.mappers.StatusToTwitterUser
+import com.monday8am.tweetmeck.data.mappers.mapTo
+import com.monday8am.tweetmeck.data.mappers.toLambda
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.models.TwitterUser
@@ -15,14 +19,13 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 interface DataRepository {
+    val lists: LiveData<List<TwitterList>>
     suspend fun getTweet(tweetId: Long): Result<Tweet>
     suspend fun getUser(userId: Long): Result<TwitterUser>
-    suspend fun getLists(forceUpdate: Boolean = false): Result<List<TwitterList>>
-    suspend fun refreshTimeline(listId: Long): Result<Boolean>
-    suspend fun likeTweet(tweet: Tweet): Result<Boolean>
+    suspend fun refreshTimeline(listId: Long): Result<Unit>
+    suspend fun likeTweet(tweet: Tweet): Result<Unit>
     fun getTimeline(listId: Long, scope: CoroutineScope): TimelineContent
     suspend fun deleteCachedData()
 }
@@ -40,73 +43,39 @@ class DataRepositoryImpl(
 
     private val pageSize = 20
     private val prefetchDistance = 20
-    private var cachedLists: List<TwitterList>? = null
 
-    override suspend fun getLists(forceUpdate: Boolean): Result<List<TwitterList>> {
-        return withContext(ioDispatcher) {
-            if (!forceUpdate) {
-                cachedLists?.let { cached ->
-                    return@withContext Success(cached.sortedBy { it.createdAt })
-                }
-            }
-            val newTasks = fetchListsFromRemoteOrLocal(forceUpdate)
-            (newTasks as? Success)?.let {
-                cachedLists = it.data
-            }
-            return@withContext newTasks
+    override suspend fun refreshTimeline(listId: Long): Result<Unit> {
+        return asResult {
+            val response = remoteClient.getListTimeline(listId, count = pageSize * 2)
+            val tweets = response.map { it.mapTo(StatusToTweet(listId).toLambda()) }
+            val users = response.map { it.mapTo(StatusToTwitterUser().toLambda()) }
+            db.tweetDao().insert(tweets)
+            db.twitterUserDao().insert(users)
         }
     }
 
-    override suspend fun refreshTimeline(listId: Long): Result<Boolean> {
-        return withContext(ioDispatcher) {
-            when (val result = remoteClient.getListTimeline(listId, count = pageSize * 2)) {
-                is Success -> {
-                    db.twitterUserDao().insert(result.data.map { it.user })
-                    db.tweetDao().refreshTweetsFromList(listId, result.data.map { it.tweet })
-                    Success(true)
-                }
-                is Error -> Error(result.exception)
-                else -> Error(Exception("Wrong state at refresh operation"))
-            }
-        }
-    }
-
-    override suspend fun likeTweet(tweet: Tweet): Result<Boolean> {
-        return withContext(ioDispatcher) {
+    override suspend fun likeTweet(tweet: Tweet): Result<Unit> {
+        return asResult {
             val newTweet = tweet.setFavorite(!tweet.tweetContent.favorited)
-
             // update cache first to refresh view faster
             if (tweet.isCached) {
                 db.tweetDao().insert(newTweet)
             }
-
-            when (val result = remoteClient.likeTweet(tweet.id, newTweet.tweetContent.favorited)) {
-                is Success -> {
-                    if (tweet.isCached) {
-                        db.tweetDao().insert(
-                            newTweet.setRetweetCount(result.data.tweetContent.retweetCount)
-                                    .setFavorite(result.data.tweetContent.favorited)
-                        )
-                    }
-                    Success(true)
-                }
-                is Error -> Error(result.exception)
-                else -> Error(Exception("Wrong state at refresh operation"))
-            }
+            val response = remoteClient.likeTweet(tweet.id, newTweet.tweetContent.favorited)
+                                       .mapTo(StatusToTweet(tweet.listId).toLambda())
+            // insert tweet with content updated from server
+            db.tweetDao().insert(
+                newTweet.setRetweetCount(response.tweetContent.retweetCount)
+                        .setFavorite(response.tweetContent.favorited)
+            )
         }
     }
 
-    private suspend fun loadMoreForTimeline(listId: Long, maxTweetId: Long): Result<Boolean> {
-        return withContext(ioDispatcher) {
-            when (val result = remoteClient.getListTimeline(listId, maxTweetId = maxTweetId, count = pageSize * 2)) {
-                is Success -> {
-                        db.twitterUserDao().insert(result.data.map { it.user })
-                        db.tweetDao().insert(result.data.map { it.tweet })
-                    Success(true)
-                }
-                is Error -> Error(result.exception)
-                else -> Error(Exception("Wrong state at refresh operation"))
-            }
+    private suspend fun loadMoreForTimeline(listId: Long, maxTweetId: Long): Result<Unit> {
+        return asResult {
+            val result = remoteClient.getListTimeline(listId, maxTweetId = maxTweetId, count = pageSize * 2)
+            db.tweetDao().insert(result.map { it.mapTo(StatusToTweet(listId).toLambda()) })
+            db.twitterUserDao().insert(result.map { it.mapTo(StatusToTwitterUser().toLambda()) })
         }
     }
 
@@ -162,24 +131,14 @@ class DataRepositoryImpl(
         }
     }
 
-    private suspend fun fetchListsFromRemoteOrLocal(forceUpdate: Boolean): Result<List<TwitterList>> {
-        // Don't read from local if it's forced
-        if (forceUpdate) {
+    private suspend fun <T> asResult(block: suspend() -> T): Result<T> {
+        return withContext(ioDispatcher) {
             try {
-                val listsFromRemote = remoteClient.getLists()
-                db.twitterListDao().updateAll(listsFromRemote)
-                return Success(listsFromRemote)
-            } catch (error: Throwable) {
-                Timber.d("Remote data source fetch failed : ${error.message}")
+                val result = block.invoke()
+                Success(result)
+            } catch (e: Exception) {
+                Error(e)
             }
-            return Error(Exception("Can't force refresh: remote data source is unavailable"))
-        }
-
-        // Local if remote fails
-        return try {
-            Success(db.twitterListDao().getAll())
-        } catch (e: Throwable) {
-            Error(Exception("Error fetching from remote and local: ${e.message}"))
         }
     }
 }
