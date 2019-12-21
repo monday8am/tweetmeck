@@ -14,7 +14,7 @@ interface TwitterUserDao {
     suspend fun getItemById(id: Long): TwitterUser?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(item: TwitterUser): Long
+    suspend fun insert(item: TwitterUser)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(items: List<TwitterUser>)

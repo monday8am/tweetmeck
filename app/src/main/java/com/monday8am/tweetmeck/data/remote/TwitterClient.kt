@@ -32,7 +32,7 @@ interface TwitterClient {
 
     // Get content
     suspend fun getUser(id: Long): User
-    suspend fun getLists(): List<TwitterList>
+    suspend fun getLists(screenName: String): List<TwitterList>
     suspend fun getListTimeline(
         listId: Long,
         sinceTweetId: Long? = null,
@@ -42,8 +42,6 @@ interface TwitterClient {
 }
 
 data class OAuthToken(val token: String, val secret: String)
-
-data class AuthResponse(val accessToken: AccessToken, val userId: Long)
 
 typealias RequestToken = OAuthToken
 
@@ -83,8 +81,8 @@ class TwitterClientImpl(
         return client.users.showByUserId(id).await().result
     }
 
-    override suspend fun getLists(): List<TwitterList> {
-        return client.lists.list.await().results
+    override suspend fun getLists(screenName: String): List<TwitterList> {
+        return client.lists.list(screenName).await().results
     }
 
     override suspend fun getListTimeline(
@@ -101,8 +99,6 @@ class TwitterClientImpl(
     }
 
     override suspend fun likeTweet(id: Long, value: Boolean): Status {
-        val xxx = client.favorites.create(id).await()
-        xxx
         return if (value) {
             client.favorites.create(id).await().result
         } else {

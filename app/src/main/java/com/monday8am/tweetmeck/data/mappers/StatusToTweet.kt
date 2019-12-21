@@ -6,7 +6,7 @@ import com.monday8am.tweetmeck.data.models.entities.UrlEntity
 import com.monday8am.tweetmeck.util.TweetDateUtils
 import jp.nephy.penicillin.models.Status
 
-class StatusToTweet(val listId: Long) : Mapper<Status, Tweet> {
+class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
     override fun map(from: Status): Tweet {
         return Tweet(
             id = from.id,

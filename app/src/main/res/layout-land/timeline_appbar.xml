@@ -30,7 +30,7 @@
                 android:onClick="@{() -> viewModel.onProfileClicked()}"
                 android:padding="@dimen/spacing_normal"
                 app:clipToCircle="@{true}"
-                app:imageUrl="@{viewModel.currentUser.profileImageUrl}"
+                app:imageUrl="@{viewModel.currentUserImageUrl}"
                 app:placeholder="@{@drawable/ic_account_circle}" />
 
             <com.google.android.material.tabs.TabLayout

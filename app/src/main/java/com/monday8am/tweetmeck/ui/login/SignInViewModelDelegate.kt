@@ -5,8 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.monday8am.tweetmeck.data.AuthRepository
 import com.monday8am.tweetmeck.data.Result
-import com.monday8am.tweetmeck.data.models.TwitterUser
+import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.succeeded
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
@@ -19,9 +21,9 @@ sealed class AuthState {
 }
 
 interface SignInViewModelDelegate {
-    val currentUser: LiveData<TwitterUser?>
+    val currentSession: Flow<Session?>
     val authState: LiveData<AuthState>
-    suspend fun isLogged(): Boolean
+    val isLogged: Boolean
     suspend fun startWebAuth()
     suspend fun setWebAuthResult(resultUri: Uri?, errorMsg: String? = null)
     suspend fun logOut()
@@ -30,20 +32,25 @@ interface SignInViewModelDelegate {
 class SignInViewModelDelegateImpl : SignInViewModelDelegate, KoinComponent {
 
     private val authRepository: AuthRepository by inject()
+
     private val _authState = MutableLiveData<AuthState>()
-
-    override val currentUser: LiveData<TwitterUser?>
-
     override val authState: LiveData<AuthState>
         get() = _authState
 
-    override suspend fun isLogged(): Boolean {
-        return authRepository.isLogged()
-    }
+    override val isLogged: Boolean
+        get() = _authState.value == AuthState.Logged
+
+    override val currentSession: Flow<Session?>
 
     init {
-        _authState.value = AuthState.Loading
-        currentUser = authRepository.loggedUserFlow()
+        currentSession = authRepository.session.map {
+            if (it == null) {
+                _authState.value = AuthState.NotLogged
+            } else {
+                _authState.value = AuthState.Logged
+            }
+            it
+        }
     }
 
     override suspend fun startWebAuth() {
@@ -73,7 +80,7 @@ class SignInViewModelDelegateImpl : SignInViewModelDelegate, KoinComponent {
     }
 
     override suspend fun logOut() {
+        _authState.value = AuthState.Loading
         authRepository.logout()
-        _authState.value = AuthState.NotLogged
     }
 }

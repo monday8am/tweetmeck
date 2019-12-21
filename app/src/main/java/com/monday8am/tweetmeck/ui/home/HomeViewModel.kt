@@ -7,22 +7,24 @@ import androidx.lifecycle.viewModelScope
 import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.Result.Error
-import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.TimelineContent
+import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
+import com.monday8am.tweetmeck.data.succeeded
 import com.monday8am.tweetmeck.ui.login.SignInViewModelDelegate
 import com.monday8am.tweetmeck.ui.login.SignInViewModelDelegateImpl
 import com.monday8am.tweetmeck.util.Event
 import com.monday8am.tweetmeck.util.map
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class HomeViewModel(private val dataRepository: DataRepository) :
     ViewModel(), TweetItemEventListener, SignInViewModelDelegate by SignInViewModelDelegateImpl() {
 
-    private val _twitterLists = MutableLiveData<List<TwitterList>>()
-    val twitterLists: LiveData<List<TwitterList>> = _twitterLists
+    val twitterLists: LiveData<List<TwitterList>>
+        get() = dataRepository.lists
 
     private val _dataLoading = MutableLiveData<Boolean>()
     val dataLoading: LiveData<Boolean> = _dataLoading
@@ -30,9 +32,10 @@ class HomeViewModel(private val dataRepository: DataRepository) :
     private val _errorMessage = MutableLiveData<Event<String>>()
     val errorMessage: LiveData<Event<String>> = _errorMessage
 
-    val currentUserImageUri: LiveData<String?> = currentUser.map { it?.profileImageUrl }
+    private val _currentUserImageUrl = MutableLiveData<String?>()
+    val currentUserImageUrl: LiveData<String?> = _currentUserImageUrl
 
-    private val swipeRefreshResult = MutableLiveData<Result<Boolean>>()
+    private val swipeRefreshResult = MutableLiveData<Result<Unit>>()
     val swipeRefreshing: LiveData<Boolean> = swipeRefreshResult.map {
         false // Whenever refresh finishes, stop the indicator, whatever the result
     }
@@ -50,18 +53,29 @@ class HomeViewModel(private val dataRepository: DataRepository) :
     val navigateToSignInDialog: LiveData<Event<Boolean>> = _navigateToSignInDialog
 
     init {
-        loadLists(true)
+        viewModelScope.launch {
+            currentSession.collect { session ->
+                refreshUserContent(session)
+                refreshLists(session)
+            }
+        }
     }
 
-    private fun loadLists(forceUpload: Boolean = false) {
-        viewModelScope.launch {
-            _dataLoading.value = true
-            when (val result = dataRepository.getLists(forceUpload)) {
-                is Success -> _twitterLists.value = result.data
-                is Error -> _errorMessage.value = Event(content = result.exception.message ?: "Unknown Error")
-                else -> _errorMessage.value = Event(content = "Unknown state error")
+    private suspend fun refreshUserContent(session: Session?) {
+        if (session != null) {
+            when (val result = dataRepository.getUser(session.userId)) {
+                is Result.Success -> _currentUserImageUrl.value = result.data.profileImageUrl
+                else -> _errorMessage.value = Event("Error loading user profile")
             }
-            _dataLoading.value = false
+        } else {
+            _currentUserImageUrl.value = null
+        }
+    }
+
+    private suspend fun refreshLists(session: Session?) {
+        val result = dataRepository.refreshLists(session?.screenName)
+        if (!result.succeeded) {
+            _errorMessage.value = Event("Error loading lists")
         }
     }
 
@@ -73,13 +87,13 @@ class HomeViewModel(private val dataRepository: DataRepository) :
 
     fun onProfileClicked() {
         viewModelScope.launch {
-            _navigateToSignInDialog.value = Event(isLogged())
+            _navigateToSignInDialog.value = Event(isLogged)
         }
     }
 
     fun onSwipeRefresh() {
         viewModelScope.launch {
-            swipeRefreshResult.value = dataRepository.refreshTimeline(currentTimelineId)
+            swipeRefreshResult.value = dataRepository.refreshListTimeline(currentTimelineId)
         }
     }
 

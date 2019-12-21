@@ -6,10 +6,7 @@ import androidx.paging.toLiveData
 import com.monday8am.tweetmeck.data.Result.Error
 import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.local.TwitterDatabase
-import com.monday8am.tweetmeck.data.mappers.StatusToTweet
-import com.monday8am.tweetmeck.data.mappers.StatusToTwitterUser
-import com.monday8am.tweetmeck.data.mappers.mapTo
-import com.monday8am.tweetmeck.data.mappers.toLambda
+import com.monday8am.tweetmeck.data.mappers.*
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.models.TwitterUser
@@ -24,7 +21,8 @@ interface DataRepository {
     val lists: LiveData<List<TwitterList>>
     suspend fun getTweet(tweetId: Long): Result<Tweet>
     suspend fun getUser(userId: Long): Result<TwitterUser>
-    suspend fun refreshTimeline(listId: Long): Result<Unit>
+    suspend fun refreshListTimeline(listId: Long): Result<Unit>
+    suspend fun refreshLists(screenName: String?): Result<Unit>
     suspend fun likeTweet(tweet: Tweet): Result<Unit>
     fun getTimeline(listId: Long, scope: CoroutineScope): TimelineContent
     suspend fun deleteCachedData()
@@ -44,7 +42,18 @@ class DataRepositoryImpl(
     private val pageSize = 20
     private val prefetchDistance = 20
 
-    override suspend fun refreshTimeline(listId: Long): Result<Unit> {
+    override val lists: LiveData<List<TwitterList>>
+        get() = db.twitterListDao().getAll()
+
+    override suspend fun refreshLists(screenName: String?): Result<Unit> {
+        return asResult {
+            val name = screenName ?: "nytimes"
+            val listsFromRemote = remoteClient.getLists(name).map { it.mapTo(ListToTwitterList().toLambda()) }
+            db.twitterListDao().updateAll(listsFromRemote)
+        }
+    }
+
+    override suspend fun refreshListTimeline(listId: Long): Result<Unit> {
         return asResult {
             val response = remoteClient.getListTimeline(listId, count = pageSize * 2)
             val tweets = response.map { it.mapTo(StatusToTweet(listId).toLambda()) }
@@ -89,7 +98,7 @@ class DataRepositoryImpl(
         val boundaryCallback = TimelineBoundaryCallback(
             listId = listId,
             scope = scope,
-            refreshCallback = ::refreshTimeline,
+            refreshCallback = ::refreshListTimeline,
             loadMoreCallback = ::loadMoreForTimeline
         )
 
@@ -145,5 +154,5 @@ class DataRepositoryImpl(
 
 data class TimelineContent(
     val pagedList: LiveData<PagedList<Tweet>>,
-    val loadMoreState: LiveData<RequestState>
+    val loadMoreState: LiveData<Result<Unit>>
 )

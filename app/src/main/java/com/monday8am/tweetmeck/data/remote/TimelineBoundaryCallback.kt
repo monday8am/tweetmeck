@@ -18,7 +18,7 @@ class TimelineBoundaryCallback(
 ) : PagedList.BoundaryCallback<Tweet>() {
 
     private val helper = PagingRequestHelper(Dispatchers.IO.asExecutor())
-    val requestState = MutableLiveData<Result<Boolean>>()
+    val requestState = MutableLiveData<Result<Unit>>()
 
     override fun onZeroItemsLoaded() {
         helper.runIfNotRunning(PagingRequestHelper.RequestType.INITIAL) {
