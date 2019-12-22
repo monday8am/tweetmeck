@@ -10,6 +10,8 @@
         <item name="materialAlertDialogTitleTextStyle">@style/AlertDialog.TitleText</item>
         <item name="materialAlertDialogTitlePanelStyle">@style/AlertDialog.TitlePanel</item>
         <item name="materialAlertDialogBodyTextStyle">@style/AlertDialog.BodyText</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
     </style>
 
     <style name="AlertDialog.Style" parent="MaterialAlertDialog.MaterialComponents">
@@ -40,6 +42,14 @@
     <style name="AlertDialog.ButtonBar" parent ="@style/Widget.AppCompat.ButtonBar.AlertDialog">
         <item name="android:paddingBottom">@dimen/margin_small</item>
         <item name="android:paddingTop">@dimen/margin_small</item>
+    </style>
+
+    <style name="NegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/base01</item>
+    </style>
+
+    <style name="PositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/base01</item>
     </style>
 
     <style name="TextAppearance.Tweetmeck.ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">

@@ -10,7 +10,6 @@ import com.monday8am.tweetmeck.data.local.SharedPreferencesServiceImpl
 import com.monday8am.tweetmeck.data.local.TwitterDatabase
 import com.monday8am.tweetmeck.data.remote.TwitterClient
 import com.monday8am.tweetmeck.data.remote.TwitterClientImpl
-import com.monday8am.tweetmeck.ui.dialogs.SignInDialogDispatcher
 import com.monday8am.tweetmeck.ui.home.HomeFragment
 import com.monday8am.tweetmeck.ui.home.HomeViewModel
 import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider

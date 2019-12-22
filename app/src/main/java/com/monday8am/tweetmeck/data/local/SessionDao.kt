@@ -15,4 +15,7 @@ interface SessionDao {
 
     @Query("SELECT * FROM sessions")
     fun currentSessionFlow(): Flow<List<Session>>
+
+    @Query("DELETE FROM sessions")
+    suspend fun clear()
 }
