@@ -71,11 +71,11 @@ data class Tweet(
         }
     }
 
-    fun setRetweetCount(newValue: Int): Tweet {
+    fun setRetweeted(newValue: Boolean): Tweet {
         return if (retweetedContent != null) {
-            this.copy(retweetedContent = retweetedContent.copy(retweetCount = newValue))
+            this.copy(retweetedContent = setRetweeted(retweetedContent, newValue))
         } else {
-            this.copy(content = content.copy(retweetCount = newValue))
+            this.copy(content = setRetweeted(content, newValue))
         }
     }
 
@@ -83,5 +83,11 @@ data class Tweet(
         return content.copy(
             favorited = newValue,
             favoriteCount = if (newValue) content.favoriteCount + 1 else content.favoriteCount - 1)
+    }
+
+    private fun setRetweeted(content: TweetContent, newValue: Boolean): TweetContent {
+        return content.copy(
+            retweeted = newValue,
+            retweetCount = if (newValue) content.retweetCount + 1 else content.retweetCount - 1)
     }
 }

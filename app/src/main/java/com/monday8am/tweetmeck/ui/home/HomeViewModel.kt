@@ -135,7 +135,21 @@ class HomeViewModel(private val dataRepository: DataRepository) :
                 }
             }
         } else {
-            _errorMessage.value = Event("User must be logged In!")
+            _errorMessage.value = Event("User must be logged in!")
+        }
+    }
+
+    override fun retweetTweet(tweet: Tweet) {
+        if (lastSession != null) {
+            viewModelScope.launch {
+                when (val result = dataRepository.retweetTweet(tweet, lastSession)) {
+                    is Error -> _errorMessage.value =
+                        Event(content = result.exception.message ?: "Unknown Error")
+                    else -> Timber.d("Tweet updated correctly!")
+                }
+            }
+        } else {
+            _errorMessage.value = Event("User must be logged in!")
         }
     }
 
@@ -164,4 +178,5 @@ interface TweetItemEventListener {
     fun searchForSymbol(symbol: String)
     fun retryLoadMore(listId: Long)
     fun likeTweet(tweet: Tweet)
+    fun retweetTweet(tweet: Tweet)
 }

@@ -191,6 +191,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:drawablePadding="@dimen/spacing_micro"
         android:drawableStart="@{tweet.tweetContent.retweeted ? @drawable/ic_retweet_selected : @drawable/ic_retweet}"
         android:textAppearance="@style/TextAppearance.Tweetmeck.Body2"
+        android:onClick="@{() -> eventListener.retweetTweet(tweet)}"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_content"
         app:quantity="@{tweet.tweetContent.retweetCount}"

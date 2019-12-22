@@ -7,10 +7,7 @@ import com.monday8am.tweetmeck.data.Result.Error
 import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.local.TwitterDatabase
 import com.monday8am.tweetmeck.data.mappers.*
-import com.monday8am.tweetmeck.data.models.Session
-import com.monday8am.tweetmeck.data.models.Tweet
-import com.monday8am.tweetmeck.data.models.TwitterList
-import com.monday8am.tweetmeck.data.models.TwitterUser
+import com.monday8am.tweetmeck.data.models.*
 import com.monday8am.tweetmeck.data.remote.TimelineBoundaryCallback
 import com.monday8am.tweetmeck.data.remote.TwitterClient
 import kotlinx.coroutines.CoroutineDispatcher
@@ -26,6 +23,7 @@ interface DataRepository {
     suspend fun refreshLists(screenName: String): Result<Unit>
     suspend fun refreshLoggedUserLists(session: Session): Result<Unit>
     suspend fun likeTweet(tweet: Tweet, session: Session): Result<Unit>
+    suspend fun retweetTweet(tweet: Tweet, session: Session): Result<Unit>
     fun getTimeline(listId: Long, scope: CoroutineScope): TimelineContent
     suspend fun deleteCachedData()
 }
@@ -83,8 +81,23 @@ class DataRepositoryImpl(
                                        .mapTo(StatusToTweet(tweet.listId).toLambda())
             // insert tweet with content updated from server
             db.tweetDao().insert(
-                newTweet.setRetweetCount(response.tweetContent.retweetCount)
-                        .setFavorite(response.tweetContent.favorited)
+                newTweet.setFavorite(response.tweetContent.favorited)
+            )
+        }
+    }
+
+    override suspend fun retweetTweet(tweet: Tweet, session: Session): Result<Unit> {
+        return asResult {
+            val newTweet = tweet.setRetweeted(!tweet.tweetContent.favorited)
+            // update cache first to refresh view faster
+            if (tweet.isCached) {
+                db.tweetDao().insert(newTweet)
+            }
+            val response = remoteClient.retweetTweet(tweet.id, newTweet.tweetContent.retweeted, session)
+                .mapTo(StatusToTweet(tweet.listId).toLambda())
+            // insert tweet with content updated from server
+            db.tweetDao().insert(
+                newTweet.setRetweeted(response.tweetContent.retweeted)
             )
         }
     }
