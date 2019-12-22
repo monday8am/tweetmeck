@@ -3,7 +3,7 @@
     <data>
         <variable
             name="viewmodel"
-            type="com.monday8am.tweetmeck.tweet.TweetViewModel" />
+            type="com.monday8am.tweetmeck.ui.tweet.TweetViewModel" />
     </data>
 <com.monday8am.tweetmeck.widget.InsetDispatchingCoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -15,7 +15,7 @@
     tools:ignore="MergeRootFrame"
     app:marginLeftSystemWindowInsets="@{true}"
     app:marginRightSystemWindowInsets="@{true}"
-    tools:context=".tweet.TweetFragment">
+    tools:context=".ui.tweet.TweetFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/tweet_detail_appbars"

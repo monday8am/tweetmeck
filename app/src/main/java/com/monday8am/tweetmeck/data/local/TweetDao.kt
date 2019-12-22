@@ -32,5 +32,5 @@ interface TweetDao {
     suspend fun deleteByList(listId: Long)
 
     @Query("DELETE FROM tweets")
-    suspend fun deleteAll()
+    suspend fun clear()
 }

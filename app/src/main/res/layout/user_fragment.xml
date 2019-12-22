@@ -3,11 +3,11 @@
 <data>
     <variable
         name="viewmodel"
-        type="com.monday8am.tweetmeck.user.UserViewModel" />
+        type="com.monday8am.tweetmeck.ui.user.UserViewModel" />
 
     <variable
         name="authViewModel"
-        type="com.monday8am.tweetmeck.login.AuthViewModel" />
+        type="com.monday8am.tweetmeck.ui.login.AuthViewModel" />
 </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -18,7 +18,7 @@
     tools:ignore="MergeRootFrame"
     app:marginLeftSystemWindowInsets="@{true}"
     app:marginRightSystemWindowInsets="@{true}"
-    tools:context=".user.UserFragment">
+    tools:context=".ui.user.UserFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/tweet_detail_appbars"
@@ -55,8 +55,8 @@
         android:id="@+id/logout_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/logout_from_twitter"
-        android:onClick="@{() -> authViewModel.logout()}"
+        android:text="@string/sign_out"
+        android:onClick="@{() -> authViewModel.triggerLogOut()}"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

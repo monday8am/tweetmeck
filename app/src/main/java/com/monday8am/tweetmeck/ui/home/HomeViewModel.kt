@@ -1,6 +1,5 @@
-package com.monday8am.tweetmeck.home
+package com.monday8am.tweetmeck.ui.home
 
-import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,30 +7,36 @@ import androidx.lifecycle.viewModelScope
 import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.Result.Error
-import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.TimelineContent
+import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
+import com.monday8am.tweetmeck.data.succeeded
+import com.monday8am.tweetmeck.ui.login.SignInViewModelDelegate
 import com.monday8am.tweetmeck.util.Event
 import com.monday8am.tweetmeck.util.map
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.koin.core.context.GlobalContext
 import timber.log.Timber
 
-class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), TweetItemEventListener {
+class HomeViewModel(private val dataRepository: DataRepository) :
+    ViewModel(), TweetItemEventListener,
+        SignInViewModelDelegate by GlobalContext.get().koin.get() {
 
-    private val _twitterLists = MutableLiveData<List<TwitterList>>()
-    val twitterLists: LiveData<List<TwitterList>> = _twitterLists
+    val twitterLists: LiveData<List<TwitterList>>
+        get() = dataRepository.lists
 
     private val _dataLoading = MutableLiveData<Boolean>()
     val dataLoading: LiveData<Boolean> = _dataLoading
 
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> = _error
+    private val _errorMessage = MutableLiveData<Event<String>>()
+    val errorMessage: LiveData<Event<String>> = _errorMessage
 
-    private val _currentUserImageUri = MutableLiveData<Uri>()
-    val currentUserImageUri: LiveData<Uri> = _currentUserImageUri
+    private val _currentUserImageUrl = MutableLiveData<String?>()
+    val currentUserImageUrl: LiveData<String?> = _currentUserImageUrl
 
-    private val swipeRefreshResult = MutableLiveData<Result<Boolean>>()
+    private val swipeRefreshResult = MutableLiveData<Result<Unit>>()
     val swipeRefreshing: LiveData<Boolean> = swipeRefreshResult.map {
         false // Whenever refresh finishes, stop the indicator, whatever the result
     }
@@ -45,19 +50,38 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), T
     private val _navigateToUserDetails = MutableLiveData<Event<Long>>()
     val navigateToUserDetails: LiveData<Event<Long>> = _navigateToUserDetails
 
+    private val _navigateToSignInDialog = MutableLiveData<Event<Boolean>>()
+    val navigateToSignInDialog: LiveData<Event<Boolean>> = _navigateToSignInDialog
+
     init {
-        loadLists(true)
+        viewModelScope.launch {
+            currentSessionFlow.collect { session ->
+                refreshUserContent(session)
+                refreshLists(session)
+            }
+        }
     }
 
-    private fun loadLists(forceUpload: Boolean = false) {
-        viewModelScope.launch {
-            _dataLoading.value = true
-            when (val result = dataRepository.getLists(forceUpload)) {
-                is Success -> _twitterLists.value = result.data
-                is Error -> Timber.d("Error loading lists: ${result.exception.message}")
-                else -> Timber.d("Wrong result state!")
+    private suspend fun refreshUserContent(session: Session?) {
+        if (session != null) {
+            when (val result = dataRepository.getUser(session.userId)) {
+                is Result.Success -> _currentUserImageUrl.value = result.data.profileImageUrl
+                else -> _errorMessage.value = Event("Error loading user profile")
             }
-            _dataLoading.value = false
+        } else {
+            _currentUserImageUrl.value = null
+        }
+    }
+
+    private suspend fun refreshLists(session: Session?) {
+        val result = if (session != null) {
+            dataRepository.refreshLoggedUserLists(session)
+        } else {
+            dataRepository.refreshLists("nytimes")
+        }
+
+        if (!result.succeeded) {
+            _errorMessage.value = Event("Error loading lists")
         }
     }
 
@@ -68,12 +92,14 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), T
     }
 
     fun onProfileClicked() {
-        Timber.d("OnProfile clicked!")
+        viewModelScope.launch {
+            _navigateToSignInDialog.value = Event(isLogged)
+        }
     }
 
     fun onSwipeRefresh() {
         viewModelScope.launch {
-            swipeRefreshResult.value = dataRepository.refreshTimeline(currentTimelineId)
+            swipeRefreshResult.value = dataRepository.refreshListTimeline(currentTimelineId)
         }
     }
 
@@ -100,11 +126,16 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel(), T
     }
 
     override fun likeTweet(tweet: Tweet) {
-        viewModelScope.launch {
-            when (val result = dataRepository.likeTweet(tweet)) {
-                is Error -> _error.value = result.exception.message
-                else -> Timber.d("Tweet updated correctly!")
+        if (lastSession != null) {
+            viewModelScope.launch {
+                when (val result = dataRepository.likeTweet(tweet, lastSession)) {
+                    is Error -> _errorMessage.value =
+                        Event(content = result.exception.message ?: "Unknown Error")
+                    else -> Timber.d("Tweet updated correctly!")
+                }
             }
+        } else {
+            _errorMessage.value = Event("User must be logged In!")
         }
     }
 

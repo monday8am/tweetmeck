@@ -3,7 +3,6 @@ package com.monday8am.tweetmeck.data.models
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.monday8am.tweetmeck.util.TweetDateUtils
 
 @Entity(tableName = "users")
 data class TwitterUser(
@@ -29,31 +28,6 @@ data class TwitterUser(
     @ColumnInfo(name = "default_profile_image") val defaultProfileImage: Boolean,
 
     val following: Boolean,
-    @ColumnInfo(name = "follow_request_sent") val followRequestSent: Boolean
-) {
-    companion object {
-        fun from(dto: jp.nephy.penicillin.models.User): TwitterUser {
-            return TwitterUser(
-                dto.id,
-                TweetDateUtils.apiTimeToLong(dto.createdAtRaw),
-                dto.name,
-                dto.screenName,
-                dto.location,
-                dto.description,
-                dto.url,
-                dto.verified,
-                dto.followersCount,
-                dto.friendsCount,
-                dto.listedCount,
-                dto.favouritesCount,
-                dto.statusesCount,
-                dto.profileBackgroundColor,
-                dto.profileBackgroundImageUrl,
-                dto.profileBackgroundTile,
-                dto.profileImageUrl,
-                dto.defaultProfileImage,
-                dto.following,
-                dto.followRequestSent)
-        }
-    }
-}
+    @ColumnInfo(name = "follow_request_sent") val followRequestSent: Boolean,
+    @ColumnInfo(name = "logged_user") val loggedUser: Boolean = false
+)

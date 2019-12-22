@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Tweetmeck</string>
-    <string name="navigate_up" translation-description="Arrow at the top left of the screen for navigation">Navigate up</string>
 
-    <string name="login_screen_title">Login</string>
-    <string name="login_info">Enter your login information!</string>
-    <string name="twitter_username">Twitter username</string>
-    <string name="login_on_twitter">Login on Twitter</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="logout_info">Press button to logout!</string>
-    <string name="logout_from_twitter">Logout from Twitter</string>
+    <!-- Onboarding -->
+    <string name="onboarding_title">Onboarding</string>
+    <string name="onboarding_step1">Tweetmeck is a mobile implementation of the popular webapp Tweetdeck</string>
+    <string name="start_btn">Start!</string>
 
     <!-- Timeline -->
     <string name="timeline_screen_title">Timeline</string>
@@ -27,9 +21,23 @@
     <!-- Single Tweet -->
     <string name="tweet_screen_title">Conversation</string>
 
+    <!-- Sign in dialog -->
+    <string name="dialog_sign_in_title" translation_description="The title of the dialog. When the user needs to sign in.">Sign in to customize your schedule</string>
+    <string name="dialog_sign_in_content" translation_description="The content of the dialog. When the user needs to sign in.">Sign in to save sessions and build your custom schedule. Saved sessions will be synced from your account across devices.</string>
+    <string name="not_now" translation_description="The description of a button that the user doesn't want to sign in.">Not now</string>
+    <string name="sign_in" translation_description="The description of a button to sign in.">Sign in</string>
+    <string name="firebase_auth_no_network_connection" translation_description="Snackbar message when there is no network connectivity.">No internet connection</string>
+    <string name="firebase_auth_unknown_error" translation_description="Snackbar message when Firebase Auth has an unknown error.">Unknown error</string>
+
+    <!-- Sign out dialog -->
+    <string name="dialog_sign_out_title" translation_description="The title of the dialog. Used to confirm that the user wants to sign out.">Sign out?</string>
+    <string name="dialog_sign_out_content" translation_description="The content of the dialog. Used to confirm that the user wants to sign out.">All saved events remain synced to your account.</string>
+    <string name="sign_out" translation_description="The description of a button to sign out.">Sign out</string>
+
     <!-- Accessibility -->
-    <string name="a11y_star" translation_description="Star button" >Bookmark</string>
-    <string name="a11y_sign_in" translation_description="Sign in button" >Sign in</string>
+    <string name="navigate_up" translation-description="Arrow at the top left of the screen for navigation">Navigate up</string>
+    <string name="a11y_star" translation_description="Star button">Bookmark</string>
+    <string name="a11y_sign_in" translation_description="Sign in button">Sign in</string>
     <string name="likes">Likes</string>
 
     <!--Date Format strings-->

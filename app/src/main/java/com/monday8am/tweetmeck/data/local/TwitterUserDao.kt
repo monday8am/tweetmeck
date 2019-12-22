@@ -1,5 +1,6 @@
 package com.monday8am.tweetmeck.data.local
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -13,10 +14,13 @@ interface TwitterUserDao {
     suspend fun getItemById(id: Long): TwitterUser?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(item: TwitterUser): Long
+    suspend fun insert(item: TwitterUser)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(items: List<TwitterUser>)
+
+    @Query("SELECT * FROM users WHERE logged_user = '1'")
+    fun loggedUser(): LiveData<List<TwitterUser>>
 
     @Query("DELETE FROM users")
     suspend fun deleteAll()

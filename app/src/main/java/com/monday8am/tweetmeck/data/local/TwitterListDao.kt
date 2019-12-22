@@ -1,5 +1,6 @@
 package com.monday8am.tweetmeck.data.local
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.monday8am.tweetmeck.data.models.TwitterList
 
@@ -7,7 +8,7 @@ import com.monday8am.tweetmeck.data.models.TwitterList
 interface TwitterListDao {
 
     @Query("SELECT * FROM lists")
-    suspend fun getAll(): List<TwitterList>
+    fun getAll(): LiveData<List<TwitterList>>
 
     @Query("SELECT * FROM lists WHERE id = :id")
     suspend fun getItemById(id: Long): TwitterList?

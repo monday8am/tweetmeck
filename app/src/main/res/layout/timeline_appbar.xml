@@ -4,7 +4,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.monday8am.tweetmeck.home.HomeViewModel" />
+            type="com.monday8am.tweetmeck.ui.home.HomeViewModel" />
     </data>
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -19,17 +19,24 @@
             app:layout_scrollFlags="scroll|snap|enterAlways">
 
             <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical|start"
+                android:contentDescription="@string/a11y_sign_in"
+                android:background="@drawable/ic_signin_bg" />
+
+            <ImageView
                 android:id="@+id/profile_button"
-                android:layout_width="@dimen/a11y_min_touch_target"
-                android:layout_height="@dimen/a11y_min_touch_target"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center_vertical|start"
                 android:contentDescription="@string/a11y_sign_in"
                 android:foreground="?selectableItemBackground"
                 android:onClick="@{() -> viewModel.onProfileClicked()}"
-                android:padding="@dimen/spacing_micro"
+                android:padding="2dp"
                 app:clipToCircle="@{true}"
-                app:imageUri="@{viewModel.currentUserImageUri}"
-                app:placeholder="@{@drawable/ic_account_circle}" />
+                app:imageUrl="@{viewModel.currentUserImageUrl}"
+                app:placeholder="@{@drawable/ic_signin}" />
 
             <TextView
                 android:id="@+id/title"

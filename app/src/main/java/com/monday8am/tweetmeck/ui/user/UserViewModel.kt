@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.user
+package com.monday8am.tweetmeck.ui.user
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.home.timeline
+package com.monday8am.tweetmeck.ui.home.timeline
 
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.ItemTweetBinding
-import com.monday8am.tweetmeck.home.TweetItemEventListener
+import com.monday8am.tweetmeck.ui.home.TweetItemEventListener
 
 class TimelineAdapter(
     private val eventListener: TweetItemEventListener,

@@ -13,12 +13,12 @@ import kotlinx.coroutines.launch
 class TimelineBoundaryCallback(
     private val listId: Long,
     private val scope: CoroutineScope,
-    private val refreshCallback: suspend (listId: Long) -> Result<Boolean>,
-    private val loadMoreCallback: suspend (listId: Long, maxTweetId: Long) -> Result<Boolean>
+    private val refreshCallback: suspend (listId: Long) -> Result<Unit>,
+    private val loadMoreCallback: suspend (listId: Long, maxTweetId: Long) -> Result<Unit>
 ) : PagedList.BoundaryCallback<Tweet>() {
 
     private val helper = PagingRequestHelper(Dispatchers.IO.asExecutor())
-    val requestState = MutableLiveData<Result<Boolean>>()
+    val requestState = MutableLiveData<Result<Unit>>()
 
     override fun onZeroItemsLoaded() {
         helper.runIfNotRunning(PagingRequestHelper.RequestType.INITIAL) {

@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.home.timeline
+package com.monday8am.tweetmeck.ui.home.timeline
 
 import android.content.Context
 import android.text.SpannableStringBuilder
@@ -12,7 +12,7 @@ import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TweetContent
 import com.monday8am.tweetmeck.data.models.entities.EntityLinkType
-import com.monday8am.tweetmeck.home.TweetItemEventListener
+import com.monday8am.tweetmeck.ui.home.TweetItemEventListener
 import com.monday8am.tweetmeck.util.TweetDateUtils
 import timber.log.Timber
 

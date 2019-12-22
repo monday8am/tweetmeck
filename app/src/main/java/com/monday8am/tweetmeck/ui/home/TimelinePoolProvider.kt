@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.home
+package com.monday8am.tweetmeck.ui.home
 
 import androidx.recyclerview.widget.RecyclerView
 

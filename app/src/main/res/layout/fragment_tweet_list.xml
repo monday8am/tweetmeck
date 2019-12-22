@@ -8,7 +8,7 @@ xmlns:tools="http://schemas.android.com/tools">
 
     <variable
         name="viewModel"
-        type="com.monday8am.tweetmeck.home.HomeViewModel" />
+        type="com.monday8am.tweetmeck.ui.home.HomeViewModel" />
 
     <variable
         name="isEmpty"
@@ -29,7 +29,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:paddingTop="@dimen/spacing_normal"
         android:scrollbars="vertical"
         app:layoutManager="LinearLayoutManager"
-        tools:context=".home.timeline.TimelineFragment"
+        tools:context=".ui.home.timeline.TimelineFragment"
         tools:listitem="@layout/item_tweet"
         tools:ignore="UnusedAttribute" />
 
