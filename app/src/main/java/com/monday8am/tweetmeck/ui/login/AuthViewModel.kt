@@ -4,9 +4,10 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import org.koin.core.context.GlobalContext
 
 class AuthViewModel : ViewModel(),
-    SignInViewModelDelegate by SignInViewModelDelegateImpl() {
+    SignInViewModelDelegate by GlobalContext.get().koin.get() {
 
     fun triggerLogIn() = viewModelScope.launch { startWebAuth() }
 

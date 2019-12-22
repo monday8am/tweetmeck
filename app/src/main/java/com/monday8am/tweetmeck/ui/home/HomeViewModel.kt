@@ -13,15 +13,16 @@ import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.succeeded
 import com.monday8am.tweetmeck.ui.login.SignInViewModelDelegate
-import com.monday8am.tweetmeck.ui.login.SignInViewModelDelegateImpl
 import com.monday8am.tweetmeck.util.Event
 import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.koin.core.context.GlobalContext
 import timber.log.Timber
 
 class HomeViewModel(private val dataRepository: DataRepository) :
-    ViewModel(), TweetItemEventListener, SignInViewModelDelegate by SignInViewModelDelegateImpl() {
+    ViewModel(), TweetItemEventListener,
+        SignInViewModelDelegate by GlobalContext.get().koin.get() {
 
     val twitterLists: LiveData<List<TwitterList>>
         get() = dataRepository.lists
@@ -54,7 +55,7 @@ class HomeViewModel(private val dataRepository: DataRepository) :
 
     init {
         viewModelScope.launch {
-            currentSession.collect { session ->
+            currentSessionFlow.collect { session ->
                 refreshUserContent(session)
                 refreshLists(session)
             }
@@ -73,7 +74,12 @@ class HomeViewModel(private val dataRepository: DataRepository) :
     }
 
     private suspend fun refreshLists(session: Session?) {
-        val result = dataRepository.refreshLists(session?.screenName)
+        val result = if (session != null) {
+            dataRepository.refreshLoggedUserLists(session)
+        } else {
+            dataRepository.refreshLists("nytimes")
+        }
+
         if (!result.succeeded) {
             _errorMessage.value = Event("Error loading lists")
         }
@@ -120,11 +126,16 @@ class HomeViewModel(private val dataRepository: DataRepository) :
     }
 
     override fun likeTweet(tweet: Tweet) {
-        viewModelScope.launch {
-            when (val result = dataRepository.likeTweet(tweet)) {
-                is Error -> _errorMessage.value = Event(content = result.exception.message ?: "Unknown Error")
-                else -> Timber.d("Tweet updated correctly!")
+        if (lastSession != null) {
+            viewModelScope.launch {
+                when (val result = dataRepository.likeTweet(tweet, lastSession)) {
+                    is Error -> _errorMessage.value =
+                        Event(content = result.exception.message ?: "Unknown Error")
+                    else -> Timber.d("Tweet updated correctly!")
+                }
             }
+        } else {
+            _errorMessage.value = Event("User must be logged In!")
         }
     }
 

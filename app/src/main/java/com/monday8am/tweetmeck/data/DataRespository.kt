@@ -7,6 +7,7 @@ import com.monday8am.tweetmeck.data.Result.Error
 import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.local.TwitterDatabase
 import com.monday8am.tweetmeck.data.mappers.*
+import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.models.TwitterUser
@@ -22,8 +23,9 @@ interface DataRepository {
     suspend fun getTweet(tweetId: Long): Result<Tweet>
     suspend fun getUser(userId: Long): Result<TwitterUser>
     suspend fun refreshListTimeline(listId: Long): Result<Unit>
-    suspend fun refreshLists(screenName: String?): Result<Unit>
-    suspend fun likeTweet(tweet: Tweet): Result<Unit>
+    suspend fun refreshLists(screenName: String): Result<Unit>
+    suspend fun refreshLoggedUserLists(session: Session): Result<Unit>
+    suspend fun likeTweet(tweet: Tweet, session: Session): Result<Unit>
     fun getTimeline(listId: Long, scope: CoroutineScope): TimelineContent
     suspend fun deleteCachedData()
 }
@@ -45,10 +47,17 @@ class DataRepositoryImpl(
     override val lists: LiveData<List<TwitterList>>
         get() = db.twitterListDao().getAll()
 
-    override suspend fun refreshLists(screenName: String?): Result<Unit> {
+    override suspend fun refreshLists(screenName: String): Result<Unit> {
         return asResult {
-            val name = screenName ?: "nytimes"
-            val listsFromRemote = remoteClient.getLists(name).map { it.mapTo(ListToTwitterList().toLambda()) }
+            val listsFromRemote = remoteClient.getLists(screenName).map { it.mapTo(ListToTwitterList().toLambda()) }
+            db.twitterListDao().updateAll(listsFromRemote)
+        }
+    }
+
+    override suspend fun refreshLoggedUserLists(session: Session): Result<Unit> {
+        return asResult {
+            val listsFromRemote = remoteClient.getLoggedUserLists(session)
+                .map { it.mapTo(ListToTwitterList().toLambda()) }
             db.twitterListDao().updateAll(listsFromRemote)
         }
     }
@@ -63,14 +72,14 @@ class DataRepositoryImpl(
         }
     }
 
-    override suspend fun likeTweet(tweet: Tweet): Result<Unit> {
+    override suspend fun likeTweet(tweet: Tweet, session: Session): Result<Unit> {
         return asResult {
             val newTweet = tweet.setFavorite(!tweet.tweetContent.favorited)
             // update cache first to refresh view faster
             if (tweet.isCached) {
                 db.tweetDao().insert(newTweet)
             }
-            val response = remoteClient.likeTweet(tweet.id, newTweet.tweetContent.favorited)
+            val response = remoteClient.likeTweet(tweet.id, newTweet.tweetContent.favorited, session)
                                        .mapTo(StatusToTweet(tweet.listId).toLambda())
             // insert tweet with content updated from server
             db.tweetDao().insert(

@@ -41,7 +41,7 @@ val appModule = module {
 
     single<AuthRepository> { AuthRepositoryImpl(get(), get(), get()) }
     single<DataRepository> { DataRepositoryImpl(get(), get()) }
-    single<SignInViewModelDelegate> { SignInViewModelDelegateImpl() }
+    single<SignInViewModelDelegate> { SignInViewModelDelegateImpl(get()) }
 
     viewModel { OnboardingViewModel(get()) }
     viewModel { AuthViewModel() }
@@ -52,6 +52,4 @@ val appModule = module {
     scope(named<HomeFragment>()) {
         scoped { TimelinePoolProvider() }
     }
-
-    factory { SignInDialogDispatcher() }
 }

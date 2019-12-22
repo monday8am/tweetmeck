@@ -1,5 +1,6 @@
 package com.monday8am.tweetmeck.data.remote
 
+import com.monday8am.tweetmeck.data.models.Session
 import io.ktor.http.Url
 import jp.nephy.penicillin.PenicillinClient
 import jp.nephy.penicillin.core.session.ApiClient
@@ -27,8 +28,9 @@ interface TwitterClient {
     suspend fun getAuthUrl(requestToken: RequestToken): String
     suspend fun getAccessToken(requestToken: RequestToken, oAuthVerifier: String): AccessTokenResponse
 
-    // Tweet operations
-    suspend fun likeTweet(id: Long, value: Boolean): Status
+    // Logged operations
+    suspend fun likeTweet(id: Long, value: Boolean, session: Session): Status
+    suspend fun getLoggedUserLists(session: Session): List<TwitterList>
 
     // Get content
     suspend fun getUser(id: Long): User
@@ -81,6 +83,11 @@ class TwitterClientImpl(
         return client.users.showByUserId(id).await().result
     }
 
+    override suspend fun getLoggedUserLists(session: Session): List<TwitterList> {
+        client = refreshClientCredentials(session.accessToken, session.accessTokenSecret)
+        return client.lists.list().await().results
+    }
+
     override suspend fun getLists(screenName: String): List<TwitterList> {
         return client.lists.list(screenName).await().results
     }
@@ -98,12 +105,21 @@ class TwitterClientImpl(
         return response.results
     }
 
-    override suspend fun likeTweet(id: Long, value: Boolean): Status {
+    override suspend fun likeTweet(id: Long, value: Boolean, session: Session): Status {
+        client = refreshClientCredentials(session.accessToken, session.accessTokenSecret)
         return if (value) {
             client.favorites.create(id).await().result
         } else {
             client.favorites.destroy(id).await().result
         }
+    }
+
+    private fun refreshClientCredentials(accessToken: String, accessTokenSecret: String): ApiClient {
+        if (client.session.credentials.accessToken != accessToken ||
+                client.session.credentials.accessTokenSecret != accessTokenSecret) {
+            return getClient(accessToken, accessTokenSecret)
+        }
+        return client
     }
 
     private fun getClient(token: String, secret: String): ApiClient {

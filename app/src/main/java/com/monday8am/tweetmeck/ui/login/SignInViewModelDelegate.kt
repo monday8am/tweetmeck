@@ -9,8 +9,6 @@ import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.succeeded
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import org.koin.core.KoinComponent
-import org.koin.core.inject
 
 sealed class AuthState {
     object NotLogged : AuthState()
@@ -21,17 +19,16 @@ sealed class AuthState {
 }
 
 interface SignInViewModelDelegate {
-    val currentSession: Flow<Session?>
+    val currentSessionFlow: Flow<Session?>
     val authState: LiveData<AuthState>
     val isLogged: Boolean
+    val lastSession: Session?
     suspend fun startWebAuth()
     suspend fun setWebAuthResult(resultUri: Uri?, errorMsg: String? = null)
     suspend fun logOut()
 }
 
-class SignInViewModelDelegateImpl : SignInViewModelDelegate, KoinComponent {
-
-    private val authRepository: AuthRepository by inject()
+class SignInViewModelDelegateImpl(private val authRepository: AuthRepository) : SignInViewModelDelegate {
 
     private val _authState = MutableLiveData<AuthState>()
     override val authState: LiveData<AuthState>
@@ -40,10 +37,15 @@ class SignInViewModelDelegateImpl : SignInViewModelDelegate, KoinComponent {
     override val isLogged: Boolean
         get() = _authState.value == AuthState.Logged
 
-    override val currentSession: Flow<Session?>
+    override val currentSessionFlow: Flow<Session?>
+
+    private var _lastSession: Session? = null
+    override val lastSession: Session?
+        get() = _lastSession
 
     init {
-        currentSession = authRepository.session.map {
+        currentSessionFlow = authRepository.session.map {
+            _lastSession = it
             if (it == null) {
                 _authState.value = AuthState.NotLogged
             } else {
