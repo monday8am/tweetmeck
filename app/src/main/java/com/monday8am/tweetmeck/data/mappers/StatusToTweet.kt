@@ -10,9 +10,9 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
     override fun map(from: Status): Tweet {
         return Tweet(
             id = from.id,
-            content = getTweetContent(from)!!,
-            retweetedContent = getTweetContent(from.retweetedStatus),
-            quotedContent = getTweetContent(from.quotedStatus ?: from.retweetedStatus?.quotedStatus),
+            main = getTweetContent(from)!!,
+            retweeted = getTweetContent(from.retweetedStatus),
+            quoted = getTweetContent(from.quotedStatus ?: from.retweetedStatus?.quotedStatus),
             truncated = from.truncated,
             source = from.source,
             listId = listId,
@@ -21,8 +21,8 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
             inReplyToUserId = from.inReplyToUserId)
     }
 
-    private fun getTimelineUser(status: Status): TimelineUser {
-        return TimelineUser(
+    private fun getTimelineUser(status: Status): UiUser {
+        return UiUser(
             status.user.id,
             status.user.name,
             status.user.screenName,
@@ -31,11 +31,11 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
         )
     }
 
-    private fun getTweetContent(dtoStatus: Status?): TweetContent? {
+    private fun getTweetContent(dtoStatus: Status?): UiTweet? {
         val status = dtoStatus ?: return null
         val unescapedContent = getUnescapedContent(status)
 
-        return TweetContent(
+        return UiTweet(
             id = status.id,
             createdAt = TweetDateUtils.apiTimeToLong(dtoStatus.createdAtRaw),
             fullText = getTextWithoutUrls(unescapedContent.first, status),

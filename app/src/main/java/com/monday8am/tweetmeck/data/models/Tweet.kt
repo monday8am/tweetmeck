@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import com.monday8am.tweetmeck.data.models.entities.MediaEntity
 import com.monday8am.tweetmeck.data.models.entities.UrlEntity
 
-data class TimelineUser(
+data class UiUser(
     @ColumnInfo(name = "user_id") val id: Long,
     @ColumnInfo(name = "user_name")val name: String,
     @ColumnInfo(name = "screen_name") val screenName: String,
@@ -15,11 +15,11 @@ data class TimelineUser(
     @ColumnInfo(name = "verified") val verified: Boolean
 )
 
-data class TweetContent(
+data class UiTweet(
     @ColumnInfo(name = "id") val id: Long,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "full_text") val fullText: String,
-    @Embedded val user: TimelineUser,
+    @Embedded val user: UiUser,
     @ColumnInfo(name = "url_entities") val urlEntities: List<UrlEntity>,
     @ColumnInfo(name = "media_entities") val mediaEntities: List<MediaEntity>,
     @ColumnInfo(name = "retweet_count") val retweetCount: Int,
@@ -31,9 +31,9 @@ data class TweetContent(
 @Entity(tableName = "tweets")
 data class Tweet(
     @PrimaryKey val id: Long,
-    @Embedded(prefix = "main_") val content: TweetContent,
-    @Embedded(prefix = "retweeted_") val retweetedContent: TweetContent?,
-    @Embedded(prefix = "quoted_") val quotedContent: TweetContent?,
+    @Embedded(prefix = "main_") val main: UiTweet,
+    @Embedded(prefix = "retweeted_") val retweeted: UiTweet?,
+    @Embedded(prefix = "quoted_") val quoted: UiTweet?,
 
     val truncated: Boolean,
     val source: String,
@@ -43,9 +43,9 @@ data class Tweet(
     @ColumnInfo(name = "in_reply_to_user_id") val inReplyToUserId: Long?
 ) {
 
-    val tweetContent: TweetContent
+    val uiContent: UiTweet
         get() {
-            return retweetedContent ?: content
+            return retweeted ?: main
         }
 
     val isCached: Boolean
@@ -55,37 +55,37 @@ data class Tweet(
 
     val hasQuote: Boolean
         get() {
-            return quotedContent != null
+            return quoted != null
         }
 
     val hasRetweeted: Boolean
         get() {
-            return retweetedContent != null
+            return retweeted != null
         }
 
     fun setFavorite(newValue: Boolean): Tweet {
-        return if (retweetedContent != null) {
-            this.copy(retweetedContent = setFavorite(retweetedContent, newValue))
+        return if (retweeted != null) {
+            this.copy(retweeted = setFavorite(retweeted, newValue))
         } else {
-            this.copy(content = setFavorite(content, newValue))
+            this.copy(main = setFavorite(main, newValue))
         }
     }
 
     fun setRetweeted(newValue: Boolean): Tweet {
-        return if (retweetedContent != null) {
-            this.copy(retweetedContent = setRetweeted(retweetedContent, newValue))
+        return if (retweeted != null) {
+            this.copy(retweeted = setRetweeted(retweeted, newValue))
         } else {
-            this.copy(content = setRetweeted(content, newValue))
+            this.copy(main = setRetweeted(main, newValue))
         }
     }
 
-    private fun setFavorite(content: TweetContent, newValue: Boolean): TweetContent {
+    private fun setFavorite(content: UiTweet, newValue: Boolean): UiTweet {
         return content.copy(
             favorited = newValue,
             favoriteCount = if (newValue) content.favoriteCount + 1 else content.favoriteCount - 1)
     }
 
-    private fun setRetweeted(content: TweetContent, newValue: Boolean): TweetContent {
+    private fun setRetweeted(content: UiTweet, newValue: Boolean): UiTweet {
         return content.copy(
             retweeted = newValue,
             retweetCount = if (newValue) content.retweetCount + 1 else content.retweetCount - 1)

@@ -7,6 +7,8 @@ import com.monday8am.tweetmeck.data.AuthRepository
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.succeeded
+import com.monday8am.tweetmeck.util.Event
+import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -20,7 +22,7 @@ sealed class AuthState {
 
 interface SignInViewModelDelegate {
     val currentSessionFlow: Flow<Session?>
-    val authState: LiveData<AuthState>
+    val authState: LiveData<Event<AuthState>>
     val isLogged: Boolean
     val lastSession: Session?
     suspend fun startWebAuth()
@@ -31,8 +33,8 @@ interface SignInViewModelDelegate {
 class SignInViewModelDelegateImpl(private val authRepository: AuthRepository) : SignInViewModelDelegate {
 
     private val _authState = MutableLiveData<AuthState>()
-    override val authState: LiveData<AuthState>
-        get() = _authState
+    override val authState: LiveData<Event<AuthState>>
+        get() = _authState.map { Event(it) }
 
     override val isLogged: Boolean
         get() = _authState.value == AuthState.Logged

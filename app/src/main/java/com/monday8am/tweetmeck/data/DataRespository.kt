@@ -47,7 +47,7 @@ class DataRepositoryImpl(
 
     override suspend fun refreshLists(screenName: String): Result<Unit> {
         return asResult {
-            val listsFromRemote = remoteClient.getLists(screenName).map { it.mapTo(ListToTwitterList().toLambda()) }
+            val listsFromRemote = remoteClient.getLists(screenName).map { it.mapWith(ListToTwitterList().asLambda()) }
             db.twitterListDao().updateAll(listsFromRemote)
         }
     }
@@ -55,7 +55,7 @@ class DataRepositoryImpl(
     override suspend fun refreshLoggedUserLists(session: Session): Result<Unit> {
         return asResult {
             val listsFromRemote = remoteClient.getLoggedUserLists(session)
-                .map { it.mapTo(ListToTwitterList().toLambda()) }
+                .map { it.mapWith(ListToTwitterList().asLambda()) }
             db.twitterListDao().updateAll(listsFromRemote)
         }
     }
@@ -63,8 +63,8 @@ class DataRepositoryImpl(
     override suspend fun refreshListTimeline(listId: Long): Result<Unit> {
         return asResult {
             val response = remoteClient.getListTimeline(listId, count = pageSize * 2)
-            val tweets = response.map { it.mapTo(StatusToTweet(listId).toLambda()) }
-            val users = response.map { it.mapTo(StatusToTwitterUser().toLambda()) }
+            val tweets = response.map { it.mapWith(StatusToTweet(listId).asLambda()) }
+            val users = response.map { it.mapWith(StatusToTwitterUser().asLambda()) }
             db.tweetDao().insert(tweets)
             db.twitterUserDao().insert(users)
         }
@@ -72,41 +72,25 @@ class DataRepositoryImpl(
 
     override suspend fun likeTweet(tweet: Tweet, session: Session): Result<Unit> {
         return asResult {
-            val newTweet = tweet.setFavorite(!tweet.tweetContent.favorited)
-            // update cache first to refresh view faster
-            if (tweet.isCached) {
-                db.tweetDao().insert(newTweet)
-            }
-            val response = remoteClient.likeTweet(tweet.id, newTweet.tweetContent.favorited, session)
-                                       .mapTo(StatusToTweet(tweet.listId).toLambda())
-            // insert tweet with content updated from server
-            db.tweetDao().insert(
-                newTweet.setFavorite(response.tweetContent.favorited)
-            )
+            val response = remoteClient.likeTweet(tweet.id, !tweet.uiContent.favorited, session)
+                                       .mapWith(StatusToTweet(tweet.listId).asLambda())
+            db.tweetDao().insert(tweet.setFavorite(response.uiContent.favorited))
         }
     }
 
     override suspend fun retweetTweet(tweet: Tweet, session: Session): Result<Unit> {
         return asResult {
-            val newTweet = tweet.setRetweeted(!tweet.tweetContent.favorited)
-            // update cache first to refresh view faster
-            if (tweet.isCached) {
-                db.tweetDao().insert(newTweet)
-            }
-            val response = remoteClient.retweetTweet(tweet.id, newTweet.tweetContent.retweeted, session)
-                .mapTo(StatusToTweet(tweet.listId).toLambda())
-            // insert tweet with content updated from server
-            db.tweetDao().insert(
-                newTweet.setRetweeted(response.tweetContent.retweeted)
-            )
+            val response = remoteClient.retweetTweet(tweet.id, !tweet.uiContent.retweeted, session)
+                                        .mapWith(StatusToTweet(tweet.listId).asLambda())
+            db.tweetDao().insert(tweet.setRetweeted(response.uiContent.retweeted))
         }
     }
 
     private suspend fun loadMoreForTimeline(listId: Long, maxTweetId: Long): Result<Unit> {
         return asResult {
             val result = remoteClient.getListTimeline(listId, maxTweetId = maxTweetId, count = pageSize * 2)
-            db.tweetDao().insert(result.map { it.mapTo(StatusToTweet(listId).toLambda()) })
-            db.twitterUserDao().insert(result.map { it.mapTo(StatusToTwitterUser().toLambda()) })
+            db.tweetDao().insert(result.map { it.mapWith(StatusToTweet(listId).asLambda()) })
+            db.twitterUserDao().insert(result.map { it.mapWith(StatusToTwitterUser().asLambda()) })
         }
     }
 

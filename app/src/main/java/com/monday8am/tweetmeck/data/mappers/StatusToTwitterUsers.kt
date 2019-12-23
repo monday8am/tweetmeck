@@ -5,6 +5,6 @@ import jp.nephy.penicillin.models.Status
 
 class StatusToTwitterUser : Mapper<Status, TwitterUser> {
     override fun map(from: Status): TwitterUser {
-        return from.user.mapTo(UserToTwitterUser().toLambda())
+        return from.user.mapWith(UserToTwitterUser().asLambda())
     }
 }

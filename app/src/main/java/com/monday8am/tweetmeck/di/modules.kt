@@ -38,7 +38,7 @@ val appModule = module {
     factory { get<TwitterDatabase>().twitterListDao() }
     factory { get<TwitterDatabase>().twitterUserDao() }
 
-    single<AuthRepository> { AuthRepositoryImpl(get(), get(), get()) }
+    single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
     single<DataRepository> { DataRepositoryImpl(get(), get()) }
     single<SignInViewModelDelegate> { SignInViewModelDelegateImpl(get()) }
 

@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import android.webkit.*
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.monday8am.tweetmeck.R
+import com.monday8am.tweetmeck.util.EventObserver
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class AuthWebViewFragment : Fragment() {
@@ -79,7 +79,7 @@ class AuthWebViewFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel.authState.observe(viewLifecycleOwner, Observer<AuthState> { state ->
+        viewModel.authState.observe(viewLifecycleOwner, EventObserver { state ->
             when (state) {
                 is AuthState.WaitingForUserCredentials -> webView.loadUrl(state.url)
                 else -> this.findNavController().navigateUp()

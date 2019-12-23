@@ -10,10 +10,10 @@ interface SuspendMapper<F, T> {
     suspend fun map(from: F): T
 }
 
-fun <F, T> Mapper<F, T>.toLambda(): (F) -> T {
+fun <F, T> Mapper<F, T>.asLambda(): (F) -> T {
     return { map(it) }
 }
 
-fun <F, T> PenicillinModel.mapTo(mapper: (F) -> T): T {
+fun <F, T> PenicillinModel.mapWith(mapper: (F) -> T): T {
     return mapper.invoke(this as F)
 }

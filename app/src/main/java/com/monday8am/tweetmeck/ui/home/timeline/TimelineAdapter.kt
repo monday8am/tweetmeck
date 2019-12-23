@@ -59,7 +59,7 @@ object TweetItemDiff : DiffUtil.ItemCallback<Tweet>() {
     }
 
     override fun areContentsTheSame(oldItem: Tweet, newItem: Tweet): Boolean {
-        return oldItem.tweetContent.favorited == newItem.tweetContent.favorited &&
-                oldItem.tweetContent.retweeted == newItem.tweetContent.retweeted
+        return oldItem.uiContent.favorited == newItem.uiContent.favorited &&
+                oldItem.uiContent.retweeted == newItem.uiContent.retweeted
     }
 }

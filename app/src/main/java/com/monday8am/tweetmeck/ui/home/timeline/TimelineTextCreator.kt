@@ -10,7 +10,7 @@ import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.data.models.Tweet
-import com.monday8am.tweetmeck.data.models.TweetContent
+import com.monday8am.tweetmeck.data.models.UiTweet
 import com.monday8am.tweetmeck.data.models.entities.EntityLinkType
 import com.monday8am.tweetmeck.ui.home.TweetItemEventListener
 import com.monday8am.tweetmeck.util.TweetDateUtils
@@ -19,14 +19,14 @@ import timber.log.Timber
 class TimelineTextCreator(private val context: Context) {
 
     fun getUserRetweetText(tweet: Tweet): CharSequence {
-        val screenName = tweet.content.user.screenName
+        val screenName = tweet.main.user.screenName
         return buildSpannedString {
             bold { append(screenName) }
             append(context.getString(R.string.retweeted))
         }
     }
 
-    fun getUserDateText(tweetContent: TweetContent?): CharSequence {
+    fun getUserDateText(tweetContent: UiTweet?): CharSequence {
         val content = tweetContent ?: return ""
         val date = TweetDateUtils.getRelativeTimeString(context, System.currentTimeMillis(), content.createdAt)
         return buildSpannedString {
@@ -35,7 +35,7 @@ class TimelineTextCreator(private val context: Context) {
         }
     }
 
-    fun getTweetDisplayText(tweetContent: TweetContent?, listener: TweetItemEventListener): CharSequence {
+    fun getTweetDisplayText(tweetContent: UiTweet?, listener: TweetItemEventListener): CharSequence {
         val content = tweetContent ?: return ""
         val spannable = SpannableStringBuilder(content.fullText)
 
