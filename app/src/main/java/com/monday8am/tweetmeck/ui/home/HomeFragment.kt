@@ -15,12 +15,10 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.databinding.HomeFragmentBinding
-import com.monday8am.tweetmeck.ui.dialogs.SignInDialogDispatcher
 import com.monday8am.tweetmeck.ui.home.timeline.TimelineFragment
 import com.monday8am.tweetmeck.ui.login.AuthState
 import com.monday8am.tweetmeck.ui.login.AuthViewModel
 import com.monday8am.tweetmeck.util.EventObserver
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
@@ -32,7 +30,6 @@ class HomeFragment : Fragment() {
 
     private val viewModel: HomeViewModel by viewModel()
     private val authViewModel: AuthViewModel by sharedViewModel()
-    private val dialogDispatcher: SignInDialogDispatcher by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,14 +69,16 @@ class HomeFragment : Fragment() {
             )
         })
 
-        authViewModel.authState.observe(viewLifecycleOwner, Observer<AuthState> { state ->
+        authViewModel.authState.observe(viewLifecycleOwner, EventObserver { state ->
             when (state) {
                 is AuthState.Loading -> {
                     // viewBinding.button.alpha = 0.5f
                     // viewBinding.button.isEnabled = false
                     Timber.d("Loading")
                 }
-                is AuthState.WaitingForUserCredentials -> findNavController().navigate(R.id.action_timeline_dest_to_auth_dest)
+                is AuthState.WaitingForUserCredentials -> {
+                    findNavController().navigate(R.id.action_timeline_dest_to_auth_dest)
+                }
                 is AuthState.Logged -> {
                     Timber.d("Logged")
                 }

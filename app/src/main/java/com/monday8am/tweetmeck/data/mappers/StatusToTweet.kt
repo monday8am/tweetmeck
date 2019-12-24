@@ -4,15 +4,16 @@ import com.monday8am.tweetmeck.data.models.*
 import com.monday8am.tweetmeck.data.models.entities.MediaEntity
 import com.monday8am.tweetmeck.data.models.entities.UrlEntity
 import com.monday8am.tweetmeck.util.TweetDateUtils
+import jp.nephy.penicillin.extensions.models.text
 import jp.nephy.penicillin.models.Status
 
 class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
     override fun map(from: Status): Tweet {
         return Tweet(
             id = from.id,
-            content = getTweetContent(from)!!,
-            retweetedContent = getTweetContent(from.retweetedStatus),
-            quotedContent = getTweetContent(from.quotedStatus ?: from.retweetedStatus?.quotedStatus),
+            main = getTweetContent(from)!!,
+            retweet = getTweetContent(from.retweetedStatus),
+            quote = getTweetContent(from.quotedStatus ?: from.retweetedStatus?.quotedStatus),
             truncated = from.truncated,
             source = from.source,
             listId = listId,
@@ -21,8 +22,8 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
             inReplyToUserId = from.inReplyToUserId)
     }
 
-    private fun getTimelineUser(status: Status): TimelineUser {
-        return TimelineUser(
+    private fun getTimelineUser(status: Status): UiUser {
+        return UiUser(
             status.user.id,
             status.user.name,
             status.user.screenName,
@@ -31,11 +32,11 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
         )
     }
 
-    private fun getTweetContent(dtoStatus: Status?): TweetContent? {
+    private fun getTweetContent(dtoStatus: Status?): UiTweet? {
         val status = dtoStatus ?: return null
         val unescapedContent = getUnescapedContent(status)
 
-        return TweetContent(
+        return UiTweet(
             id = status.id,
             createdAt = TweetDateUtils.apiTimeToLong(dtoStatus.createdAtRaw),
             fullText = getTextWithoutUrls(unescapedContent.first, status),
@@ -49,7 +50,7 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
     }
 
     private fun getUnescapedContent(tweet: Status): Pair<String, List<IntArray>> {
-        return TweetUtils.unescapeTweetContent(tweet.fullTextRaw ?: "")
+        return TweetUtils.unescapeTweetContent(tweet.text)
     }
 
     private fun getUrlEntities(

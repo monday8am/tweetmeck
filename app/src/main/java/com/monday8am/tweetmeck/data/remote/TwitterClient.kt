@@ -15,6 +15,8 @@ import jp.nephy.penicillin.endpoints.oauth.AccessTokenResponse
 import jp.nephy.penicillin.endpoints.oauth.accessToken
 import jp.nephy.penicillin.endpoints.oauth.authenticateUrl
 import jp.nephy.penicillin.endpoints.oauth.requestToken
+import jp.nephy.penicillin.endpoints.statuses.retweet
+import jp.nephy.penicillin.endpoints.statuses.unretweet
 import jp.nephy.penicillin.endpoints.timeline.listTimeline
 import jp.nephy.penicillin.endpoints.users.showByUserId
 import jp.nephy.penicillin.extensions.await
@@ -30,6 +32,7 @@ interface TwitterClient {
 
     // Logged operations
     suspend fun likeTweet(id: Long, value: Boolean, session: Session): Status
+    suspend fun retweetTweet(id: Long, value: Boolean, session: Session): Status
     suspend fun getLoggedUserLists(session: Session): List<TwitterList>
 
     // Get content
@@ -111,6 +114,15 @@ class TwitterClientImpl(
             client.favorites.create(id).await().result
         } else {
             client.favorites.destroy(id).await().result
+        }
+    }
+
+    override suspend fun retweetTweet(id: Long, value: Boolean, session: Session): Status {
+        client = refreshClientCredentials(session.accessToken, session.accessTokenSecret)
+        return if (value) {
+            client.statuses.retweet(id).await().result
+        } else {
+            client.statuses.unretweet(id).await().result
         }
     }
 
