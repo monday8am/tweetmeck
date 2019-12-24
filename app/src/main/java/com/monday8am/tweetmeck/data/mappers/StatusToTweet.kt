@@ -4,6 +4,7 @@ import com.monday8am.tweetmeck.data.models.*
 import com.monday8am.tweetmeck.data.models.entities.MediaEntity
 import com.monday8am.tweetmeck.data.models.entities.UrlEntity
 import com.monday8am.tweetmeck.util.TweetDateUtils
+import jp.nephy.penicillin.extensions.models.text
 import jp.nephy.penicillin.models.Status
 
 class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
@@ -11,8 +12,8 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
         return Tweet(
             id = from.id,
             main = getTweetContent(from)!!,
-            retweeted = getTweetContent(from.retweetedStatus),
-            quoted = getTweetContent(from.quotedStatus ?: from.retweetedStatus?.quotedStatus),
+            retweet = getTweetContent(from.retweetedStatus),
+            quote = getTweetContent(from.quotedStatus ?: from.retweetedStatus?.quotedStatus),
             truncated = from.truncated,
             source = from.source,
             listId = listId,
@@ -49,7 +50,7 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
     }
 
     private fun getUnescapedContent(tweet: Status): Pair<String, List<IntArray>> {
-        return TweetUtils.unescapeTweetContent(tweet.fullTextRaw ?: "")
+        return TweetUtils.unescapeTweetContent(tweet.text)
     }
 
     private fun getUrlEntities(

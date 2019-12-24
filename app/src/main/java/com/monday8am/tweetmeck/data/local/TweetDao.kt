@@ -13,8 +13,8 @@ interface TweetDao {
     @Query("SELECT * FROM tweets WHERE list_id = :listId ORDER BY id DESC")
     fun getTweetsByListId(listId: Long): DataSource.Factory<Int, Tweet>
 
-    @Query("SELECT COUNT(*) FROM tweets WHERE list_id = :listId")
-    suspend fun countTweetsByListId(listId: Long): Int
+    @Query("DELETE FROM tweets WHERE retweeted_id = :id AND main_user_id = :userId")
+    suspend fun deleteTweetWithRetweetedId(id: Long, userId: Long)
 
     @Transaction
     suspend fun refreshTweetsFromList(listId: Long, tweets: List<Tweet>) {
@@ -22,8 +22,20 @@ interface TweetDao {
         insert(tweets)
     }
 
+    @Transaction
+    suspend fun deleteAndUpdateTweets(tweetedId: Long, toUpdate: List<Tweet>) {
+        delete(tweetedId)
+        insert(toUpdate)
+    }
+
+    @Query("SELECT * FROM tweets WHERE retweeted_id = :retweetedId OR main_id = :retweetedId")
+    suspend fun getRelatedTweets(retweetedId: Long): List<Tweet>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: Tweet)
+
+    @Query("DELETE FROM tweets WHERE id = :id")
+    suspend fun delete(id: Long)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(items: List<Tweet>)

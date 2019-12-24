@@ -32,8 +32,8 @@ data class UiTweet(
 data class Tweet(
     @PrimaryKey val id: Long,
     @Embedded(prefix = "main_") val main: UiTweet,
-    @Embedded(prefix = "retweeted_") val retweeted: UiTweet?,
-    @Embedded(prefix = "quoted_") val quoted: UiTweet?,
+    @Embedded(prefix = "retweeted_") val retweet: UiTweet?,
+    @Embedded(prefix = "quoted_") val quote: UiTweet?,
 
     val truncated: Boolean,
     val source: String,
@@ -45,7 +45,7 @@ data class Tweet(
 
     val uiContent: UiTweet
         get() {
-            return retweeted ?: main
+            return retweet ?: main
         }
 
     val isCached: Boolean
@@ -55,25 +55,25 @@ data class Tweet(
 
     val hasQuote: Boolean
         get() {
-            return quoted != null
+            return quote != null
         }
 
     val hasRetweeted: Boolean
         get() {
-            return retweeted != null
+            return retweet != null
         }
 
     fun setFavorite(newValue: Boolean): Tweet {
-        return if (retweeted != null) {
-            this.copy(retweeted = setFavorite(retweeted, newValue))
+        return if (retweet != null) {
+            this.copy(retweet = setFavorite(retweet, newValue))
         } else {
             this.copy(main = setFavorite(main, newValue))
         }
     }
 
     fun setRetweeted(newValue: Boolean): Tweet {
-        return if (retweeted != null) {
-            this.copy(retweeted = setRetweeted(retweeted, newValue))
+        return if (retweet != null) {
+            this.copy(retweet = setRetweeted(retweet, newValue))
         } else {
             this.copy(main = setRetweeted(main, newValue))
         }

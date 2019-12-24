@@ -80,9 +80,22 @@ class DataRepositoryImpl(
 
     override suspend fun retweetTweet(tweet: Tweet, session: Session): Result<Unit> {
         return asResult {
-            val response = remoteClient.retweetTweet(tweet.id, !tweet.uiContent.retweeted, session)
+            val newTweet = remoteClient.retweetTweet(tweet.id, !tweet.uiContent.retweeted, session)
                                         .mapWith(StatusToTweet(tweet.listId).asLambda())
-            db.tweetDao().insert(tweet.setRetweeted(response.uiContent.retweeted))
+            val existingTweets = db.tweetDao().getRelatedTweets(tweet.uiContent.id)
+                                              .map { it.setRetweeted(!tweet.uiContent.retweeted) }
+                                              .toMutableList()
+            val retweetUndone = tweet.uiContent.retweeted
+            if (retweetUndone) {
+                val tweetedByMe = existingTweets.find { it.main.user.id == session.userId }
+                if (tweetedByMe != null) {
+                    existingTweets.removeIf { it.id == tweetedByMe.id }
+                    db.tweetDao().deleteAndUpdateTweets(tweetedByMe.id, existingTweets)
+                }
+            } else {
+                db.tweetDao().insert(existingTweets)
+                db.tweetDao().insert(newTweet)
+            }
         }
     }
 

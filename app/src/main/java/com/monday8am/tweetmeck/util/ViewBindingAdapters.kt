@@ -67,6 +67,8 @@ fun quantity(textView: TextView, total: Int) {
             if (total > 0) {
                 val format = textView.resources.getString(R.string.tw__normal_format)
                 textView.text = String.format(format, total)
+            } else {
+                textView.text = ""
             }
         }
         in 4..6 -> {
