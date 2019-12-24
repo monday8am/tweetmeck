@@ -66,7 +66,7 @@ class TimelineFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TimelineAdapter(viewModel, viewLifecycleOwner, TimelineTextCreator(view.context))
+        adapter = TimelineAdapter(viewModel, viewLifecycleOwner, TimelineTextCreator(view.context, viewModel.lastSession))
 
         binding.recyclerview.addItemDecoration(DividerItemDecoration(
             binding.recyclerview.context,

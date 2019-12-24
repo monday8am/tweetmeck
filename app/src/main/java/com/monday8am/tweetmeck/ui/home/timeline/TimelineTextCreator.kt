@@ -9,6 +9,7 @@ import android.view.View
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.monday8am.tweetmeck.R
+import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.UiTweet
 import com.monday8am.tweetmeck.data.models.entities.EntityLinkType
@@ -16,10 +17,11 @@ import com.monday8am.tweetmeck.ui.home.TweetItemEventListener
 import com.monday8am.tweetmeck.util.TweetDateUtils
 import timber.log.Timber
 
-class TimelineTextCreator(private val context: Context) {
+class TimelineTextCreator(private val context: Context,
+                          private val session: Session?) {
 
     fun getUserRetweetText(tweet: Tweet): CharSequence {
-        val screenName = tweet.main.user.screenName
+        val screenName = if (tweet.main.user.screenName == session?.screenName) "You" else tweet.main.user.screenName
         return buildSpannedString {
             bold { append(screenName) }
             append(context.getString(R.string.retweeted))
