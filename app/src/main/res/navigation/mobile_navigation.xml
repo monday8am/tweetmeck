@@ -34,6 +34,9 @@
         <action
             android:id="@+id/action_timeline_dest_to_auth_dest"
             app:destination="@id/auth_dest" />
+        <action
+            android:id="@+id/action_timeline_dest_to_searchFragment"
+            app:destination="@id/search_dest" />
     </fragment>
     <fragment
         android:id="@+id/user_dest"
@@ -64,5 +67,13 @@
     <dialog
         android:id="@+id/sign_out_dialog_dest"
         android:name="com.monday8am.tweetmeck.ui.login.SignOutDialogFragment"/>
+    <fragment
+        android:id="@+id/search_dest"
+        android:name="com.monday8am.tweetmeck.ui.search.SearchFragment"
+        tools:layout="@layout/search_fragment" >
+        <argument
+            android:name="searchItem"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

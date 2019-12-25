@@ -8,7 +8,7 @@ xmlns:tools="http://schemas.android.com/tools">
 
     <variable
         name="viewModel"
-        type="com.monday8am.tweetmeck.ui.home.HomeViewModel" />
+        type="com.monday8am.tweetmeck.ui.base.TweetListViewModel" />
 
     <variable
         name="isEmpty"

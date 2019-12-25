@@ -3,6 +3,7 @@ package com.monday8am.tweetmeck.ui.login
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
 import kotlinx.coroutines.launch
 import org.koin.core.context.GlobalContext
 

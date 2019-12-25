@@ -16,7 +16,7 @@ import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.databinding.HomeFragmentBinding
 import com.monday8am.tweetmeck.ui.home.timeline.TimelineFragment
-import com.monday8am.tweetmeck.ui.login.AuthState
+import com.monday8am.tweetmeck.ui.delegates.AuthState
 import com.monday8am.tweetmeck.ui.login.AuthViewModel
 import com.monday8am.tweetmeck.util.EventObserver
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel

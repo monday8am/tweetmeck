@@ -14,9 +14,10 @@ import com.monday8am.tweetmeck.ui.home.HomeFragment
 import com.monday8am.tweetmeck.ui.home.HomeViewModel
 import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider
 import com.monday8am.tweetmeck.ui.login.AuthViewModel
-import com.monday8am.tweetmeck.ui.login.SignInViewModelDelegate
-import com.monday8am.tweetmeck.ui.login.SignInViewModelDelegateImpl
+import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
+import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegateImpl
 import com.monday8am.tweetmeck.ui.onboarding.OnboardingViewModel
+import com.monday8am.tweetmeck.ui.search.SearchViewModel
 import com.monday8am.tweetmeck.ui.tweet.TweetViewModel
 import com.monday8am.tweetmeck.ui.user.UserViewModel
 import org.koin.android.ext.koin.androidContext
@@ -40,13 +41,18 @@ val appModule = module {
 
     single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
     single<DataRepository> { DataRepositoryImpl(get(), get()) }
-    single<SignInViewModelDelegate> { SignInViewModelDelegateImpl(get()) }
+    single<SignInViewModelDelegate> {
+        SignInViewModelDelegateImpl(
+            get()
+        )
+    }
 
     viewModel { OnboardingViewModel(get()) }
     viewModel { AuthViewModel() }
     viewModel { HomeViewModel(get()) }
     viewModel { (userId: Long) -> UserViewModel(userId, get()) }
     viewModel { (tweetId: Long) -> TweetViewModel(tweetId, get()) }
+    viewModel { (searchItem: String) -> SearchViewModel(searchItem, get()) }
 
     scope(named<HomeFragment>()) {
         scoped { TimelinePoolProvider() }

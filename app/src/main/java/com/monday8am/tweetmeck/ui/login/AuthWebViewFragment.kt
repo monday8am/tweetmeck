@@ -10,6 +10,7 @@ import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.monday8am.tweetmeck.R
+import com.monday8am.tweetmeck.ui.delegates.AuthState
 import com.monday8am.tweetmeck.util.EventObserver
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
