@@ -15,8 +15,8 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.databinding.HomeFragmentBinding
-import com.monday8am.tweetmeck.ui.home.timeline.TimelineFragment
 import com.monday8am.tweetmeck.ui.delegates.AuthState
+import com.monday8am.tweetmeck.ui.home.timeline.TimelineFragment
 import com.monday8am.tweetmeck.ui.login.AuthViewModel
 import com.monday8am.tweetmeck.util.EventObserver
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -24,6 +24,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class HomeFragment : Fragment() {
+
+    private val tabsCacheSize = 15
 
     private lateinit var binding: HomeFragmentBinding
     private lateinit var viewPager2: ViewPager2
@@ -48,15 +50,8 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.twitterLists.observe(viewLifecycleOwner, Observer<List<TwitterList>> { lists ->
+            Timber.d("$lists")
             bindContent(view, lists)
-        })
-
-        viewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
-            findNavController().navigate(HomeFragmentDirections.actionTimelineDestToTweetDest(tweetId))
-        })
-
-        viewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { userId ->
-            findNavController().navigate(HomeFragmentDirections.actionTimelineDestToUserDest(userId))
         })
 
         viewModel.navigateToSignInDialog.observe(viewLifecycleOwner, EventObserver { isSigned ->
@@ -106,6 +101,8 @@ class HomeFragment : Fragment() {
     private fun bindContent(view: View, items: List<TwitterList>) {
         val appbar: View = view.findViewById(R.id.appbar)
         val tabs: TabLayout = view.findViewById(R.id.tabs)
+
+        viewPager2.offscreenPageLimit = tabsCacheSize
 
         viewPager2.adapter = object : FragmentStateAdapter(this) {
             override fun createFragment(position: Int): Fragment {

@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.FragmentTweetListBinding
 import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider
+import com.monday8am.tweetmeck.util.EventObserver
 import org.koin.androidx.scope.currentScope
-import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
 import timber.log.Timber
 
 abstract class TweetListFragment : Fragment() {
@@ -24,10 +24,9 @@ abstract class TweetListFragment : Fragment() {
     private lateinit var adapter: TweetListAdapter
     private lateinit var binding: FragmentTweetListBinding
     private val viewPoolProvider: TimelinePoolProvider? by lazy {
-        parentFragment?.currentScope?.get<TimelinePoolProvider>()
+        activity?.currentScope?.get<TimelinePoolProvider>()
     }
 
-    @Suppress("UNCHECKED_CAST")
     abstract var viewModel: TweetListViewModel
 
     override fun onCreateView(
@@ -35,8 +34,6 @@ abstract class TweetListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = getSharedViewModel(from = { parentFragment as ViewModelStoreOwner })
-
         binding = FragmentTweetListBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = this@TweetListFragment.viewModel
@@ -68,23 +65,26 @@ abstract class TweetListFragment : Fragment() {
             }
         }
 
-        viewModel.timelineContent.observe(viewLifecycleOwner, Observer { timelineContent ->
-
-            timelineContent.pagedList.observe(viewLifecycleOwner, Observer<PagedList<Tweet>> {
-                adapter.submitList(it) {
-                    // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
-                    // item added to the end of the list as an anchor during initial load.
-                    val layoutManager = (binding.recyclerview.layoutManager as LinearLayoutManager)
-                    val position = layoutManager.findFirstCompletelyVisibleItemPosition()
-                    if (position != RecyclerView.NO_POSITION) {
-                        binding.recyclerview.scrollToPosition(position)
-                    }
+        viewModel.pagedList.observe(viewLifecycleOwner, Observer<PagedList<Tweet>> {
+            adapter.submitList(it) {
+                // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
+                // item added to the end of the list as an anchor during initial load.
+                val layoutManager = (binding.recyclerview.layoutManager as LinearLayoutManager)
+                val position = layoutManager.findFirstCompletelyVisibleItemPosition()
+                if (position != RecyclerView.NO_POSITION) {
+                    binding.recyclerview.scrollToPosition(position)
                 }
-            })
+            }
+        })
 
-            timelineContent.loadMoreState.observe(this, Observer {
-                Timber.d("Request state! $it")
-            })
+        viewModel.loadMoreState.observe(viewLifecycleOwner, Observer {
+            Timber.d("Request state! $it")
+        })
+
+        // Show an error message
+        viewModel.errorMessage.observe(viewLifecycleOwner, EventObserver { errorMsg ->
+            // TODO: Change once there's a way to show errors to the user
+            Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
         })
     }
 }

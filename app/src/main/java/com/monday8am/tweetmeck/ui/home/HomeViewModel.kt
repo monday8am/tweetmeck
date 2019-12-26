@@ -4,27 +4,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.monday8am.tweetmeck.data.*
-import com.monday8am.tweetmeck.data.Result.Error
+import com.monday8am.tweetmeck.data.DataRepository
+import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.models.Session
-import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
-import com.monday8am.tweetmeck.ui.base.TweetListViewModel
+import com.monday8am.tweetmeck.data.succeeded
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
 import com.monday8am.tweetmeck.util.Event
 import com.monday8am.tweetmeck.util.map
-import jp.nephy.penicillin.endpoints.Timeline
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.core.context.GlobalContext
-import timber.log.Timber
-
 
 class HomeViewModel(
-    authRepository: AuthRepository,
-    private val dataRepository: DataRepository) :
-    TweetListViewModel(authRepository, dataRepository),
+    private val dataRepository: DataRepository
+) : ViewModel(),
         SignInViewModelDelegate by GlobalContext.get().koin.get() {
 
     val twitterLists: LiveData<List<TwitterList>>
@@ -41,25 +35,20 @@ class HomeViewModel(
         false // Whenever refresh finishes, stop the indicator, whatever the result
     }
 
-    private var timelines: MutableMap<Long, TimelineContent> = mutableMapOf()
+    private val _errorMessage = MutableLiveData<Event<String>>()
+    val errorMessage: LiveData<Event<String>> = _errorMessage
+
     private var currentTimelineId: Long = -1
 
     private val _navigateToSignInDialog = MutableLiveData<Event<Boolean>>()
     val navigateToSignInDialog: LiveData<Event<Boolean>> = _navigateToSignInDialog
 
-    private val _timelineContent = MutableLiveData<TimelineContent>()
-    override val timelineContent: LiveData<TimelineContent> = _timelineContent
-
     init {
         viewModelScope.launch {
             currentSessionFlow.collect { session ->
                 refreshUserContent(session)
-                refreshLists(session)
+                //refreshLists(session)
             }
-        }
-
-        dataRepository.lists.also {
-
         }
     }
 
@@ -100,9 +89,5 @@ class HomeViewModel(
 
     fun onChangedDisplayedTimeline(listId: Long) {
         currentTimelineId = listId
-        timelines.getOrPut(listId, {
-            dataRepository.getTimeline(listId, viewModelScope)
-        })
-        _timelineContent.value = timelines[listId]
     }
 }

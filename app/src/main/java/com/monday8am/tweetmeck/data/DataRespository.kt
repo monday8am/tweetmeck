@@ -24,7 +24,7 @@ interface DataRepository {
     suspend fun refreshLoggedUserLists(session: Session): Result<Unit>
     suspend fun likeTweet(tweet: Tweet, session: Session): Result<Unit>
     suspend fun retweetTweet(tweet: Tweet, session: Session): Result<Unit>
-    fun getTimeline(listId: Long, scope: CoroutineScope): TimelineContent
+    fun getTimeline(listId: Long): TimelineContent
     suspend fun deleteCachedData()
 }
 
@@ -107,7 +107,7 @@ class DataRepositoryImpl(
         }
     }
 
-    override fun getTimeline(listId: Long, scope: CoroutineScope): TimelineContent {
+    override fun getTimeline(listId: Long): TimelineContent {
         val pagedListConfig = PagedList.Config.Builder()
             .setInitialLoadSizeHint(pageSize * 2)
             .setPageSize(pageSize)
@@ -116,7 +116,6 @@ class DataRepositoryImpl(
 
         val boundaryCallback = TimelineBoundaryCallback(
             listId = listId,
-            scope = scope,
             refreshCallback = ::refreshListTimeline,
             loadMoreCallback = ::loadMoreForTimeline
         )

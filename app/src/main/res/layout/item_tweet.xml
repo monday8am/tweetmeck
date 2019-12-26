@@ -17,7 +17,7 @@ xmlns:tools="http://schemas.android.com/tools">
 
     <variable
         name="eventListener"
-        type="com.monday8am.tweetmeck.ui.home.TweetItemEventListener" />
+        type="com.monday8am.tweetmeck.ui.base.TweetItemEventListener" />
 
 </data>
 

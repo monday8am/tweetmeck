@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagedList
 import com.monday8am.tweetmeck.data.AuthRepository
 import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.Result
-import com.monday8am.tweetmeck.data.TimelineContent
 import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.util.Event
@@ -15,8 +15,10 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-abstract class TweetListViewModel(private val authRepository: AuthRepository,
-                         private val dataRepository: DataRepository) : ViewModel(),
+abstract class TweetListViewModel(
+    private val authRepository: AuthRepository,
+    private val dataRepository: DataRepository
+) : ViewModel(),
     TweetItemEventListener {
 
     private val _navigateToTweetDetails = MutableLiveData<Event<Long>>()
@@ -25,10 +27,11 @@ abstract class TweetListViewModel(private val authRepository: AuthRepository,
     private val _navigateToUserDetails = MutableLiveData<Event<Long>>()
     val navigateToUserDetails: LiveData<Event<Long>> = _navigateToUserDetails
 
-    protected val _errorMessage = MutableLiveData<Event<String>>()
+    private val _errorMessage = MutableLiveData<Event<String>>()
     val errorMessage: LiveData<Event<String>> = _errorMessage
 
-    abstract val timelineContent: LiveData<TimelineContent>
+    abstract val pagedList: LiveData<PagedList<Tweet>>
+    abstract val loadMoreState: LiveData<Result<Unit>>
 
     var currentSession: Session? = null
 
@@ -47,7 +50,6 @@ abstract class TweetListViewModel(private val authRepository: AuthRepository,
     }
 
     override fun openUserDetails(screenName: String) {
-       
     }
 
     override fun retryLoadMore(listId: Long) {
@@ -76,8 +78,6 @@ abstract class TweetListViewModel(private val authRepository: AuthRepository,
                     else -> Timber.d("Tweet updated correctly!")
                 }
             }
-        } else {
-            _errorMessage.value = Event("User must be logged in!")
         }
     }
 

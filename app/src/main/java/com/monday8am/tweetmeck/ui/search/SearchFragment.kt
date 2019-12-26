@@ -17,10 +17,11 @@ class SearchFragment : Fragment() {
     private lateinit var viewModel: SearchViewModel
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel =  getViewModel { parametersOf(navArgs.searchItem) }
+        viewModel = getViewModel { parametersOf(navArgs.searchItem) }
 
         val binding = SearchFragmentBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
@@ -33,6 +34,4 @@ class SearchFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
     }
-
 }
-

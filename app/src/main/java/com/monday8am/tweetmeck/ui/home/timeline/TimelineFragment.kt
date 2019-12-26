@@ -1,27 +1,18 @@
 package com.monday8am.tweetmeck.ui.home.timeline
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelStoreOwner
-import androidx.paging.PagedList
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.monday8am.tweetmeck.data.models.Tweet
-import com.monday8am.tweetmeck.databinding.FragmentTweetListBinding
-import com.monday8am.tweetmeck.ui.home.HomeViewModel
-import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider
+import androidx.navigation.fragment.findNavController
+import com.monday8am.tweetmeck.ui.base.TweetListFragment
+import com.monday8am.tweetmeck.ui.base.TweetListViewModel
+import com.monday8am.tweetmeck.ui.home.HomeFragmentDirections
+import com.monday8am.tweetmeck.util.EventObserver
 import com.monday8am.tweetmeck.util.lazyFast
-import org.koin.androidx.scope.currentScope
-import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
+import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
-class TimelineFragment : Fragment() {
+class TimelineFragment : TweetListFragment() {
 
     companion object {
         private const val ARG_LIST_ID = "arg.TWEET_LIST_ID"
@@ -35,72 +26,25 @@ class TimelineFragment : Fragment() {
             }
     }
 
-    private lateinit var adapter: TimelineAdapter
-    private lateinit var binding: FragmentTweetListBinding
-    private val viewPoolProvider: TimelinePoolProvider? by lazy {
-        parentFragment?.currentScope?.get<TimelinePoolProvider>()
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private lateinit var viewModel: HomeViewModel
-
     private val listId: Long by lazyFast {
         val args = arguments ?: throw IllegalStateException("Missing arguments!")
         args.getLong(ARG_LIST_ID)
     }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        viewModel = getSharedViewModel(from = { parentFragment as ViewModelStoreOwner })
-
-        binding = FragmentTweetListBinding.inflate(inflater, container, false).apply {
-            lifecycleOwner = viewLifecycleOwner
-            viewModel = this@TimelineFragment.viewModel
-        }
-        return binding.root
-    }
+    override var viewModel: TweetListViewModel
+        get() = getViewModel<TimelineViewModel> { parametersOf(listId) }
+        set(value) {}
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TimelineAdapter(viewModel, viewLifecycleOwner, TimelineTextCreator(view.context, viewModel.lastSession))
-
-        binding.recyclerview.addItemDecoration(DividerItemDecoration(
-            binding.recyclerview.context,
-            DividerItemDecoration.VERTICAL
-        ))
-
-        binding.recyclerview.apply {
-            adapter = this@TimelineFragment.adapter
-            setRecycledViewPool(viewPoolProvider?.tweetItemPool)
-            (layoutManager as LinearLayoutManager).recycleChildrenOnDetach = true
-            (itemAnimator as DefaultItemAnimator).run {
-                supportsChangeAnimations = false
-                addDuration = 160L
-                moveDuration = 160L
-                changeDuration = 160L
-                removeDuration = 120L
-            }
-        }
-
-        val content = viewModel.getTimelineContent(listId)
-        content.pagedList.observe(this, Observer<PagedList<Tweet>> {
-            adapter.submitList(it) {
-                // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
-                // item added to the end of the list as an anchor during initial load.
-                val layoutManager = (binding.recyclerview.layoutManager as LinearLayoutManager)
-                val position = layoutManager.findFirstCompletelyVisibleItemPosition()
-                if (position != RecyclerView.NO_POSITION) {
-                    binding.recyclerview.scrollToPosition(position)
-                }
-            }
+        viewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
+            Timber.d("Tweet id $tweetId")
+            findNavController().navigate(HomeFragmentDirections.actionTimelineDestToTweetDest(tweetId))
         })
 
-        content.loadMoreState.observe(this, Observer {
-            Timber.d("Request state! $it")
+        viewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { userId ->
+            Timber.d("User id $userId")
+            findNavController().navigate(HomeFragmentDirections.actionTimelineDestToUserDest(userId))
         })
     }
 }

@@ -16,8 +16,10 @@ import com.monday8am.tweetmeck.data.models.entities.EntityLinkType
 import com.monday8am.tweetmeck.util.TweetDateUtils
 import timber.log.Timber
 
-class TweetItemTextCreator(private val context: Context,
-                           private val session: Session?) {
+class TweetItemTextCreator(
+    private val context: Context,
+    private val session: Session?
+) {
 
     fun getUserRetweetText(tweet: Tweet): CharSequence {
         val screenName = if (tweet.main.user.screenName == session?.screenName) "You" else tweet.main.user.screenName

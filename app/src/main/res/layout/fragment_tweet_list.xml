@@ -32,22 +32,6 @@ xmlns:tools="http://schemas.android.com/tools">
         tools:context=".ui.home.timeline.TimelineFragment"
         tools:listitem="@layout/item_tweet"
         tools:ignore="UnusedAttribute" />
-
-    <TextView
-        android:id="@+id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="@dimen/schedule_page_padding_bottom"
-        android:layout_marginHorizontal="@dimen/margin_large"
-        android:drawablePadding="@dimen/spacing_normal"
-        android:drawableTop="@drawable/ic_sad"
-        android:gravity="center"
-        android:text="@string/timeline_no_tweets"
-        app:goneUnless="@{isEmpty &amp;&amp; !viewModel.dataLoading}"
-        tools:text="@string/timeline_no_tweets"
-        tools:visibility="visible" />
-
 </FrameLayout>
 
 </layout>
