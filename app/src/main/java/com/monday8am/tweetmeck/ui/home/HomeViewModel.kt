@@ -47,7 +47,7 @@ class HomeViewModel(
         viewModelScope.launch {
             currentSessionFlow.collect { session ->
                 refreshUserContent(session)
-                //refreshLists(session)
+                refreshLists(session)
             }
         }
     }
