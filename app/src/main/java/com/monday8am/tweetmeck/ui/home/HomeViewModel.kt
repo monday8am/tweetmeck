@@ -87,7 +87,11 @@ class HomeViewModel(
         }
     }
 
-    fun onChangedDisplayedTimeline(listId: Long) {
-        currentTimelineId = listId
+    fun onChangedDisplayedTimeline(position: Int) {
+        twitterLists.value?.let {
+            if (it.isNotEmpty()) {
+                currentTimelineId = it[position].id
+            }
+        }
     }
 }

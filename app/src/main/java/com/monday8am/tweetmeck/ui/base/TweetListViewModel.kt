@@ -78,6 +78,8 @@ abstract class TweetListViewModel(
                     else -> Timber.d("Tweet updated correctly!")
                 }
             }
+        } else {
+            _errorMessage.value = Event("User must be logged in!")
         }
     }
 

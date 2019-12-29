@@ -4,16 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.models.Tweet
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.asExecutor
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class TimelineBoundaryCallback(
     private val listId: Long,
     private val refreshCallback: suspend (listId: Long) -> Result<Unit>,
     private val loadMoreCallback: suspend (listId: Long, maxTweetId: Long) -> Result<Unit>
-) : PagedList.BoundaryCallback<Tweet>(), CoroutineScope by CoroutineScope(Dispatchers.Default) {
+) : PagedList.BoundaryCallback<Tweet>(), CoroutineScope by CoroutineScope(Dispatchers.Main) {
 
     private val helper = PagingRequestHelper(Dispatchers.IO.asExecutor())
     val requestState = MutableLiveData<Result<Unit>>()
@@ -22,7 +19,9 @@ class TimelineBoundaryCallback(
         helper.runIfNotRunning(PagingRequestHelper.RequestType.INITIAL) {
             launch {
                 requestState.value = Result.Loading
-                val result = refreshCallback(listId)
+                val result = withContext(Dispatchers.IO) {
+                    refreshCallback(listId)
+                }
                 when (result) {
                     is Result.Success -> it.recordSuccess()
                     is Result.Error -> it.recordFailure(result.exception)
@@ -37,7 +36,9 @@ class TimelineBoundaryCallback(
         helper.runIfNotRunning(PagingRequestHelper.RequestType.AFTER) {
             launch {
                 requestState.value = Result.Loading
-                val result = loadMoreCallback(listId, itemAtEnd.id)
+                val result = withContext(Dispatchers.IO) {
+                    loadMoreCallback(listId, itemAtEnd.id)
+                }
                 when (result) {
                     is Result.Success -> it.recordSuccess()
                     is Result.Error -> it.recordFailure(result.exception)

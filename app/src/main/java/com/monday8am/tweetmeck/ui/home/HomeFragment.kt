@@ -117,7 +117,7 @@ class HomeFragment : Fragment() {
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                viewModel.onChangedDisplayedTimeline(items[position].id)
+                viewModel.onChangedDisplayedTimeline(position)
             }
         })
 
