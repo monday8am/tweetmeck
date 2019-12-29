@@ -71,7 +71,7 @@ class HomeViewModel(
         }
 
         if (!result.succeeded) {
-            _errorMessage.value = Event("Error loading lists")
+            _errorMessage.value = Event("Error loading lissts")
         }
     }
 
