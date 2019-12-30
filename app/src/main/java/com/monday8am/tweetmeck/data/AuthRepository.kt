@@ -48,14 +48,20 @@ class AuthRepositoryImpl(
         return asResult {
             val session = twitterClient.getAccessToken(requestToken, verifier).mapToSession()
             val userContent = twitterClient.getUser(session.userId).mapWith(UserToTwitterUser().asLambda())
-            db.tweetDao().clear()
+            cleanDatabase()
             db.twitterUserDao().insert(userContent)
             db.sessionDao().insert(session)
         }
     }
 
     override suspend fun logout() {
+        cleanDatabase()
+    }
+
+    private suspend fun cleanDatabase() {
         withContext(ioDispatcher) {
+            db.twitterUserDao().clear()
+            db.twitterListDao().clear()
             db.tweetDao().clear()
             db.sessionDao().clear()
         }

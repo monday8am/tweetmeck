@@ -25,7 +25,6 @@ interface DataRepository {
     suspend fun likeTweet(tweet: Tweet, session: Session): Result<Unit>
     suspend fun retweetTweet(tweet: Tweet, session: Session): Result<Unit>
     fun getTimeline(listId: Long): TimelineContent
-    suspend fun deleteCachedData()
 }
 
 // Try order if not update forced: https://medium.com/@appmattus/caching-made-simple-on-android-d6e024e3726b
@@ -136,12 +135,6 @@ class DataRepositoryImpl(
     override suspend fun getUser(userId: Long): Result<TwitterUser> =
         getItemFromDb(userId, db.twitterUserDao()::getItemById
     )
-
-    override suspend fun deleteCachedData() {
-        withContext(ioDispatcher) {
-            db.twitterListDao().deleteAll()
-        }
-    }
 
     private suspend fun <T> getItemFromDb(itemId: Long, dbCall: suspend (Long) -> T?): Result<T> {
         return withContext(ioDispatcher) {

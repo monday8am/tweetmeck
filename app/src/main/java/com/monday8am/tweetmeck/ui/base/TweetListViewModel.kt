@@ -70,6 +70,7 @@ abstract class TweetListViewModel(
     }
 
     override fun likeTweet(tweet: Tweet) {
+        Timber.d("likeTweet call!")
         val session = currentSession
         if (session != null) {
             viewModelScope.launch {
@@ -85,6 +86,7 @@ abstract class TweetListViewModel(
     }
 
     override fun retweetTweet(tweet: Tweet) {
+        Timber.d("retweetTweet call!")
         val session = currentSession
         if (session != null) {
             viewModelScope.launch {

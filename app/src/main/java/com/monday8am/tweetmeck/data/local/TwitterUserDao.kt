@@ -23,5 +23,5 @@ interface TwitterUserDao {
     fun loggedUser(): LiveData<List<TwitterUser>>
 
     @Query("DELETE FROM users")
-    suspend fun deleteAll()
+    suspend fun clear()
 }

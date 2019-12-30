@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.adapter.FragmentViewHolder
 import androidx.viewpager2.widget.ViewPager2
-import com.ethanhua.skeleton.SkeletonScreen
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.monday8am.tweetmeck.R
@@ -30,7 +30,6 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: HomeFragmentBinding
     private lateinit var viewPager2: ViewPager2
-    private var skeletonScreen: SkeletonScreen? = null
 
     private val viewModel: HomeViewModel by viewModel()
     private val authViewModel: AuthViewModel by sharedViewModel()
@@ -114,12 +113,24 @@ class HomeFragment : Fragment() {
             override fun getItemCount(): Int {
                 return items.count()
             }
+
+            override fun onViewDetachedFromWindow(holder: FragmentViewHolder) {
+                super.onViewDetachedFromWindow(holder)
+                holder.adapterPosition
+            }
         }
 
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                viewModel.onChangedDisplayedTimeline(position)
+                try {
+                    if (items.size > position - 1) {
+                        viewModel.onChangedDisplayedTimeline(items[position].id)
+                    }
+                } catch (e: Exception) {
+                    Timber.d("Exception: ${items.size} > $position")
+                }
+
             }
         })
 

@@ -41,10 +41,18 @@
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/viewpager2"
+                    app:goneUnless="@{true}"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:pageMargin="@{@dimen/spacing_normal}" />
 
             </com.monday8am.tweetmeck.widget.CustomSwipeRefreshLayout>
+
+        <com.monday8am.tweetmeck.widget.TimelineSkeleton
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="140dp"
+            app:goneUnless="@{viewModel.dataLoading}" />
+
     </com.monday8am.tweetmeck.widget.InsetDispatchingCoordinatorLayout>
 </layout>

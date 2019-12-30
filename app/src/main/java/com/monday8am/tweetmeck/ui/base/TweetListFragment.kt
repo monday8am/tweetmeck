@@ -12,9 +12,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ethanhua.skeleton.Skeleton
-import com.ethanhua.skeleton.SkeletonScreen
-import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.FragmentTweetListBinding
 import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider
@@ -29,8 +26,6 @@ abstract class TweetListFragment : Fragment() {
     private val viewPoolProvider: TimelinePoolProvider? by lazy {
         activity?.currentScope?.get<TimelinePoolProvider>()
     }
-
-    private var skeletonScreen: SkeletonScreen? = null
 
     abstract var viewModel: TweetListViewModel
 
@@ -74,6 +69,8 @@ abstract class TweetListFragment : Fragment() {
         })
 
         binding.recyclerview.apply {
+            adapter = this@TweetListFragment.adapter
+            setRecycledViewPool(viewPoolProvider?.tweetItemPool)
             (layoutManager as LinearLayoutManager).recycleChildrenOnDetach = true
             (itemAnimator as DefaultItemAnimator).run {
                 supportsChangeAnimations = false
@@ -86,20 +83,6 @@ abstract class TweetListFragment : Fragment() {
 
         viewModel.loadMoreState.observe(viewLifecycleOwner, Observer {
             Timber.d("Request state! $it")
-        })
-
-        viewModel.dataLoading.observe(viewLifecycleOwner, Observer<Boolean> { loading ->
-            if (loading) {
-                skeletonScreen = Skeleton.bind(binding.recyclerview)
-                    .shimmer(false)
-                    .load(R.layout.item_tweet_skeleton)
-                    .show()
-            } else {
-                binding.recyclerview.apply {
-                    adapter = this@TweetListFragment.adapter
-                    setRecycledViewPool(viewPoolProvider?.tweetItemPool)
-                }
-            }
         })
 
         // Show an error message

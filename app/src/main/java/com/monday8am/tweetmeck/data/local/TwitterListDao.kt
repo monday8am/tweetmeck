@@ -7,7 +7,7 @@ import com.monday8am.tweetmeck.data.models.TwitterList
 @Dao
 interface TwitterListDao {
 
-    @Query("SELECT * FROM lists")
+    @Query("SELECT * FROM lists ORDER BY created_at DESC")
     fun getAll(): LiveData<List<TwitterList>>
 
     @Query("SELECT * FROM lists WHERE id = :id")
@@ -15,7 +15,7 @@ interface TwitterListDao {
 
     @Transaction
     suspend fun updateAll(items: List<TwitterList>) {
-        deleteAll()
+        clear()
         insertAll(items)
     }
 
@@ -26,5 +26,5 @@ interface TwitterListDao {
     suspend fun insert(item: TwitterList): Long
 
     @Query("DELETE FROM lists")
-    suspend fun deleteAll()
+    suspend fun clear()
 }

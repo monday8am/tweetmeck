@@ -19,8 +19,15 @@ xmlns:tools="http://schemas.android.com/tools">
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.monday8am.tweetmeck.widget.TimelineSkeleton
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="@dimen/spacing_normal"
+        app:goneUnless="@{viewModel.dataLoading}" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview"
+        app:goneUnless="@{!viewModel.dataLoading}"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"

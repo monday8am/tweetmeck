@@ -59,8 +59,14 @@
                 android:id="@+id/tabs"
                 app:tabMode="scrollable"
                 app:tabGravity="fill"
+                app:goneUnless="@{!viewModel.dataLoading}"
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize" />
+
+            <com.monday8am.tweetmeck.widget.TimelineAppbarSkeleton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:goneUnless="@{viewModel.dataLoading}" />
 
             <ProgressBar
                 android:id="@+id/loading"
@@ -68,7 +74,7 @@
                 android:layout_height="4dp"
                 android:scaleY="4"
                 android:layout_alignParentBottom="true"
-                app:goneUnless="@{viewModel.dataLoading}"
+                app:invisibleUnless="@{viewModel.dataLoading}"
                 style="@style/Widget.Tweetmeck.Progressbar.Horizontal"
                 android:indeterminate="true" />
 

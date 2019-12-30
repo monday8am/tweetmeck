@@ -6,12 +6,14 @@ import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.succeeded
+import com.monday8am.tweetmeck.ui.delegates.AuthState
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
 import com.monday8am.tweetmeck.util.Event
 import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.core.context.GlobalContext
+import timber.log.Timber
 
 class HomeViewModel(
     private val dataRepository: DataRepository
@@ -21,7 +23,7 @@ class HomeViewModel(
     val twitterLists: LiveData<List<TwitterList>>
         get() = Transformations.distinctUntilChanged(dataRepository.lists)
 
-    private val _dataLoading = MutableLiveData<Boolean>()
+    private val _dataLoading = MediatorLiveData<Boolean>()
     val dataLoading: LiveData<Boolean> = _dataLoading
 
     private val _currentUserImageUrl = MutableLiveData<String?>()
@@ -43,10 +45,20 @@ class HomeViewModel(
     init {
         viewModelScope.launch {
             _dataLoading.value = true
+            _dataLoading.addSource(twitterLists) { list ->
+                _dataLoading.value = list.isEmpty()
+            }
+            _dataLoading.addSource(authState) { authEvent ->
+                when(authEvent.peekContent()) {
+                    is AuthState.Loading,
+                    is AuthState.WaitingForUserCredentials -> _dataLoading.value = true
+                    else -> { }
+                }
+            }
+
             currentSessionFlow.collect { session ->
                 refreshUserContent(session)
                 refreshLists(session)
-                _dataLoading.value = false
             }
         }
     }
@@ -82,15 +94,15 @@ class HomeViewModel(
 
     fun onSwipeRefresh() {
         viewModelScope.launch {
-            swipeRefreshResult.value = dataRepository.refreshListTimeline(currentTimelineId)
+            val result = dataRepository.refreshListTimeline(currentTimelineId)
+            swipeRefreshResult.value = result
+            if (result is Result.Error) {
+                _errorMessage.value = Event(result.exception.message ?: "Error refreshing content")
+            }
         }
     }
 
-    fun onChangedDisplayedTimeline(position: Int) {
-        twitterLists.value?.let {
-            if (it.isNotEmpty()) {
-                currentTimelineId = it[position].id
-            }
-        }
+    fun onChangedDisplayedTimeline(listId: Long) {
+        currentTimelineId = listId
     }
 }
