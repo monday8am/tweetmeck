@@ -2,6 +2,7 @@ package com.monday8am.tweetmeck.ui.home.timeline
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.monday8am.tweetmeck.ui.base.TweetListFragment
 import com.monday8am.tweetmeck.ui.base.TweetListViewModel

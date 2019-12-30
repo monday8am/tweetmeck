@@ -6,6 +6,7 @@
             name="viewModel"
             type="com.monday8am.tweetmeck.ui.home.HomeViewModel" />
     </data>
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
@@ -50,12 +51,28 @@
 
         </FrameLayout>
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabs"
-            app:tabMode="scrollable"
-            app:tabGravity="fill"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize" />
+            android:layout_height="?actionBarSize">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabs"
+                app:tabMode="scrollable"
+                app:tabGravity="fill"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize" />
+
+            <ProgressBar
+                android:id="@+id/loading"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:scaleY="4"
+                android:layout_alignParentBottom="true"
+                app:goneUnless="@{viewModel.dataLoading}"
+                style="@style/Widget.Tweetmeck.Progressbar.Horizontal"
+                android:indeterminate="true" />
+
+        </RelativeLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 </layout>

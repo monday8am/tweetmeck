@@ -292,6 +292,10 @@
         <item name="android:paddingRight">@dimen/margin_normal</item>
     </style>
 
+    <style name="Widget.Tweetmeck.Progressbar.Horizontal" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:indeterminateTint">@color/base0</item>
+    </style>
+
     <!-- Misc -->
     <style name="Widget.Tweetmeck.EmptyResults">
         <item name="android:drawablePadding">@dimen/margin_normal</item>

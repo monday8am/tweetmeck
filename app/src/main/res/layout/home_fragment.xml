@@ -46,15 +46,5 @@
                     app:pageMargin="@{@dimen/spacing_normal}" />
 
             </com.monday8am.tweetmeck.widget.CustomSwipeRefreshLayout>
-
-        <ProgressBar
-            android:id="@+id/loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminate="true"
-            android:indeterminateTint="?attr/colorControlLight"
-            app:goneUnless="@{viewModel.dataLoading}" />
-
     </com.monday8am.tweetmeck.widget.InsetDispatchingCoordinatorLayout>
 </layout>

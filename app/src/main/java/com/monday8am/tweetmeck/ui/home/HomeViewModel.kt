@@ -1,9 +1,6 @@
 package com.monday8am.tweetmeck.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.models.Session
@@ -22,7 +19,7 @@ class HomeViewModel(
         SignInViewModelDelegate by GlobalContext.get().koin.get() {
 
     val twitterLists: LiveData<List<TwitterList>>
-        get() = dataRepository.lists
+        get() = Transformations.distinctUntilChanged(dataRepository.lists)
 
     private val _dataLoading = MutableLiveData<Boolean>()
     val dataLoading: LiveData<Boolean> = _dataLoading
@@ -45,9 +42,11 @@ class HomeViewModel(
 
     init {
         viewModelScope.launch {
+            _dataLoading.value = true
             currentSessionFlow.collect { session ->
                 refreshUserContent(session)
                 refreshLists(session)
+                _dataLoading.value = false
             }
         }
     }
@@ -71,7 +70,7 @@ class HomeViewModel(
         }
 
         if (!result.succeeded) {
-            _errorMessage.value = Event("Error loading lissts")
+            _errorMessage.value = Event("Error loading lists")
         }
     }
 

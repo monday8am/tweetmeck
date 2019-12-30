@@ -39,8 +39,8 @@ class DataRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : DataRepository {
 
-    private val pageSize = 20
-    private val prefetchDistance = 20
+    private val pageSize = 10
+    private val prefetchDistance = 10
 
     override val lists: LiveData<List<TwitterList>>
         get() = db.twitterListDao().getAll()

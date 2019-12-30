@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.ethanhua.skeleton.Skeleton
+import com.ethanhua.skeleton.SkeletonScreen
+import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.FragmentTweetListBinding
 import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider
@@ -26,6 +29,8 @@ abstract class TweetListFragment : Fragment() {
     private val viewPoolProvider: TimelinePoolProvider? by lazy {
         activity?.currentScope?.get<TimelinePoolProvider>()
     }
+
+    private var skeletonScreen: SkeletonScreen? = null
 
     abstract var viewModel: TweetListViewModel
 
@@ -52,21 +57,12 @@ abstract class TweetListFragment : Fragment() {
             DividerItemDecoration.VERTICAL
         ))
 
-        binding.recyclerview.apply {
-            adapter = this@TweetListFragment.adapter
-            setRecycledViewPool(viewPoolProvider?.tweetItemPool)
-            (layoutManager as LinearLayoutManager).recycleChildrenOnDetach = true
-            (itemAnimator as DefaultItemAnimator).run {
-                supportsChangeAnimations = false
-                addDuration = 160L
-                moveDuration = 160L
-                changeDuration = 160L
-                removeDuration = 120L
-            }
-        }
-
         viewModel.pagedList.observe(viewLifecycleOwner, Observer<PagedList<Tweet>> {
             adapter.submitList(it) {
+                if (it.isNotEmpty()) {
+                    Timber.d("Loading data for ${it.first().listId}: loaded: ${it.loadedCount} placeholders: ${it.size} ")
+                }
+
                 // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
                 // item added to the end of the list as an anchor during initial load.
                 val layoutManager = (binding.recyclerview.layoutManager as LinearLayoutManager)
@@ -77,8 +73,33 @@ abstract class TweetListFragment : Fragment() {
             }
         })
 
+        binding.recyclerview.apply {
+            (layoutManager as LinearLayoutManager).recycleChildrenOnDetach = true
+            (itemAnimator as DefaultItemAnimator).run {
+                supportsChangeAnimations = false
+                addDuration = 160L
+                moveDuration = 160L
+                changeDuration = 160L
+                removeDuration = 120L
+            }
+        }
+
         viewModel.loadMoreState.observe(viewLifecycleOwner, Observer {
             Timber.d("Request state! $it")
+        })
+
+        viewModel.dataLoading.observe(viewLifecycleOwner, Observer<Boolean> { loading ->
+            if (loading) {
+                skeletonScreen = Skeleton.bind(binding.recyclerview)
+                    .shimmer(false)
+                    .load(R.layout.item_tweet_skeleton)
+                    .show()
+            } else {
+                binding.recyclerview.apply {
+                    adapter = this@TweetListFragment.adapter
+                    setRecycledViewPool(viewPoolProvider?.tweetItemPool)
+                }
+            }
         })
 
         // Show an error message

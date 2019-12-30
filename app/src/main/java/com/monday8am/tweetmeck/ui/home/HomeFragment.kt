@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.ethanhua.skeleton.SkeletonScreen
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.monday8am.tweetmeck.R
@@ -25,10 +26,11 @@ import timber.log.Timber
 
 class HomeFragment : Fragment() {
 
-    private val tabsCacheSize = 15
+    private val tabsCacheSize = 5
 
     private lateinit var binding: HomeFragmentBinding
     private lateinit var viewPager2: ViewPager2
+    private var skeletonScreen: SkeletonScreen? = null
 
     private val viewModel: HomeViewModel by viewModel()
     private val authViewModel: AuthViewModel by sharedViewModel()

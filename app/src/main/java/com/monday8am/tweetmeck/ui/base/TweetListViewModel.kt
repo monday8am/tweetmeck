@@ -30,6 +30,7 @@ abstract class TweetListViewModel(
     private val _errorMessage = MutableLiveData<Event<String>>()
     val errorMessage: LiveData<Event<String>> = _errorMessage
 
+    abstract val dataLoading: LiveData<Boolean>
     abstract val pagedList: LiveData<PagedList<Tweet>>
     abstract val loadMoreState: LiveData<Result<Unit>>
 
