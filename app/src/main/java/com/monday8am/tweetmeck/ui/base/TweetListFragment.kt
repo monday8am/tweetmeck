@@ -54,10 +54,6 @@ abstract class TweetListFragment : Fragment() {
 
         viewModel.pagedList.observe(viewLifecycleOwner, Observer<PagedList<Tweet>> {
             adapter.submitList(it) {
-                if (it.isNotEmpty()) {
-                    Timber.d("Loading data for ${it.first().listId}: loaded: ${it.loadedCount} placeholders: ${it.size} ")
-                }
-
                 // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
                 // item added to the end of the list as an anchor during initial load.
                 val layoutManager = (binding.recyclerview.layoutManager as LinearLayoutManager)
