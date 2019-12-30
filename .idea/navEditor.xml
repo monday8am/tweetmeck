@@ -41,6 +41,18 @@
                       </LayoutPositions>
                     </value>
                   </entry>
+                  <entry key="searchFragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="147" />
+                            <option name="y" value="-356" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
                   <entry key="sign_in_dialog_dest">
                     <value>
                       <LayoutPositions>
@@ -81,6 +93,11 @@
                                 <LayoutPositions />
                               </value>
                             </entry>
+                            <entry key="action_timeline_dest_to_searchFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_timeline_dest_to_sign_in_dialog_dest">
                               <value>
                                 <LayoutPositions />
@@ -111,8 +128,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="193" />
-                            <option name="y" value="44" />
+                            <option name="x" value="426" />
+                            <option name="y" value="41" />
                           </Point>
                         </option>
                       </LayoutPositions>
@@ -123,8 +140,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="450" />
-                            <option name="y" value="325" />
+                            <option name="x" value="426" />
+                            <option name="y" value="358" />
                           </Point>
                         </option>
                       </LayoutPositions>

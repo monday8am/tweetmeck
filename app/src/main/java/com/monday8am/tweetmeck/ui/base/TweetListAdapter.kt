@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.ui.home.timeline
+package com.monday8am.tweetmeck.ui.base
 
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -9,12 +9,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.ItemTweetBinding
-import com.monday8am.tweetmeck.ui.home.TweetItemEventListener
 
-class TimelineAdapter(
+class TweetListAdapter(
     private val eventListener: TweetItemEventListener,
     private val lifecycleOwner: LifecycleOwner,
-    private val textCreator: TimelineTextCreator
+    private val textCreator: TweetItemTextCreator
 ) : PagedListAdapter<Tweet, TweetViewHolder>(TweetItemDiff) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TweetViewHolder {
@@ -35,7 +34,7 @@ class TimelineAdapter(
 
 class TweetViewHolder(
     private val binding: ItemTweetBinding,
-    private val textCreator: TimelineTextCreator,
+    private val textCreator: TweetItemTextCreator,
     private val eventListener: TweetItemEventListener,
     private val lifecycleOwner: LifecycleOwner
 ) : RecyclerView.ViewHolder(binding.root) {

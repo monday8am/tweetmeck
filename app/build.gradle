@@ -89,5 +89,4 @@ dependencies {
     implementation "org.koin:koin-android:$rootProject.koinVersion"
     implementation "org.koin:koin-androidx-viewmodel:$rootProject.koinVersion"
     implementation "org.koin:koin-androidx-scope:$rootProject.koinVersion"
-
 }

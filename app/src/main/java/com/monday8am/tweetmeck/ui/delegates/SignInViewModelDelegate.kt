@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.ui.login
+package com.monday8am.tweetmeck.ui.delegates
 
 import android.net.Uri
 import androidx.lifecycle.LiveData
@@ -30,7 +30,8 @@ interface SignInViewModelDelegate {
     suspend fun logOut()
 }
 
-class SignInViewModelDelegateImpl(private val authRepository: AuthRepository) : SignInViewModelDelegate {
+class SignInViewModelDelegateImpl(private val authRepository: AuthRepository) :
+    SignInViewModelDelegate {
 
     private val _authState = MutableLiveData<AuthState>()
     override val authState: LiveData<Event<AuthState>>
@@ -49,9 +50,11 @@ class SignInViewModelDelegateImpl(private val authRepository: AuthRepository) : 
         currentSessionFlow = authRepository.session.map {
             _lastSession = it
             if (it == null) {
-                _authState.value = AuthState.NotLogged
+                _authState.value =
+                    AuthState.NotLogged
             } else {
-                _authState.value = AuthState.Logged
+                _authState.value =
+                    AuthState.Logged
             }
             it
         }
@@ -61,25 +64,39 @@ class SignInViewModelDelegateImpl(private val authRepository: AuthRepository) : 
         _authState.value = AuthState.Loading
 
         when (val response = authRepository.getAuthUrl()) {
-            is Result.Success -> _authState.value = AuthState.WaitingForUserCredentials(response.data)
-            is Result.Error -> _authState.value = AuthState.Error(response.exception.message ?: "Error getting auth URL")
-            else -> _authState.value = AuthState.Error("Error getting auth URL")
+            is Result.Success -> _authState.value =
+                AuthState.WaitingForUserCredentials(
+                    response.data
+                )
+            is Result.Error -> _authState.value =
+                AuthState.Error(
+                    response.exception.message ?: "Error getting auth URL"
+                )
+            else -> _authState.value =
+                AuthState.Error("Error getting auth URL")
         }
     }
 
     override suspend fun setWebAuthResult(resultUri: Uri?, errorMsg: String?) {
         when {
             resultUri != null -> {
-                _authState.value = AuthState.Loading
+                _authState.value =
+                    AuthState.Loading
                 val result = authRepository.login(resultUri)
                 if (result.succeeded) {
-                    _authState.value = AuthState.Logged
+                    _authState.value =
+                        AuthState.Logged
                 } else {
-                    _authState.value = AuthState.Error(errorMsg = "Wrong result after login request")
+                    _authState.value =
+                        AuthState.Error(
+                            errorMsg = "Wrong result after login request"
+                        )
                 }
             }
-            errorMsg != null -> _authState.value = AuthState.Error(errorMsg = errorMsg)
-            else -> _authState.value = AuthState.NotLogged
+            errorMsg != null -> _authState.value =
+                AuthState.Error(errorMsg = errorMsg)
+            else -> _authState.value =
+                AuthState.NotLogged
         }
     }
 

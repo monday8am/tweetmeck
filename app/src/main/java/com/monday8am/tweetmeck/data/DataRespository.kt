@@ -11,7 +11,6 @@ import com.monday8am.tweetmeck.data.models.*
 import com.monday8am.tweetmeck.data.remote.TimelineBoundaryCallback
 import com.monday8am.tweetmeck.data.remote.TwitterClient
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -24,8 +23,7 @@ interface DataRepository {
     suspend fun refreshLoggedUserLists(session: Session): Result<Unit>
     suspend fun likeTweet(tweet: Tweet, session: Session): Result<Unit>
     suspend fun retweetTweet(tweet: Tweet, session: Session): Result<Unit>
-    fun getTimeline(listId: Long, scope: CoroutineScope): TimelineContent
-    suspend fun deleteCachedData()
+    fun getTimeline(listId: Long): TimelineContent
 }
 
 // Try order if not update forced: https://medium.com/@appmattus/caching-made-simple-on-android-d6e024e3726b
@@ -39,8 +37,8 @@ class DataRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : DataRepository {
 
-    private val pageSize = 20
-    private val prefetchDistance = 20
+    private val pageSize = 8
+    private val prefetchDistance = 10
 
     override val lists: LiveData<List<TwitterList>>
         get() = db.twitterListDao().getAll()
@@ -107,7 +105,7 @@ class DataRepositoryImpl(
         }
     }
 
-    override fun getTimeline(listId: Long, scope: CoroutineScope): TimelineContent {
+    override fun getTimeline(listId: Long): TimelineContent {
         val pagedListConfig = PagedList.Config.Builder()
             .setInitialLoadSizeHint(pageSize * 2)
             .setPageSize(pageSize)
@@ -116,7 +114,6 @@ class DataRepositoryImpl(
 
         val boundaryCallback = TimelineBoundaryCallback(
             listId = listId,
-            scope = scope,
             refreshCallback = ::refreshListTimeline,
             loadMoreCallback = ::loadMoreForTimeline
         )
@@ -137,12 +134,6 @@ class DataRepositoryImpl(
     override suspend fun getUser(userId: Long): Result<TwitterUser> =
         getItemFromDb(userId, db.twitterUserDao()::getItemById
     )
-
-    override suspend fun deleteCachedData() {
-        withContext(ioDispatcher) {
-            db.twitterListDao().deleteAll()
-        }
-    }
 
     private suspend fun <T> getItemFromDb(itemId: Long, dbCall: suspend (Long) -> T?): Result<T> {
         return withContext(ioDispatcher) {

@@ -41,19 +41,17 @@
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/viewpager2"
+                    app:goneUnless="@{true}"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:pageMargin="@{@dimen/spacing_normal}" />
 
             </com.monday8am.tweetmeck.widget.CustomSwipeRefreshLayout>
 
-        <ProgressBar
-            android:id="@+id/loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminate="true"
-            android:indeterminateTint="?attr/colorControlLight"
+        <com.monday8am.tweetmeck.widget.TimelineSkeleton
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="144dp"
             app:goneUnless="@{viewModel.dataLoading}" />
 
     </com.monday8am.tweetmeck.widget.InsetDispatchingCoordinatorLayout>
