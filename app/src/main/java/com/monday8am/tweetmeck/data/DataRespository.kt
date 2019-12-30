@@ -11,7 +11,6 @@ import com.monday8am.tweetmeck.data.models.*
 import com.monday8am.tweetmeck.data.remote.TimelineBoundaryCallback
 import com.monday8am.tweetmeck.data.remote.TwitterClient
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -38,7 +37,7 @@ class DataRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : DataRepository {
 
-    private val pageSize = 10
+    private val pageSize = 8
     private val prefetchDistance = 10
 
     override val lists: LiveData<List<TwitterList>>

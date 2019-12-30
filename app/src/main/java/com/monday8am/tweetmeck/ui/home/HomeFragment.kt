@@ -100,11 +100,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun bindContent(view: View, items: List<TwitterList>) {
-        val appbar: View = view.findViewById(R.id.appbar)
         val tabs: TabLayout = view.findViewById(R.id.tabs)
 
         viewPager2.offscreenPageLimit = tabsCacheSize
-
         viewPager2.adapter = object : FragmentStateAdapter(this) {
             override fun createFragment(position: Int): Fragment {
                 return TimelineFragment.newInstance(items[position].id)
@@ -123,14 +121,9 @@ class HomeFragment : Fragment() {
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                try {
-                    if (items.size > position - 1) {
-                        viewModel.onChangedDisplayedTimeline(items[position].id)
-                    }
-                } catch (e: Exception) {
-                    Timber.d("Exception: ${items.size} > $position")
+                if (items.size > position) {
+                    viewModel.onChangedDisplayedTimeline(items[position].id)
                 }
-
             }
         })
 

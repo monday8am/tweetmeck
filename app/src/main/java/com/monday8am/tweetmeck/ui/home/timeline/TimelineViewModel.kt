@@ -8,28 +8,40 @@ import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.ui.base.TweetListViewModel
+import com.monday8am.tweetmeck.ui.delegates.AuthState
+import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
+import org.koin.core.context.GlobalContext
 
 class TimelineViewModel(
     listId: Long,
     authRepository: AuthRepository,
     dataRepository: DataRepository
-) : TweetListViewModel(authRepository, dataRepository) {
+) : TweetListViewModel(authRepository, dataRepository),
+    SignInViewModelDelegate by GlobalContext.get().koin.get() {
 
     override val pagedList: LiveData<PagedList<Tweet>>
     override val loadMoreState: LiveData<Result<Unit>>
 
-    private val _internalDataLoading: MediatorLiveData<Boolean> = MediatorLiveData()
-    override val dataLoading: LiveData<Boolean> = _internalDataLoading
+    private val _dataLoading: MediatorLiveData<Boolean> = MediatorLiveData()
+    override val dataLoading: LiveData<Boolean> = _dataLoading
 
     init {
-        _internalDataLoading.value = true
+        _dataLoading.value = true
 
         val timelineContent = dataRepository.getTimeline(listId)
         pagedList = timelineContent.pagedList
         loadMoreState = timelineContent.loadMoreState
 
-        _internalDataLoading.addSource(pagedList) {
-            _internalDataLoading.value = false
+        _dataLoading.addSource(pagedList) {
+            _dataLoading.value = false
+        }
+
+        _dataLoading.addSource(authState) { authEvent ->
+            when (authEvent.peekContent()) {
+                is AuthState.Loading,
+                is AuthState.WaitingForUserCredentials -> _dataLoading.value = true
+                else -> { }
+            }
         }
     }
 }

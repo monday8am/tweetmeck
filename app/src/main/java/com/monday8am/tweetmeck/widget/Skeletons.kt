@@ -10,7 +10,8 @@ class TimelineSkeleton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0,
-    defStyleRes: Int = 0): LinearLayout(context, attrs, defStyle, defStyleRes) {
+    defStyleRes: Int = 0
+) : LinearLayout(context, attrs, defStyle, defStyleRes) {
 
     init {
         LayoutInflater.from(context).inflate(R.layout.timeline_skeleton, this)
@@ -21,7 +22,8 @@ class TimelineAppbarSkeleton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0,
-    defStyleRes: Int = 0): LinearLayout(context, attrs, defStyle, defStyleRes) {
+    defStyleRes: Int = 0
+) : LinearLayout(context, attrs, defStyle, defStyleRes) {
 
     init {
         LayoutInflater.from(context).inflate(R.layout.timeline_skeleton_appbar, this)

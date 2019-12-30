@@ -51,7 +51,7 @@
         <com.monday8am.tweetmeck.widget.TimelineSkeleton
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="140dp"
+            android:layout_marginTop="144dp"
             app:goneUnless="@{viewModel.dataLoading}" />
 
     </com.monday8am.tweetmeck.widget.InsetDispatchingCoordinatorLayout>

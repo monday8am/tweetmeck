@@ -13,7 +13,6 @@ import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.core.context.GlobalContext
-import timber.log.Timber
 
 class HomeViewModel(
     private val dataRepository: DataRepository
@@ -49,7 +48,7 @@ class HomeViewModel(
                 _dataLoading.value = list.isEmpty()
             }
             _dataLoading.addSource(authState) { authEvent ->
-                when(authEvent.peekContent()) {
+                when (authEvent.peekContent()) {
                     is AuthState.Loading,
                     is AuthState.WaitingForUserCredentials -> _dataLoading.value = true
                     else -> { }
