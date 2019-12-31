@@ -9,7 +9,7 @@
     <fragment
         android:id="@+id/onboarding_dest"
         android:name="com.monday8am.tweetmeck.ui.onboarding.OnboardingFragment"
-        tools:layout="@layout/onboarding_fragment">
+        tools:layout="@layout/onboarding_page_fragment">
         <action
             android:id="@+id/action_onboarding_dest_to_timeline_dest"
             app:destination="@id/timeline_dest" />

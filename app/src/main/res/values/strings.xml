@@ -64,4 +64,7 @@
     <string name="tw__thousand_format">%.1fk</string>
     <string name="tw__million_format">%.1fm</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

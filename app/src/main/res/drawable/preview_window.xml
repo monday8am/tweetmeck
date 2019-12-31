@@ -17,11 +17,9 @@
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:drawable="@color/base3"/>
-    <item android:top="10dp" android:left="10dp" >
-        <bitmap
-            android:src="@drawable/ic_signin"
-            android:gravity="center"/>
-    </item>
+    <item android:drawable="@color/base3" />
+    <item
+        android:drawable="@drawable/ic_bird_small"
+        android:gravity="center" />
 
 </layer-list>
