@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.adapter.FragmentViewHolder
 import androidx.viewpager2.widget.ViewPager2
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.databinding.OnboardingFragmentBinding
@@ -29,7 +28,7 @@ class OnboardingFragment : Fragment(), CoroutineScope by MainScope() {
         savedInstanceState: Bundle?
     ): View? {
         viewBinding = OnboardingFragmentBinding.inflate(layoutInflater)
-        viewPager2 = viewBinding.onboardingViewpager2
+        viewPager2 = viewBinding.slider
         return viewBinding.root
     }
 
@@ -46,30 +45,15 @@ class OnboardingFragment : Fragment(), CoroutineScope by MainScope() {
 
         viewPager2.adapter = object : FragmentStateAdapter(this) {
             override fun createFragment(position: Int): Fragment {
-                when(position) {
-                    
+                return if (position == 1) {
+                    OnboardingQueryFragment()
+                } else {
+                    OnboardingPageFragment.newInstance(position)
                 }
-                return TimelineFragment.newInstance(items[position].id)
             }
 
-            override fun getItemCount(): Int {
-                return items.count()
-            }
-
-            override fun onViewDetachedFromWindow(holder: FragmentViewHolder) {
-                super.onViewDetachedFromWindow(holder)
-                holder.adapterPosition
-            }
+            override fun getItemCount(): Int = 2
         }
-
-        viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                if (items.size > position) {
-                    viewModel.onChangedDisplayedTimeline(items[position].id)
-                }
-            }
-        })
     }
 
     private fun navigateToTimeline() = findNavController().navigate(R.id.action_onboarding_dest_to_timeline_dest)

@@ -5,7 +5,9 @@
     <!-- Onboarding -->
     <string name="onboarding_title">Onboarding</string>
     <string name="onboarding_step1">Tweetmeck is a mobile implementation of the popular webapp Tweetdeck</string>
-    <string name="start_btn">Start!</string>
+    <string name="get_started">Get started</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
 
     <!-- Timeline -->
     <string name="timeline_screen_title">Timeline</string>

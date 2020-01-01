@@ -108,6 +108,14 @@
         <item name="android:lineSpacingMultiplier">@dimen/text_line_spacing</item>
     </style>
 
+    <style name="Widget.Tweetmeck.OnboardingButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:fontFamily">@font/pt_sans</item>
+    </style>
+
+    <style name="Widget.Tweetmeck.OnboardingTextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:fontFamily">@font/pt_sans</item>
+    </style>
+
     <style name="TextAppearance.Tweetmeck.SpeakerTitle" parent="@style/TextAppearance.Tweetmeck.SessionTitle">
         <item name="android:textColor">?colorPrimary</item>
     </style>
