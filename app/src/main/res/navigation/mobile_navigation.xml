@@ -3,17 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    android:label="Login"
-    app:startDestination="@+id/onboarding_dest">
+    app:startDestination="@id/timeline_dest">
 
-    <fragment
-        android:id="@+id/onboarding_dest"
-        android:name="com.monday8am.tweetmeck.ui.onboarding.OnboardingFragment"
-        tools:layout="@layout/onboarding_page_fragment">
-        <action
-            android:id="@+id/action_onboarding_dest_to_timeline_dest"
-            app:destination="@id/timeline_dest" />
-    </fragment>
     <fragment
         android:id="@+id/timeline_dest"
         android:name="com.monday8am.tweetmeck.ui.home.HomeFragment"

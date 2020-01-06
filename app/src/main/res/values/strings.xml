@@ -3,8 +3,12 @@
     <string name="app_name">Tweetmeck</string>
 
     <!-- Onboarding -->
-    <string name="onboarding_title">Onboarding</string>
-    <string name="onboarding_step1">Tweetmeck is a mobile implementation of the popular webapp Tweetdeck</string>
+    <string name="onboarding_slide0_title">Tweetmeck is for pleasure reading</string>
+    <string name="onboarding_slide0_subtitle">Read tweets in a productive way, without noise and with perfect font and contrast</string>
+    <string name="onboarding_slide1_title">Never miss a good thread</string>
+    <string name="onboarding_slide1_subtitle">The curated lists let you explore the topics easily, without missing tweets in a fast timeline flow</string>
+    <string name="onboarding_slide2_title">Configure your first experience</string>
+    <string name="onboarding_slide2_subtitle">Select your area of interest and start to explore the app </string>
     <string name="get_started">Get started</string>
     <string name="next">Next</string>
     <string name="skip">Skip</string>

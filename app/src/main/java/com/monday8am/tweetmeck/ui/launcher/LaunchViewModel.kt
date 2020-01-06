@@ -16,7 +16,7 @@ class LaunchViewModel(preferencesStorage: PreferenceStorage) : ViewModel() {
 
     val launchDestination: LiveData<Event<LaunchDestination>> = onboardingCompletedResult.map {
         if (it) {
-            Event(LaunchDestination.MAIN_ACTIVITY)
+            Event(LaunchDestination.ONBOARDING)
         } else {
             Event(LaunchDestination.ONBOARDING)
         }

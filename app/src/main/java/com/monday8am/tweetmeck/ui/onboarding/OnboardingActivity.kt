@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.viewpager2.widget.ViewPager2
 import com.monday8am.tweetmeck.MainActivity
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.databinding.ActivityOnboardingBinding
@@ -13,6 +14,7 @@ import org.koin.android.ext.android.inject
 
 class OnboardingActivity : AppCompatActivity() {
 
+    private val numberOfPages by lazy { OnBoardingPage.values().size }
     private val onboardingViewModel: OnboardingViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +33,7 @@ class OnboardingActivity : AppCompatActivity() {
             }
         })
 
+        bindContent(binding)
         setImmersiveMode()
         setupTransition(binding)
     }
@@ -43,6 +46,31 @@ class OnboardingActivity : AppCompatActivity() {
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         decor.systemUiVisibility = flags
     }
+
+    private fun bindContent(binding: ActivityOnboardingBinding)  {
+        with(binding.slider) {
+            adapter = OnBoardingPagerAdapter()
+            setPageTransformer { page, position ->
+                //setParallaxTransformation(page, position)
+            }
+            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+                    super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+                    if (numberOfPages > 1) {
+                        val newProgress = (position + positionOffset) / (numberOfPages - 1)
+                        binding.onboardingRoot.progress = newProgress
+                    }
+                }
+            })
+
+            binding.pageIndicator.setViewPager2(this)
+            binding.nextBtn.setOnClickListener {
+                val nextSlidePos: Int = binding.slider.currentItem.plus(1)
+                binding.slider.setCurrentItem(nextSlidePos, true)
+            }
+        }
+    }
+
 
     private fun setupTransition(binding: ActivityOnboardingBinding) {
         // Transition the logo animation (roughly) from the preview window background.

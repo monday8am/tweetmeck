@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.onboarding.OnboardingPageFragment">
+    tools:context=".ui.onboarding.OnboardingActivity">
 
     <ImageView
+        android:id="@+id/pageBackgroundImg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
@@ -18,24 +19,27 @@
 
     <TextView
         android:id="@+id/titleTv"
-        android:textAppearance="@style/TextAppearance.Tweetmeck.Onboarding.Title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_normal"
-        android:layout_marginEnd="@dimen/margin_normal"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:lineSpacingMultiplier="0.82"
+        android:textAppearance="@style/TextAppearance.Tweetmeck.Onboarding.Title"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Tweetmeck is for pleasure reading"
-        />
+        app:layout_constraintVertical_bias="0.12"
+        tools:text="Tweetmeck is for pleasure reading" />
 
     <TextView
         android:id="@+id/subTitleTv"
         android:textAppearance="@style/TextAppearance.Tweetmeck.Onboarding.Subtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
         android:layout_marginStart="@dimen/margin_normal"
-        android:layout_marginEnd="@dimen/margin_normal"
+        android:layout_marginEnd="@dimen/margin_large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleTv"
@@ -43,7 +47,7 @@
         />
 
     <ImageView
-        android:id="@+id/img"
+        android:id="@+id/centerImg"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="@dimen/margin_large"
@@ -54,7 +58,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.6"
+        app:layout_constraintVertical_bias="0.65"
         tools:ignore="ContentDescription"
         tools:src="@drawable/onboarding_step2" />
 

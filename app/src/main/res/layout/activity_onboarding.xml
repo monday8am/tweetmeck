@@ -8,10 +8,12 @@
             name="viewModel"
             type="com.monday8am.tweetmeck.ui.onboarding.OnboardingViewModel" />
     </data>
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.motion.widget.MotionLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.onboarding.OnboardingActivity">
+        android:id="@+id/onboardingRoot"
+        tools:context=".ui.onboarding.OnboardingActivity"
+         >
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/slider"
@@ -27,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.8"/>
+            app:layout_constraintGuide_percent="0.85"/>
 
         <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
             android:id="@+id/page_indicator"
@@ -48,7 +50,6 @@
             android:id="@+id/nextBtn"
             style="@style/Widget.Tweetmeck.OnboardingTextButton"
             android:text="@string/next"
-            android:layout_marginBottom="@dimen/margin_normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginStart="@dimen/margin_normal"
@@ -60,35 +61,28 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/startBtn"
+            android:onClick="@{() -> viewModel.getStartedClick()}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_normal"
-            android:backgroundTint="@color/magenta"
-            style="@style/Widget.Tweetmeck.OnboardingButton"
-            app:cornerRadius="24dp"
-            android:paddingStart="@dimen/margin_large"
-            android:paddingEnd="@dimen/margin_large"
-            android:paddingTop="@dimen/margin_normal"
-            android:paddingBottom="@dimen/margin_normal"
+            style="@style/Widget.Tweetmeck.OnboardingTextButton.TagButton"
             android:text="@string/get_started"
-            android:textColor="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/page_indicator"/>
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/skipBtn"
             style="@style/Widget.Tweetmeck.OnboardingTextButton"
+            android:onClick="@{() -> viewModel.getStartedClick()}"
             android:text="@string/skip"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/page_indicator"
-            android:layout_marginBottom="@dimen/margin_normal"
             android:layout_marginStart="@dimen/margin_normal"
             android:layout_marginEnd="@dimen/margin_normal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>
