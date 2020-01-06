@@ -16,13 +16,21 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:theme="@style/AppTheme.Launcher"
-            android:name=".MainActivity">
+            android:name=".ui.launcher.LauncherActivity"
+            android:theme="@style/AppTheme.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:theme="@style/AppTheme.NoActionBar"
+            android:name=".MainActivity" />
+
+        <activity
+            android:name=".ui.onboarding.OnboardingActivity"
+            android:theme="@style/AppTheme.Onboarding" />
 
         <meta-data
             android:name="preloaded_fonts"
