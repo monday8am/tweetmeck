@@ -101,10 +101,21 @@
         <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
-    <style name="TextAppearance.Tweetmeck.OnboardingDeck" parent="@style/TextAppearance.AppCompat.Body1">
+    <style name="TextAppearance.Tweetmeck.H4" parent="@style/TextAppearance.AppCompat.Display1">
         <item name="android:fontFamily">@font/pt_sans</item>
-        <item name="android:textColor">?android:textColorPrimary</item>
+    </style>
+
+    <style name="TextAppearance.Tweetmeck.Onboarding.Title" parent="TextAppearance.Tweetmeck.H4">
+        <item name="android:textColor">@color/base03</item>
+        <item name="android:letterSpacing">-0.01</item>
+    </style>
+
+    <style name="TextAppearance.Tweetmeck.Onboarding.Subtitle" parent="@style/TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:fontFamily">@font/pt_serif</item>
+        <item name="fontFamily">@font/pt_serif</item>
         <item name="android:textSize">16sp</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textColor">@color/base01</item>
         <item name="android:lineSpacingMultiplier">@dimen/text_line_spacing</item>
     </style>
 
