@@ -3,6 +3,7 @@ package com.monday8am.tweetmeck.ui.home
 import androidx.lifecycle.*
 import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.Result
+import com.monday8am.tweetmeck.data.local.PreferenceStorage
 import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.succeeded
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 import org.koin.core.context.GlobalContext
 
 class HomeViewModel(
-    private val dataRepository: DataRepository
+    private val dataRepository: DataRepository,
+    private val preferences: PreferenceStorage
 ) : ViewModel(),
         SignInViewModelDelegate by GlobalContext.get().koin.get() {
 
@@ -77,7 +79,7 @@ class HomeViewModel(
         val result = if (session != null) {
             dataRepository.refreshLoggedUserLists(session)
         } else {
-            dataRepository.refreshLists("nytimes")
+            dataRepository.refreshLists(preferences.initialTopic ?: "ny_times")
         }
 
         if (!result.succeeded) {

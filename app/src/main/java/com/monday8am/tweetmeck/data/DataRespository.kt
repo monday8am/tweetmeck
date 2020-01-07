@@ -26,11 +26,6 @@ interface DataRepository {
     fun getTimeline(listId: Long): TimelineContent
 }
 
-// Try order if not update forced: https://medium.com/@appmattus/caching-made-simple-on-android-d6e024e3726b
-// 1. Memory
-// 2. Local
-// 3. Network
-
 class DataRepositoryImpl(
     private val remoteClient: TwitterClient,
     private val db: TwitterDatabase,
@@ -63,7 +58,7 @@ class DataRepositoryImpl(
             val response = remoteClient.getListTimeline(listId, count = pageSize * 2)
             val tweets = response.map { it.mapWith(StatusToTweet(listId).asLambda()) }
             val users = response.map { it.mapWith(StatusToTwitterUser().asLambda()) }
-            db.tweetDao().insert(tweets)
+            db.tweetDao().refreshTweetsFromList(listId, tweets)
             db.twitterUserDao().insert(users)
         }
     }
