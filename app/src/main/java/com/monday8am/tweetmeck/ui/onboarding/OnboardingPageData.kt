@@ -7,25 +7,21 @@ import com.monday8am.tweetmeck.R
 enum class OnBoardingPage(
     @StringRes val titleResource: Int,
     @StringRes val subTitleResource: Int,
-    @DrawableRes val centerImageResource: Int,
-    @DrawableRes val backgroundResource: Int
+    @DrawableRes val centerImageResource: Int
 ) {
     ONE(
         R.string.onboarding_slide0_title,
         R.string.onboarding_slide0_subtitle,
-        R.drawable.onboarding_step0,
-        R.drawable.onboarding_step_bg0
+        R.drawable.onboarding_step0
     ),
     TWO(
         R.string.onboarding_slide1_title,
         R.string.onboarding_slide1_subtitle,
-        R.drawable.onboarding_step1,
-        R.drawable.onboarding_step_bg1
+        R.drawable.onboarding_step1
     ),
     THREE(
         R.string.onboarding_slide2_title,
         R.string.onboarding_slide2_subtitle,
-        R.drawable.onboarding_step2,
-        R.drawable.onboarding_step_bg2
+        R.drawable.onboarding_step2
     )
 }

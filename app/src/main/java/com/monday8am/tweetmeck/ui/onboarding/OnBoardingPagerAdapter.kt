@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.R
 import kotlinx.android.synthetic.main.onboarding_page_item.view.*
 
-class OnBoardingPagerAdapter(private val onBoardingPageList:Array<OnBoardingPage> = OnBoardingPage.values())
-    : RecyclerView.Adapter<PagerViewHolder>() {
+class OnBoardingPagerAdapter(private val onBoardingPageList: Array<OnBoardingPage> = OnBoardingPage.values()) :
+    RecyclerView.Adapter<PagerViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): PagerViewHolder {
         return LayoutInflater.from(parent.context).inflate(
@@ -30,7 +30,6 @@ class PagerViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
         root.titleTv.text = res.getString(onBoardingPage.titleResource)
         root.subTitleTv.text = res.getString(onBoardingPage.subTitleResource)
         root.centerImg.setImageResource(onBoardingPage.centerImageResource)
-        root.pageBackgroundImg.setImageResource(onBoardingPage.backgroundResource)
     }
 
     companion object {

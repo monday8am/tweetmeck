@@ -110,4 +110,3 @@ data class ViewDimensions(
  */
 val <T> T.checkAllMatched: T
     get() = this
-

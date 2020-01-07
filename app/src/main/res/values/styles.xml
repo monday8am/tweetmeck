@@ -101,8 +101,14 @@
         <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
-    <style name="TextAppearance.Tweetmeck.H4" parent="@style/TextAppearance.AppCompat.Display1">
+    <style name="TextAppearance.Tweetmeck.H4" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="android:fontFamily">@font/pt_sans</item>
+    </style>
+
+    <style name="TextAppearance.Tweetmeck.Onboarding.Tags" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:fontFamily">@font/pt_sans</item>
+        <item name="fontFamily">@font/pt_sans_bold</item>
+        <item name="android:textColor">@color/base03</item>
     </style>
 
     <style name="TextAppearance.Tweetmeck.Onboarding.Title" parent="TextAppearance.Tweetmeck.H4">
@@ -121,11 +127,6 @@
     <style name="Widget.Tweetmeck.OnboardingTextButton" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:fontFamily">@font/pt_sans</item>
         <item name="android:textColor">@color/base02</item>
-    </style>
-
-    <style name="Widget.Tweetmeck.OnboardingTextButton.TagButton" parent="@style/Widget.Tweetmeck.OnboardingTextButton">
-        <item name="android:textSize">19sp</item>
-        <item name="android:fontFamily">@font/pt_sans_bold</item>
     </style>
 
     <style name="TextAppearance.Tweetmeck.SpeakerTitle" parent="@style/TextAppearance.Tweetmeck.SessionTitle">

@@ -52,7 +52,7 @@ val appModule = module {
     viewModel { LaunchViewModel(get()) }
     viewModel { OnboardingViewModel(get()) }
     viewModel { AuthViewModel() }
-    viewModel { HomeViewModel(get()) }
+    viewModel { HomeViewModel(get(), get()) }
     viewModel { (listId: Long) -> TimelineViewModel(listId, get(), get()) }
     viewModel { (userId: Long) -> UserViewModel(userId, get()) }
     viewModel { (tweetId: Long) -> TweetViewModel(tweetId, get()) }

@@ -18,7 +18,7 @@ class LaunchViewModel(preferencesStorage: PreferenceStorage) : ViewModel() {
         if (it) {
             Event(LaunchDestination.ONBOARDING)
         } else {
-            Event(LaunchDestination.ONBOARDING)
+            Event(LaunchDestination.MAIN_ACTIVITY)
         }
     }
 

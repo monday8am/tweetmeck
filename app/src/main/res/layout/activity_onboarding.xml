@@ -4,6 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
+        <import type="com.monday8am.tweetmeck.ui.onboarding.TimelineTopics" />
         <variable
             name="viewModel"
             type="com.monday8am.tweetmeck.ui.onboarding.OnboardingViewModel" />
@@ -12,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/onboardingRoot"
+        app:layoutDescription="@xml/onboarding_motion_scene"
         tools:context=".ui.onboarding.OnboardingActivity"
          >
 
@@ -59,22 +61,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/startBtn"
-            android:onClick="@{() -> viewModel.getStartedClick()}"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/tagButtonsTv"
+            style="@style/TextAppearance.Tweetmeck.Onboarding.Tags"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            style="@style/Widget.Tweetmeck.OnboardingTextButton.TagButton"
-            android:text="@string/get_started"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="@dimen/margin_large"
+            android:layout_marginEnd="@dimen/margin_large"
+            android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.36"
+            tools:text="#Sports #Tech #Science #Politics #News" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/skipBtn"
             style="@style/Widget.Tweetmeck.OnboardingTextButton"
-            android:onClick="@{() -> viewModel.getStartedClick()}"
+            android:onClick="@{() -> viewModel.getStartedClick(TimelineTopics.NEWS)}"
             android:text="@string/skip"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
