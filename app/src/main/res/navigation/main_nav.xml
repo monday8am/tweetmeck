@@ -2,20 +2,14 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mobile_navigation"
+    android:id="@+id/main_nav"
     app:startDestination="@id/timeline_dest">
 
     <fragment
         android:id="@+id/timeline_dest"
         android:name="com.monday8am.tweetmeck.ui.home.HomeFragment"
         android:label="Timeline"
-        tools:layout="@layout/home_fragment" >
-        <action
-            android:id="@+id/action_timeline_dest_to_user_dest"
-            app:destination="@id/user_dest" />
-        <action
-            android:id="@+id/action_timeline_dest_to_tweet_dest"
-            app:destination="@id/tweet_dest" />
+        tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_timeline_dest_to_sign_in_dialog_dest"
             app:destination="@id/sign_in_dialog_dest" />
@@ -25,15 +19,12 @@
         <action
             android:id="@+id/action_timeline_dest_to_auth_dest"
             app:destination="@id/auth_dest" />
-        <action
-            android:id="@+id/action_timeline_dest_to_searchFragment"
-            app:destination="@id/search_dest" />
     </fragment>
     <fragment
         android:id="@+id/user_dest"
         android:name="com.monday8am.tweetmeck.ui.user.UserFragment"
         android:label="@string/user_screen_title"
-        tools:layout="@layout/user_fragment" >
+        tools:layout="@layout/fragment_user" >
         <argument
             android:name="userId"
             app:argType="long" />
@@ -47,7 +38,7 @@
         android:id="@+id/tweet_dest"
         android:name="com.monday8am.tweetmeck.ui.tweet.TweetFragment"
         android:label="@string/tweet_screen_title"
-        tools:layout="@layout/tweet_fragment" >
+        tools:layout="@layout/fragment_tweet" >
         <argument
             android:name="tweetId"
             app:argType="long" />
@@ -61,10 +52,22 @@
     <fragment
         android:id="@+id/search_dest"
         android:name="com.monday8am.tweetmeck.ui.search.SearchFragment"
-        tools:layout="@layout/search_fragment" >
+        tools:layout="@layout/fragment_search" >
         <argument
             android:name="searchItem"
             app:argType="string" />
     </fragment>
+
+    <action
+        android:id="@+id/action_global_SearchAction"
+        app:destination="@id/search_dest" />
+
+    <action
+        android:id="@+id/action_global_TweetAction"
+        app:destination="@id/tweet_dest" />
+
+    <action
+        android:id="@+id/action_global_UserAction"
+        app:destination="@id/user_dest" />
 
 </navigation>

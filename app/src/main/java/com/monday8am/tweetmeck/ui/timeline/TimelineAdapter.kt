@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.ui.base
+package com.monday8am.tweetmeck.ui.timeline
 
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.ItemTweetBinding
 
-class TweetListAdapter(
+class TimelineAdapter(
     private val eventListener: TweetItemEventListener,
     private val lifecycleOwner: LifecycleOwner,
     private val textCreator: TweetItemTextCreator

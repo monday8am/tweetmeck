@@ -2,10 +2,7 @@ package com.monday8am.tweetmeck.di
 
 import com.monday8am.tweetmeck.BuildConfig
 import com.monday8am.tweetmeck.MainActivity
-import com.monday8am.tweetmeck.data.AuthRepository
-import com.monday8am.tweetmeck.data.AuthRepositoryImpl
-import com.monday8am.tweetmeck.data.DataRepository
-import com.monday8am.tweetmeck.data.DataRepositoryImpl
+import com.monday8am.tweetmeck.data.*
 import com.monday8am.tweetmeck.data.local.PreferenceStorage
 import com.monday8am.tweetmeck.data.local.SharedPreferencesServiceImpl
 import com.monday8am.tweetmeck.data.local.TwitterDatabase
@@ -15,11 +12,11 @@ import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegateImpl
 import com.monday8am.tweetmeck.ui.home.HomeViewModel
 import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider
-import com.monday8am.tweetmeck.ui.home.timeline.TimelineViewModel
 import com.monday8am.tweetmeck.ui.launcher.LaunchViewModel
 import com.monday8am.tweetmeck.ui.login.AuthViewModel
 import com.monday8am.tweetmeck.ui.onboarding.OnboardingViewModel
 import com.monday8am.tweetmeck.ui.search.SearchViewModel
+import com.monday8am.tweetmeck.ui.timeline.TimelineViewModel
 import com.monday8am.tweetmeck.ui.tweet.TweetViewModel
 import com.monday8am.tweetmeck.ui.user.UserViewModel
 import org.koin.android.ext.koin.androidContext
@@ -53,7 +50,7 @@ val appModule = module {
     viewModel { OnboardingViewModel(get()) }
     viewModel { AuthViewModel() }
     viewModel { HomeViewModel(get(), get()) }
-    viewModel { (listId: Long) -> TimelineViewModel(listId, get(), get()) }
+    viewModel { (query: TimelineQuery) -> TimelineViewModel(query, get(), get()) }
     viewModel { (userId: Long) -> UserViewModel(userId, get()) }
     viewModel { (tweetId: Long) -> TweetViewModel(tweetId, get()) }
     viewModel { (searchItem: String) -> SearchViewModel(searchItem, get()) }

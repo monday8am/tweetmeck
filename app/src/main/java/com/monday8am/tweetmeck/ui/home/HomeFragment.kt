@@ -14,11 +14,12 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.monday8am.tweetmeck.R
+import com.monday8am.tweetmeck.data.TimelineQuery
 import com.monday8am.tweetmeck.data.models.TwitterList
-import com.monday8am.tweetmeck.databinding.HomeFragmentBinding
+import com.monday8am.tweetmeck.databinding.FragmentHomeBinding
 import com.monday8am.tweetmeck.ui.delegates.AuthState
-import com.monday8am.tweetmeck.ui.home.timeline.TimelineFragment
 import com.monday8am.tweetmeck.ui.login.AuthViewModel
+import com.monday8am.tweetmeck.ui.timeline.TimelineFragment
 import com.monday8am.tweetmeck.util.EventObserver
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -28,7 +29,7 @@ class HomeFragment : Fragment() {
 
     private val tabsCacheSize = 5
 
-    private lateinit var binding: HomeFragmentBinding
+    private lateinit var binding: FragmentHomeBinding
     private lateinit var viewPager2: ViewPager2
 
     private val viewModel: HomeViewModel by viewModel()
@@ -39,7 +40,7 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = HomeFragmentBinding.inflate(inflater, container, false).apply {
+        binding = FragmentHomeBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = this@HomeFragment.viewModel
         }
@@ -105,7 +106,7 @@ class HomeFragment : Fragment() {
         viewPager2.offscreenPageLimit = tabsCacheSize
         viewPager2.adapter = object : FragmentStateAdapter(this) {
             override fun createFragment(position: Int): Fragment {
-                return TimelineFragment.newInstance(items[position].id)
+                return TimelineFragment.newInstance(TimelineQuery.List(items[position].id))
             }
 
             override fun getItemCount(): Int {

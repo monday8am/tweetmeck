@@ -7,7 +7,10 @@ import com.monday8am.tweetmeck.data.Result.Error
 import com.monday8am.tweetmeck.data.Result.Success
 import com.monday8am.tweetmeck.data.local.TwitterDatabase
 import com.monday8am.tweetmeck.data.mappers.*
-import com.monday8am.tweetmeck.data.models.*
+import com.monday8am.tweetmeck.data.models.Session
+import com.monday8am.tweetmeck.data.models.Tweet
+import com.monday8am.tweetmeck.data.models.TwitterList
+import com.monday8am.tweetmeck.data.models.TwitterUser
 import com.monday8am.tweetmeck.data.remote.TimelineBoundaryCallback
 import com.monday8am.tweetmeck.data.remote.TwitterClient
 import kotlinx.coroutines.CoroutineDispatcher
@@ -23,7 +26,7 @@ interface DataRepository {
     suspend fun refreshLoggedUserLists(session: Session): Result<Unit>
     suspend fun likeTweet(tweet: Tweet, session: Session): Result<Unit>
     suspend fun retweetTweet(tweet: Tweet, session: Session): Result<Unit>
-    fun getTimeline(listId: Long): TimelineContent
+    fun getTimeline(query: TimelineQuery): TimelineContent
 }
 
 class DataRepositoryImpl(
@@ -100,7 +103,22 @@ class DataRepositoryImpl(
         }
     }
 
-    override fun getTimeline(listId: Long): TimelineContent {
+    override fun getTimeline(query: TimelineQuery): TimelineContent {
+        if (query !is TimelineQuery.List) {
+            throw Exception("Unsupported query!")
+        }
+        return getTimeline(query.listId)
+    }
+
+    override suspend fun getTweet(tweetId: Long): Result<Tweet> =
+        getItemFromDb(tweetId, db.tweetDao()::getItemById
+    )
+
+    override suspend fun getUser(userId: Long): Result<TwitterUser> =
+        getItemFromDb(userId, db.twitterUserDao()::getItemById
+    )
+
+    private fun getTimeline(listId: Long): TimelineContent {
         val pagedListConfig = PagedList.Config.Builder()
             .setInitialLoadSizeHint(pageSize * 2)
             .setPageSize(pageSize)
@@ -114,21 +132,13 @@ class DataRepositoryImpl(
         )
 
         val livePagedList = db.tweetDao().getTweetsByListId(listId).toLiveData(
-                                config = pagedListConfig,
-                                boundaryCallback = boundaryCallback)
+            config = pagedListConfig,
+            boundaryCallback = boundaryCallback)
         return TimelineContent(
             pagedList = livePagedList,
             loadMoreState = boundaryCallback.requestState
         )
     }
-
-    override suspend fun getTweet(tweetId: Long): Result<Tweet> =
-        getItemFromDb(tweetId, db.tweetDao()::getItemById
-    )
-
-    override suspend fun getUser(userId: Long): Result<TwitterUser> =
-        getItemFromDb(userId, db.twitterUserDao()::getItemById
-    )
 
     private suspend fun <T> getItemFromDb(itemId: Long, dbCall: suspend (Long) -> T?): Result<T> {
         return withContext(ioDispatcher) {

@@ -1,5 +1,7 @@
-package com.monday8am.tweetmeck.ui.base
+package com.monday8am.tweetmeck.ui.timeline
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,36 +9,61 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.monday8am.tweetmeck.MainNavDirections
+import com.monday8am.tweetmeck.data.TimelineQuery
 import com.monday8am.tweetmeck.data.models.Tweet
-import com.monday8am.tweetmeck.databinding.FragmentTweetListBinding
+import com.monday8am.tweetmeck.databinding.FragmentTimelineBinding
+import com.monday8am.tweetmeck.ui.home.HomeFragmentDirections
 import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider
 import com.monday8am.tweetmeck.util.EventObserver
+import com.monday8am.tweetmeck.util.lazyFast
 import org.koin.androidx.scope.currentScope
+import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
-abstract class TweetListFragment : Fragment() {
+class TimelineFragment : Fragment() {
 
-    private lateinit var adapter: TweetListAdapter
-    private lateinit var binding: FragmentTweetListBinding
+    companion object {
+        private const val ARG_QUERY_ID = "arg.QUERY_ID"
+
+        @JvmStatic
+        fun newInstance(query: TimelineQuery) =
+            TimelineFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_QUERY_ID, query.toString())
+                }
+            }
+    }
+
+    private val query: TimelineQuery by lazyFast {
+        val queryString = arguments?.getString(ARG_QUERY_ID) ?: throw IllegalStateException("Missing arguments!")
+        TimelineQuery.fromString(queryString)
+    }
+
+    private lateinit var adapter: TimelineAdapter
+    private lateinit var binding: FragmentTimelineBinding
+
     private val viewPoolProvider: TimelinePoolProvider? by lazy {
         activity?.currentScope?.get<TimelinePoolProvider>()
     }
 
-    abstract var viewModel: TweetListViewModel
+    private var viewModel: TimelineViewModel = getViewModel { parametersOf(query) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentTweetListBinding.inflate(inflater, container, false).apply {
+        binding = FragmentTimelineBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
-            viewModel = this@TweetListFragment.viewModel
+            viewModel = this@TimelineFragment.viewModel
         }
         return binding.root
     }
@@ -45,7 +72,7 @@ abstract class TweetListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val textCreator = TweetItemTextCreator(view.context, viewModel.currentSession)
-        adapter = TweetListAdapter(viewModel, viewLifecycleOwner, textCreator)
+        adapter = TimelineAdapter(viewModel, viewLifecycleOwner, textCreator)
 
         binding.recyclerview.addItemDecoration(DividerItemDecoration(
             binding.recyclerview.context,
@@ -65,7 +92,7 @@ abstract class TweetListFragment : Fragment() {
         })
 
         binding.recyclerview.apply {
-            adapter = this@TweetListFragment.adapter
+            adapter = this@TimelineFragment.adapter
             setRecycledViewPool(viewPoolProvider?.tweetItemPool)
             (layoutManager as LinearLayoutManager).recycleChildrenOnDetach = true
             (itemAnimator as DefaultItemAnimator).run {
@@ -77,8 +104,24 @@ abstract class TweetListFragment : Fragment() {
             }
         }
 
+        viewModel.openUrl.observe(viewLifecycleOwner, EventObserver {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
+        })
+
         viewModel.loadMoreState.observe(viewLifecycleOwner, Observer {
             Timber.d("Request state! $it")
+        })
+
+        viewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
+            findNavController().navigate(MainNavDirections.actionGlobalTweetAction(tweetId))
+        })
+
+        viewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { userId ->
+            findNavController().navigate(HomeFragmentDirections.actionGlobalUserAction(userId))
+        })
+
+        viewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
+            findNavController().navigate(HomeFragmentDirections.actionGlobalSearchAction(searchItem))
         })
 
         // Show an error message

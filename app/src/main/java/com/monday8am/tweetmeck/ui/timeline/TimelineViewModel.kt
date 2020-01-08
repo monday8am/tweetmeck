@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.ui.base
+package com.monday8am.tweetmeck.ui.timeline
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,6 +8,7 @@ import androidx.paging.PagedList
 import com.monday8am.tweetmeck.data.AuthRepository
 import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.Result
+import com.monday8am.tweetmeck.data.TimelineQuery
 import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.util.Event
@@ -15,7 +16,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-abstract class TweetListViewModel(
+class TimelineViewModel(
+    query: TimelineQuery,
     private val authRepository: AuthRepository,
     private val dataRepository: DataRepository
 ) : ViewModel(),
@@ -27,16 +29,27 @@ abstract class TweetListViewModel(
     private val _navigateToUserDetails = MutableLiveData<Event<Long>>()
     val navigateToUserDetails: LiveData<Event<Long>> = _navigateToUserDetails
 
+    private val _navigateToSearch = MutableLiveData<Event<String>>()
+    val navigateToSearch: LiveData<Event<String>> = _navigateToSearch
+
+    private val _openUrl = MutableLiveData<Event<String>>()
+    val openUrl: LiveData<Event<String>> = _openUrl
+
     private val _errorMessage = MutableLiveData<Event<String>>()
     val errorMessage: LiveData<Event<String>> = _errorMessage
 
-    abstract val dataLoading: LiveData<Boolean>
-    abstract val pagedList: LiveData<PagedList<Tweet>>
-    abstract val loadMoreState: LiveData<Result<Unit>>
+    private val _dataLoading: MutableLiveData<Boolean> = MutableLiveData()
+    val dataLoading: LiveData<Boolean> = _dataLoading
 
+    val pagedList: LiveData<PagedList<Tweet>>
+    val loadMoreState: LiveData<Result<Unit>>
     var currentSession: Session? = null
 
     init {
+        val timelineContent = dataRepository.getTimeline(query)
+        pagedList = timelineContent.pagedList
+        loadMoreState = timelineContent.loadMoreState
+
         viewModelScope.launch {
             authRepository.session.collect { currentSession = it }
         }
@@ -53,24 +66,23 @@ abstract class TweetListViewModel(
     override fun openUserDetails(screenName: String) {
     }
 
-    override fun retryLoadMore(listId: Long) {
-        Timber.d("retry load more!!")
-    }
-
     override fun openUrl(url: String) {
         Timber.d("open URL: %s", url)
     }
 
+    override fun retryLoadMore(listId: Long) {
+        Timber.d("retry load more!!")
+    }
+
     override fun searchForTag(tag: String) {
-        Timber.d("search for TAG: %s", tag)
+        _navigateToSearch.value = Event(tag)
     }
 
     override fun searchForSymbol(symbol: String) {
-        Timber.d("search for Symbol: %s", symbol)
+        _navigateToSearch.value = Event(symbol)
     }
 
     override fun likeTweet(tweet: Tweet) {
-        Timber.d("likeTweet call!")
         val session = currentSession
         if (session != null) {
             viewModelScope.launch {
@@ -86,7 +98,6 @@ abstract class TweetListViewModel(
     }
 
     override fun retweetTweet(tweet: Tweet) {
-        Timber.d("retweetTweet call!")
         val session = currentSession
         if (session != null) {
             viewModelScope.launch {

@@ -1,4 +1,4 @@
-package com.monday8am.tweetmeck.ui.base
+package com.monday8am.tweetmeck.ui.timeline
 
 import android.content.Context
 import android.text.SpannableStringBuilder
