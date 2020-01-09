@@ -6,7 +6,7 @@ import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.models.Tweet
 import kotlinx.coroutines.*
 
-class TimelineBoundaryCallback(
+class TimelineDbBoundaryCallback(
     private val listId: Long,
     private val refreshCallback: suspend (listId: Long) -> Result<Unit>,
     private val loadMoreCallback: suspend (listId: Long, maxTweetId: Long) -> Result<Unit>

@@ -53,7 +53,7 @@ val appModule = module {
     viewModel { (query: TimelineQuery) -> TimelineViewModel(query, get(), get()) }
     viewModel { (userId: Long) -> UserViewModel(userId, get()) }
     viewModel { (tweetId: Long) -> TweetViewModel(tweetId, get()) }
-    viewModel { (searchItem: String) -> SearchViewModel(searchItem, get()) }
+    viewModel { SearchViewModel() }
 
     scope(named<MainActivity>()) {
         scoped { TimelinePoolProvider() }

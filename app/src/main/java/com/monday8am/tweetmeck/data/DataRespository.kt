@@ -11,8 +11,10 @@ import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.models.TwitterUser
-import com.monday8am.tweetmeck.data.remote.TimelineBoundaryCallback
+import com.monday8am.tweetmeck.data.remote.SearchDataSourceFactory
+import com.monday8am.tweetmeck.data.remote.TimelineDbBoundaryCallback
 import com.monday8am.tweetmeck.data.remote.TwitterClient
+import com.monday8am.tweetmeck.util.switchMap
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,6 +39,11 @@ class DataRepositoryImpl(
 
     private val pageSize = 8
     private val prefetchDistance = 10
+    private val pagedListConfig = PagedList.Config.Builder()
+        .setInitialLoadSizeHint(pageSize * 2)
+        .setPageSize(pageSize)
+        .setPrefetchDistance(prefetchDistance)
+        .build()
 
     override val lists: LiveData<List<TwitterList>>
         get() = db.twitterListDao().getAll()
@@ -104,10 +111,18 @@ class DataRepositoryImpl(
     }
 
     override fun getTimeline(query: TimelineQuery): TimelineContent {
-        if (query !is TimelineQuery.List) {
-            throw Exception("Unsupported query!")
+        return when (query) {
+            is TimelineQuery.List -> getTimeline(query.listId)
+            is TimelineQuery.Hashtag -> {
+                val source = SearchDataSourceFactory(query.hashtag, remoteClient)
+                val requestState = source.sourceLiveData.switchMap { it.requestState }
+                TimelineContent(
+                    pagedList = source.toLiveData(pagedListConfig),
+                    loadMoreState = requestState
+                )
+            }
+            else -> throw Exception("Unsupported query!")
         }
-        return getTimeline(query.listId)
     }
 
     override suspend fun getTweet(tweetId: Long): Result<Tweet> =
@@ -119,13 +134,7 @@ class DataRepositoryImpl(
     )
 
     private fun getTimeline(listId: Long): TimelineContent {
-        val pagedListConfig = PagedList.Config.Builder()
-            .setInitialLoadSizeHint(pageSize * 2)
-            .setPageSize(pageSize)
-            .setPrefetchDistance(prefetchDistance)
-            .build()
-
-        val boundaryCallback = TimelineBoundaryCallback(
+        val boundaryCallback = TimelineDbBoundaryCallback(
             listId = listId,
             refreshCallback = ::refreshListTimeline,
             loadMoreCallback = ::loadMoreForTimeline

@@ -1,9 +1,9 @@
 package com.monday8am.tweetmeck.data
 
 sealed class TimelineQuery {
-    data class List(val listId: Long): TimelineQuery()
-    data class User(val userId: Long): TimelineQuery()
-    data class Hashtag(val hashtag: String): TimelineQuery()
+    data class List(val listId: Long) : TimelineQuery()
+    data class User(val userId: Long) : TimelineQuery()
+    data class Hashtag(val hashtag: String) : TimelineQuery()
 
     companion object {
         fun fromString(url: String): TimelineQuery {

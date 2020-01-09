@@ -15,6 +15,7 @@ import jp.nephy.penicillin.endpoints.oauth.AccessTokenResponse
 import jp.nephy.penicillin.endpoints.oauth.accessToken
 import jp.nephy.penicillin.endpoints.oauth.authenticateUrl
 import jp.nephy.penicillin.endpoints.oauth.requestToken
+import jp.nephy.penicillin.endpoints.search.search
 import jp.nephy.penicillin.endpoints.statuses.retweet
 import jp.nephy.penicillin.endpoints.statuses.unretweet
 import jp.nephy.penicillin.endpoints.timeline.listTimeline
@@ -43,6 +44,12 @@ interface TwitterClient {
         sinceTweetId: Long? = null,
         maxTweetId: Long? = null,
         count: Int?
+    ): List<Status>
+    suspend fun search(
+        query: String,
+        sinceTweetId: Long? = null,
+        maxTweetId: Long? = null,
+        count: Int? = null
     ): List<Status>
 }
 
@@ -106,6 +113,19 @@ class TwitterClientImpl(
             sinceId = sinceTweetId,
             maxId = maxTweetId).await()
         return response.results
+    }
+
+    override suspend fun search(
+        query: String,
+        sinceTweetId: Long?,
+        maxTweetId: Long?,
+        count: Int?
+    ): List<Status> {
+        val response = client.search.search(query,
+            count = count,
+            sinceId = sinceTweetId,
+            maxId = maxTweetId).await()
+        return response.result.statuses
     }
 
     override suspend fun likeTweet(id: Long, value: Boolean, session: Session): Status {
