@@ -16,8 +16,8 @@ class RoomConvertersTest {
         start = 1,
         end = 3,
         displayUrl = "displayUrl",
-        url = "url",
-        expandedUrl = "expandedUrl",
+        appUrl = "url",
+        webUrl = "expandedUrl",
         entityType = EntityLinkType.Hashtag
     )
 
@@ -25,8 +25,8 @@ class RoomConvertersTest {
         start = 2,
         end = 4,
         displayUrl = "displayUrl",
-        url = "url",
-        expandedUrl = "expandedUrl",
+        appUrl = "url",
+        webUrl = "expandedUrl",
         entityType = EntityLinkType.Symbol
     )
 

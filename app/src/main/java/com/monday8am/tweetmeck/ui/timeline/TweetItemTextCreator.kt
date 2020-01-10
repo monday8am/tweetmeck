@@ -67,23 +67,23 @@ class TweetItemTextCreator(
                             EntityLinkType.Hashtag -> getClickableSpan(
                                 context.getColor(R.color.cyan),
                                 listener::searchForTag,
-                                url.url
+                                url.appUrl
                             )
                             EntityLinkType.Symbol -> getClickableSpan(
                                 context.getColor(R.color.green),
                                 listener::searchForSymbol,
-                                url.url
+                                url.appUrl
                             )
                             EntityLinkType.Url -> getClickableSpan(
                                 context.getColor(R.color.blue),
                                 listener::openUrl,
-                                url.url,
+                                url.appUrl,
                                 true
                             )
                             EntityLinkType.MentionedUser -> getClickableSpan(
                                 context.getColor(R.color.cyan),
                                 listener::openUserDetails,
-                                url.url,
+                                url.appUrl,
                                 true
                             )
                         }

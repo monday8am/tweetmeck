@@ -51,13 +51,7 @@ class SearchFragment : Fragment() {
                     return true
                 }
             })
-
-            // Set focus on the SearchView and open the keyboard
-            setOnQueryTextFocusChangeListener { view, hasFocus ->
-                if (hasFocus) {
-                    showKeyboard(view.findFocus())
-                }
-            }
+            setQuery(navArgs.searchItem, false)
         }
     }
 
