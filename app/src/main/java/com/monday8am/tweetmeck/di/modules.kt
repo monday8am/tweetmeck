@@ -51,7 +51,7 @@ val appModule = module {
     viewModel { AuthViewModel() }
     viewModel { HomeViewModel(get(), get()) }
     viewModel { (query: TimelineQuery) -> TimelineViewModel(query, get(), get()) }
-    viewModel { (userId: Long) -> UserViewModel(userId, get()) }
+    viewModel { (screenName: String) -> UserViewModel(screenName, get()) }
     viewModel { (tweetId: Long) -> TweetViewModel(tweetId, get()) }
     viewModel { SearchViewModel() }
 

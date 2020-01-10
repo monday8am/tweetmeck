@@ -66,7 +66,7 @@ class HomeViewModel(
 
     private suspend fun refreshUserContent(session: Session?) {
         if (session != null) {
-            when (val result = dataRepository.getUser(session.userId)) {
+            when (val result = dataRepository.getUser(session.screenName)) {
                 is Result.Success -> _currentUserImageUrl.value = result.data.profileImageUrl
                 else -> _errorMessage.value = Event("Error loading user profile")
             }

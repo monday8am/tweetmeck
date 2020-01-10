@@ -37,14 +37,14 @@ class TimelineFragment : Fragment() {
         fun newInstance(query: TimelineQuery) =
             TimelineFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_QUERY_ID, query.toString())
+                    putString(ARG_QUERY_ID, query.toFormattedString())
                 }
             }
     }
 
     private val query: TimelineQuery by lazyFast {
         val queryString = arguments?.getString(ARG_QUERY_ID) ?: throw IllegalStateException("Missing arguments!")
-        TimelineQuery.fromString(queryString)
+        TimelineQuery.fromFormattedString(queryString)
     }
 
     private lateinit var adapter: TimelineAdapter
@@ -54,13 +54,14 @@ class TimelineFragment : Fragment() {
         activity?.currentScope?.get<TimelinePoolProvider>()
     }
 
-    private var viewModel: TimelineViewModel = getViewModel { parametersOf(query) }
+    private lateinit var viewModel: TimelineViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        viewModel = getViewModel { parametersOf(query) }
         binding = FragmentTimelineBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = this@TimelineFragment.viewModel
@@ -116,8 +117,8 @@ class TimelineFragment : Fragment() {
             findNavController().navigate(MainNavDirections.actionGlobalTweetAction(tweetId))
         })
 
-        viewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { userId ->
-            findNavController().navigate(HomeFragmentDirections.actionGlobalUserAction(userId))
+        viewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
+            findNavController().navigate(HomeFragmentDirections.actionGlobalUserAction(screenName))
         })
 
         viewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->

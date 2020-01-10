@@ -22,7 +22,7 @@ import kotlinx.coroutines.withContext
 interface DataRepository {
     val lists: LiveData<List<TwitterList>>
     suspend fun getTweet(tweetId: Long): Result<Tweet>
-    suspend fun getUser(userId: Long): Result<TwitterUser>
+    suspend fun getUser(screenName: String): Result<TwitterUser>
     suspend fun refreshListTimeline(listId: Long): Result<Unit>
     suspend fun refreshLists(screenName: String): Result<Unit>
     suspend fun refreshLoggedUserLists(session: Session): Result<Unit>
@@ -129,8 +129,8 @@ class DataRepositoryImpl(
         getItemFromDb(tweetId, db.tweetDao()::getItemById
     )
 
-    override suspend fun getUser(userId: Long): Result<TwitterUser> =
-        getItemFromDb(userId, db.twitterUserDao()::getItemById
+    override suspend fun getUser(screenName: String): Result<TwitterUser> =
+        getItemFromDb(screenName, db.twitterUserDao()::getItemByScreenName
     )
 
     private fun getTimeline(listId: Long): TimelineContent {
@@ -149,7 +149,7 @@ class DataRepositoryImpl(
         )
     }
 
-    private suspend fun <T> getItemFromDb(itemId: Long, dbCall: suspend (Long) -> T?): Result<T> {
+    private suspend fun <E, T> getItemFromDb(itemId: E, dbCall: suspend (E) -> T?): Result<T> {
         return withContext(ioDispatcher) {
             try {
                 val value: T? = dbCall.invoke(itemId)

@@ -24,7 +24,7 @@ class UserFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        userViewModel = getViewModel { parametersOf(navArgs.userId) }
+        userViewModel = getViewModel { parametersOf(navArgs.screenName) }
         val binding = FragmentUserBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewmodel = this@UserFragment.userViewModel

@@ -26,8 +26,8 @@
         android:label="@string/user_screen_title"
         tools:layout="@layout/fragment_user" >
         <argument
-            android:name="userId"
-            app:argType="long" />
+            android:name="screenName"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/auth_dest"

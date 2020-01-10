@@ -13,6 +13,9 @@ interface TwitterUserDao {
     @Query("SELECT * FROM users WHERE id = :id")
     suspend fun getItemById(id: Long): TwitterUser?
 
+    @Query("SELECT * FROM users WHERE screen_name = :screenName")
+    suspend fun getItemByScreenName(screenName: String): TwitterUser?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: TwitterUser)
 

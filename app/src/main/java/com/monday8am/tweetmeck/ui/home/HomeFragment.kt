@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.adapter.FragmentViewHolder
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -112,11 +111,6 @@ class HomeFragment : Fragment() {
             override fun getItemCount(): Int {
                 return items.count()
             }
-
-            override fun onViewDetachedFromWindow(holder: FragmentViewHolder) {
-                super.onViewDetachedFromWindow(holder)
-                holder.adapterPosition
-            }
         }
 
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -126,6 +120,14 @@ class HomeFragment : Fragment() {
                     viewModel.onChangedDisplayedTimeline(items[position].id)
                 }
             }
+        })
+
+        tabs.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabSelected(tab: TabLayout.Tab?) {}
         })
 
         // Attach tabs scrolling to viewPager after its adapter is defined

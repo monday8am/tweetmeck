@@ -26,8 +26,8 @@ class TimelineViewModel(
     private val _navigateToTweetDetails = MutableLiveData<Event<Long>>()
     val navigateToTweetDetails: LiveData<Event<Long>> = _navigateToTweetDetails
 
-    private val _navigateToUserDetails = MutableLiveData<Event<Long>>()
-    val navigateToUserDetails: LiveData<Event<Long>> = _navigateToUserDetails
+    private val _navigateToUserDetails = MutableLiveData<Event<String>>()
+    val navigateToUserDetails: LiveData<Event<String>> = _navigateToUserDetails
 
     private val _navigateToSearch = MutableLiveData<Event<String>>()
     val navigateToSearch: LiveData<Event<String>> = _navigateToSearch
@@ -59,15 +59,12 @@ class TimelineViewModel(
         _navigateToTweetDetails.value = Event(tweetId)
     }
 
-    override fun openUserDetails(userId: Long) {
-        _navigateToUserDetails.value = Event(userId)
-    }
-
     override fun openUserDetails(screenName: String) {
+        _navigateToUserDetails.value = Event(screenName)
     }
 
     override fun openUrl(url: String) {
-        Timber.d("open URL: %s", url)
+        _openUrl.value = Event(url)
     }
 
     override fun retryLoadMore(listId: Long) {
@@ -115,7 +112,6 @@ class TimelineViewModel(
 
 interface TweetItemEventListener {
     fun openTweetDetails(tweetId: Long)
-    fun openUserDetails(userId: Long)
     fun openUserDetails(screenName: String)
     fun openUrl(url: String)
     fun searchForTag(tag: String)

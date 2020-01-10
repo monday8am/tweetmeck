@@ -10,7 +10,7 @@ import com.monday8am.tweetmeck.data.models.TwitterUser
 import kotlinx.coroutines.launch
 
 class UserViewModel(
-    private val userId: Long,
+    private val userScreenName: String,
     private val dataRepository: DataRepository
 ) : ViewModel() {
 
@@ -30,7 +30,7 @@ class UserViewModel(
     private fun getUserContent() {
         viewModelScope.launch {
             _dataLoading.value = true
-            when (val result = dataRepository.getUser(userId)) {
+            when (val result = dataRepository.getUser(userScreenName)) {
                 is Result.Success -> _user.value = result.data
                 is Result.Error -> _errorMsg.value = result.exception.toString()
                 else -> _dataLoading.value = true

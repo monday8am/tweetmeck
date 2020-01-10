@@ -6,7 +6,7 @@ sealed class TimelineQuery {
     data class Hashtag(val hashtag: String) : TimelineQuery()
 
     companion object {
-        fun fromString(url: String): TimelineQuery {
+        fun fromFormattedString(url: String): TimelineQuery {
             val parsed = url.split(":")
             return when (parsed[0]) {
                 "list" -> List(parsed[1].toLong())
@@ -16,7 +16,7 @@ sealed class TimelineQuery {
         }
     }
 
-    override fun toString(): String {
+    fun toFormattedString(): String {
         return when (this) {
             is List -> "list:${this.listId}"
             is User -> "user:${this.userId}"
@@ -24,3 +24,5 @@ sealed class TimelineQuery {
         }
     }
 }
+
+

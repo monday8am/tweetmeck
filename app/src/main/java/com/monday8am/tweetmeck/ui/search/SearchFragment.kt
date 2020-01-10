@@ -28,7 +28,7 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val binding = FragmentSearchBinding.inflate(inflater, container, false).apply {
+        binding = FragmentSearchBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewmodel = this@SearchFragment.viewModel
         }

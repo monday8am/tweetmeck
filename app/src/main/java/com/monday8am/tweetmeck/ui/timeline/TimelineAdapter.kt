@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.ItemTweetBinding
+import timber.log.Timber
 
 class TimelineAdapter(
     private val eventListener: TweetItemEventListener,
@@ -18,12 +19,16 @@ class TimelineAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TweetViewHolder {
         val binding = ItemTweetBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        // set clickable links!
-        binding.content.linksClickable = true
-        binding.content.movementMethod = LinkMovementMethod.getInstance()
-        return TweetViewHolder(
+
+        val holder = TweetViewHolder(
             binding, textCreator, eventListener, lifecycleOwner
         )
+
+        holder.itemView.setOnClickListener {
+            Timber.d("Aloha!")
+        }
+
+        return holder
     }
 
     override fun onBindViewHolder(holder: TweetViewHolder, position: Int) {
