@@ -93,7 +93,7 @@ class HomeFragment : Fragment() {
         })
 
         // Show an error message
-        viewModel.errorMessage.observe(this, EventObserver { errorMsg ->
+        viewModel.timelineErrorMessage.observe(this, EventObserver { errorMsg ->
             // TODO: Change once there's a way to show errors to the user
             Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
         })

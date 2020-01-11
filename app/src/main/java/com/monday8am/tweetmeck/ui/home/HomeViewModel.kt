@@ -9,17 +9,20 @@ import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.succeeded
 import com.monday8am.tweetmeck.ui.delegates.AuthState
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
+import com.monday8am.tweetmeck.ui.timeline.TimelineViewModelDelegate
 import com.monday8am.tweetmeck.util.Event
 import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.koin.core.context.GlobalContext
 
 class HomeViewModel(
+    private val signInDelegate: SignInViewModelDelegate,
+    private val timelineDelegate: TimelineViewModelDelegate,
     private val dataRepository: DataRepository,
     private val preferences: PreferenceStorage
 ) : ViewModel(),
-        SignInViewModelDelegate by GlobalContext.get().koin.get() {
+        SignInViewModelDelegate by signInDelegate,
+        TimelineViewModelDelegate by timelineDelegate {
 
     val twitterLists: LiveData<List<TwitterList>>
         get() = Transformations.distinctUntilChanged(dataRepository.lists)

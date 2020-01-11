@@ -20,12 +20,12 @@ import com.monday8am.tweetmeck.data.TimelineQuery
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.FragmentTimelineBinding
 import com.monday8am.tweetmeck.ui.home.HomeFragmentDirections
+import com.monday8am.tweetmeck.ui.home.HomeViewModel
 import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider
 import com.monday8am.tweetmeck.util.EventObserver
 import com.monday8am.tweetmeck.util.lazyFast
 import org.koin.androidx.scope.currentScope
-import org.koin.androidx.viewmodel.ext.android.getViewModel
-import org.koin.core.parameter.parametersOf
+import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
 import timber.log.Timber
 
 class TimelineFragment : Fragment() {
@@ -54,14 +54,14 @@ class TimelineFragment : Fragment() {
         activity?.currentScope?.get<TimelinePoolProvider>()
     }
 
-    private lateinit var viewModel: TimelineViewModel
+    private lateinit var viewModel: HomeViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = getViewModel { parametersOf(query) }
+        viewModel = getSharedViewModel(from = { requireParentFragment() })
         binding = FragmentTimelineBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = this@TimelineFragment.viewModel
@@ -72,13 +72,15 @@ class TimelineFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val textCreator = TweetItemTextCreator(view.context, viewModel.currentSession)
+        val textCreator = TweetItemTextCreator(view.context, viewModel.lastSession)
         adapter = TimelineAdapter(viewModel, viewLifecycleOwner, textCreator)
 
         binding.recyclerview.addItemDecoration(DividerItemDecoration(
             binding.recyclerview.context,
             DividerItemDecoration.VERTICAL
         ))
+
+        viewModel.getTimelineContent(query)
 
         viewModel.pagedList.observe(viewLifecycleOwner, Observer<PagedList<Tweet>> {
             adapter.submitList(it) {
@@ -118,11 +120,11 @@ class TimelineFragment : Fragment() {
         })
 
         viewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
-            findNavController().navigate(HomeFragmentDirections.actionGlobalUserAction(screenName))
+            findNavController().navigate(MainNavDirections.actionGlobalUserAction(screenName))
         })
 
         viewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
-            findNavController().navigate(HomeFragmentDirections.actionGlobalSearchAction(searchItem))
+            findNavController().navigate(MainNavDirections.actionGlobalSearchAction(searchItem))
         })
 
         // Show an error message
