@@ -19,6 +19,15 @@
         <action
             android:id="@+id/action_timeline_dest_to_auth_dest"
             app:destination="@id/auth_dest" />
+        <action
+            android:id="@+id/action_home_to_search"
+            app:destination="@id/search_dest" />
+        <action
+            android:id="@+id/action_home_to_user"
+            app:destination="@id/user_dest" />
+        <action
+            android:id="@+id/action_home_to_tweet"
+            app:destination="@id/tweet_dest" />
     </fragment>
     <fragment
         android:id="@+id/user_dest"
@@ -57,17 +66,4 @@
             android:name="searchItem"
             app:argType="string" />
     </fragment>
-
-    <action
-        android:id="@+id/action_global_SearchAction"
-        app:destination="@id/search_dest" />
-
-    <action
-        android:id="@+id/action_global_TweetAction"
-        app:destination="@id/tweet_dest" />
-
-    <action
-        android:id="@+id/action_global_UserAction"
-        app:destination="@id/user_dest" />
-
 </navigation>

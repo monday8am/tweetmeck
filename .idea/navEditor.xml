@@ -8,21 +8,6 @@
             <LayoutPositions>
               <option name="myPositions">
                 <map>
-                  <entry key="action_global_SearchAction">
-                    <value>
-                      <LayoutPositions />
-                    </value>
-                  </entry>
-                  <entry key="action_global_TweetAction">
-                    <value>
-                      <LayoutPositions />
-                    </value>
-                  </entry>
-                  <entry key="action_global_UserAction">
-                    <value>
-                      <LayoutPositions />
-                    </value>
-                  </entry>
                   <entry key="auth_dest">
                     <value>
                       <LayoutPositions>
@@ -40,8 +25,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="11" />
-                            <option name="y" value="244" />
+                            <option name="x" value="-137" />
+                            <option name="y" value="52" />
                           </Point>
                         </option>
                       </LayoutPositions>
@@ -76,13 +61,18 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="-259" />
-                            <option name="y" value="648" />
+                            <option name="x" value="-599" />
+                            <option name="y" value="703" />
                           </Point>
                         </option>
                         <option name="myPositions">
                           <map>
                             <entry key="action_timeline_dest_to_auth_dest">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_timeline_dest_to_search_dest">
                               <value>
                                 <LayoutPositions />
                               </value>
@@ -97,6 +87,16 @@
                                 <LayoutPositions />
                               </value>
                             </entry>
+                            <entry key="action_timeline_dest_to_tweet_dest">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_timeline_dest_to_user_dest">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                           </map>
                         </option>
                       </LayoutPositions>
@@ -107,8 +107,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="256" />
-                            <option name="y" value="12" />
+                            <option name="x" value="162" />
+                            <option name="y" value="104" />
                           </Point>
                         </option>
                       </LayoutPositions>
@@ -119,8 +119,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="-288" />
-                            <option name="y" value="12" />
+                            <option name="x" value="-444" />
+                            <option name="y" value="42" />
                           </Point>
                         </option>
                       </LayoutPositions>

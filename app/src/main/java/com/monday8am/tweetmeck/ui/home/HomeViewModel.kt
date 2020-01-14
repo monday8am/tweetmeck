@@ -1,12 +1,11 @@
 package com.monday8am.tweetmeck.ui.home
 
 import androidx.lifecycle.*
-import com.monday8am.tweetmeck.data.DataRepository
-import com.monday8am.tweetmeck.data.Result
+import com.monday8am.tweetmeck.data.*
 import com.monday8am.tweetmeck.data.local.PreferenceStorage
 import com.monday8am.tweetmeck.data.models.Session
+import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TwitterList
-import com.monday8am.tweetmeck.data.succeeded
 import com.monday8am.tweetmeck.ui.delegates.AuthState
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
 import com.monday8am.tweetmeck.ui.timeline.TimelineViewModelDelegate
@@ -38,10 +37,14 @@ class HomeViewModel(
         false // Whenever refresh finishes, stop the indicator, whatever the result
     }
 
+    private val _scrollToTop = MutableLiveData<Event<Unit>>()
+    val scrollToTop: LiveData<Event<Unit>> = _scrollToTop
+
     private val _errorMessage = MutableLiveData<Event<String>>()
     val errorMessage: LiveData<Event<String>> = _errorMessage
 
     private var currentTimelineId: Long = -1
+    private var timelines: MutableMap<String, TimelineContent> = mutableMapOf()
 
     private val _navigateToSignInDialog = MutableLiveData<Event<Boolean>>()
     val navigateToSignInDialog: LiveData<Event<Boolean>> = _navigateToSignInDialog
@@ -67,6 +70,10 @@ class HomeViewModel(
         }
     }
 
+    override fun likeTweet(tweet: Tweet) {
+        timelineDelegate.likeTweet(tweet, lastSession, viewModelScope)
+    }
+
     private suspend fun refreshUserContent(session: Session?) {
         if (session != null) {
             when (val result = dataRepository.getUser(session.screenName)) {
@@ -79,6 +86,7 @@ class HomeViewModel(
     }
 
     private suspend fun refreshLists(session: Session?) {
+        timelines.clear()
         val result = if (session != null) {
             dataRepository.refreshLoggedUserLists(session)
         } else {
@@ -109,4 +117,15 @@ class HomeViewModel(
     fun onChangedDisplayedTimeline(listId: Long) {
         currentTimelineId = listId
     }
+
+    fun getTimelineContent(query: TimelineQuery): TimelineContent {
+        return timelines.getOrPut(query.toFormattedString(), {
+            dataRepository.getTimeline(query)
+        })
+    }
+
+    fun setScrollToTop() {
+        _scrollToTop.value = Event(Unit)
+    }
+
 }

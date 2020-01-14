@@ -18,8 +18,8 @@ interface TweetItemEventListener {
     fun searchForTag(tag: String)
     fun searchForSymbol(symbol: String)
     fun retryLoadMore(listId: Long)
-    fun likeTweet(tweet: Tweet, session: Session?, scope: CoroutineScope)
-    fun retweetTweet(tweet: Tweet, session: Session?, scope: CoroutineScope)
+    fun likeTweet(tweet: Tweet)
+    fun retweetTweet(tweet: Tweet)
 }
 
 interface TimelineViewModelDelegate: TweetItemEventListener {
@@ -28,6 +28,8 @@ interface TimelineViewModelDelegate: TweetItemEventListener {
     val navigateToSearch: LiveData<Event<String>>
     val openUrl: LiveData<Event<String>>
     val timelineErrorMessage: LiveData<Event<String>>
+    fun likeTweet(tweet: Tweet, session: Session?, scope: CoroutineScope)
+    fun retweetTweet(tweet: Tweet, session: Session?, scope: CoroutineScope)
 }
 
 class TimelineViewModelDelegateImpl(
@@ -64,6 +66,10 @@ class TimelineViewModelDelegateImpl(
     override fun retryLoadMore(listId: Long) {
         Timber.d("retry load more!!")
     }
+
+    override fun likeTweet(tweet: Tweet) {}
+
+    override fun retweetTweet(tweet: Tweet) {}
 
     override fun searchForTag(tag: String) {
         _navigateToSearch.value = Event(tag)

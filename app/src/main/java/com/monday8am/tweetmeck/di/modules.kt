@@ -16,7 +16,6 @@ import com.monday8am.tweetmeck.ui.launcher.LaunchViewModel
 import com.monday8am.tweetmeck.ui.login.AuthViewModel
 import com.monday8am.tweetmeck.ui.onboarding.OnboardingViewModel
 import com.monday8am.tweetmeck.ui.search.SearchViewModel
-import com.monday8am.tweetmeck.ui.timeline.TimelineViewModel
 import com.monday8am.tweetmeck.ui.timeline.TimelineViewModelDelegateImpl
 import com.monday8am.tweetmeck.ui.tweet.TweetViewModel
 import com.monday8am.tweetmeck.ui.user.UserViewModel
@@ -47,13 +46,12 @@ val appModule = module {
         )
     }
 
-    factory { TimelineViewModelDelegateImpl(get(), get()) }
+    factory { TimelineViewModelDelegateImpl(get()) }
 
     viewModel { LaunchViewModel(get()) }
     viewModel { OnboardingViewModel(get()) }
     viewModel { AuthViewModel() }
     viewModel { HomeViewModel(get(), get(), get(), get()) }
-    viewModel { (query: TimelineQuery) -> TimelineViewModel(query, get(), get()) }
     viewModel { (screenName: String) -> UserViewModel(screenName, get()) }
     viewModel { (tweetId: Long) -> TweetViewModel(tweetId, get()) }
     viewModel { SearchViewModel() }

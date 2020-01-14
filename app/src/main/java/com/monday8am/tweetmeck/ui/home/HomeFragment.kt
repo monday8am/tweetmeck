@@ -1,5 +1,7 @@
 package com.monday8am.tweetmeck.ui.home
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -92,8 +94,24 @@ class HomeFragment : Fragment() {
             Timber.d("Loading: $it")
         })
 
+        viewModel.openUrl.observe(viewLifecycleOwner, EventObserver {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
+        })
+
+        viewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
+            findNavController().navigate(HomeFragmentDirections.actionHomeToTweet(tweetId))
+        })
+
+        viewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
+            findNavController().navigate(HomeFragmentDirections.actionHomeToUser(screenName))
+        })
+
+        viewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
+            findNavController().navigate(HomeFragmentDirections.actionHomeToSearch(searchItem))
+        })
+
         // Show an error message
-        viewModel.timelineErrorMessage.observe(this, EventObserver { errorMsg ->
+        viewModel.errorMessage.observe(viewLifecycleOwner, EventObserver { errorMsg ->
             // TODO: Change once there's a way to show errors to the user
             Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
         })
@@ -124,7 +142,7 @@ class HomeFragment : Fragment() {
 
         tabs.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {
-
+                viewModel.setScrollToTop()
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabSelected(tab: TabLayout.Tab?) {}

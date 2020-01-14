@@ -17,9 +17,12 @@ import com.monday8am.tweetmeck.data.remote.TwitterClient
 import com.monday8am.tweetmeck.util.switchMap
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 interface DataRepository {
+    val session: Flow<Session?>
     val lists: LiveData<List<TwitterList>>
     suspend fun getTweet(tweetId: Long): Result<Tweet>
     suspend fun getUser(screenName: String): Result<TwitterUser>
@@ -47,6 +50,9 @@ class DataRepositoryImpl(
 
     override val lists: LiveData<List<TwitterList>>
         get() = db.twitterListDao().getAll()
+
+    override val session: Flow<Session?>
+        get() = db.sessionDao().currentSessionFlow().map { it.firstOrNull() }
 
     override suspend fun refreshLists(screenName: String): Result<Unit> {
         return asResult {

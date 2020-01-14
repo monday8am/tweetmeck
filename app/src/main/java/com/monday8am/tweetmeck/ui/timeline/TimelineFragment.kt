@@ -1,32 +1,25 @@
 package com.monday8am.tweetmeck.ui.timeline
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.monday8am.tweetmeck.MainNavDirections
 import com.monday8am.tweetmeck.data.TimelineQuery
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.FragmentTimelineBinding
-import com.monday8am.tweetmeck.ui.home.HomeFragmentDirections
 import com.monday8am.tweetmeck.ui.home.HomeViewModel
 import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider
 import com.monday8am.tweetmeck.util.EventObserver
 import com.monday8am.tweetmeck.util.lazyFast
 import org.koin.androidx.scope.currentScope
 import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
-import timber.log.Timber
 
 class TimelineFragment : Fragment() {
 
@@ -80,9 +73,7 @@ class TimelineFragment : Fragment() {
             DividerItemDecoration.VERTICAL
         ))
 
-        viewModel.getTimelineContent(query)
-
-        viewModel.pagedList.observe(viewLifecycleOwner, Observer<PagedList<Tweet>> {
+        viewModel.getTimelineContent(query).pagedList.observe(viewLifecycleOwner, Observer<PagedList<Tweet>> {
             adapter.submitList(it) {
                 // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
                 // item added to the end of the list as an anchor during initial load.
@@ -92,6 +83,10 @@ class TimelineFragment : Fragment() {
                     binding.recyclerview.scrollToPosition(position)
                 }
             }
+        })
+
+        viewModel.scrollToTop.observe(viewLifecycleOwner, EventObserver {
+            binding.recyclerview.scrollToPosition(0)
         })
 
         binding.recyclerview.apply {
@@ -106,31 +101,5 @@ class TimelineFragment : Fragment() {
                 removeDuration = 120L
             }
         }
-
-        viewModel.openUrl.observe(viewLifecycleOwner, EventObserver {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
-        })
-
-        viewModel.loadMoreState.observe(viewLifecycleOwner, Observer {
-            Timber.d("Request state! $it")
-        })
-
-        viewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
-            findNavController().navigate(MainNavDirections.actionGlobalTweetAction(tweetId))
-        })
-
-        viewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
-            findNavController().navigate(MainNavDirections.actionGlobalUserAction(screenName))
-        })
-
-        viewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
-            findNavController().navigate(MainNavDirections.actionGlobalSearchAction(searchItem))
-        })
-
-        // Show an error message
-        viewModel.errorMessage.observe(viewLifecycleOwner, EventObserver { errorMsg ->
-            // TODO: Change once there's a way to show errors to the user
-            Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
-        })
     }
 }
