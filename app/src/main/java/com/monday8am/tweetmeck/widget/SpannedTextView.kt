@@ -13,7 +13,8 @@ import androidx.appcompat.widget.AppCompatTextView
 class SpannedTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyle: Int = 0): AppCompatTextView(context, attrs, defStyle) {
+    defStyle: Int = 0
+) : AppCompatTextView(context, attrs, defStyle) {
 
     init {
         linksClickable = true
@@ -26,7 +27,7 @@ class SpannedTextView @JvmOverloads constructor(
         val spannable = Spannable.Factory.getInstance().newSpannable(text)
         val pressedSpan = getPressedSpan(this, spannable, event) ?: return false
 
-        when(event.action) {
+        when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 Selection.setSelection(spannable, spannable.getSpanStart(pressedSpan),
                     spannable.getSpanEnd(pressedSpan))
@@ -35,7 +36,7 @@ class SpannedTextView @JvmOverloads constructor(
                 pressedSpan.onClick(this)
                 Selection.removeSelection(spannable)
             }
-            else ->  {
+            else -> {
                 Selection.removeSelection(spannable)
                 super.onTouchEvent(event)
             }

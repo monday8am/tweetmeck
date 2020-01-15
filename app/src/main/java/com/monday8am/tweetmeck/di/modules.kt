@@ -2,7 +2,10 @@ package com.monday8am.tweetmeck.di
 
 import com.monday8am.tweetmeck.BuildConfig
 import com.monday8am.tweetmeck.MainActivity
-import com.monday8am.tweetmeck.data.*
+import com.monday8am.tweetmeck.data.AuthRepository
+import com.monday8am.tweetmeck.data.AuthRepositoryImpl
+import com.monday8am.tweetmeck.data.DataRepository
+import com.monday8am.tweetmeck.data.DataRepositoryImpl
 import com.monday8am.tweetmeck.data.local.PreferenceStorage
 import com.monday8am.tweetmeck.data.local.SharedPreferencesServiceImpl
 import com.monday8am.tweetmeck.data.local.TwitterDatabase
@@ -16,7 +19,6 @@ import com.monday8am.tweetmeck.ui.launcher.LaunchViewModel
 import com.monday8am.tweetmeck.ui.login.AuthViewModel
 import com.monday8am.tweetmeck.ui.onboarding.OnboardingViewModel
 import com.monday8am.tweetmeck.ui.search.SearchViewModel
-import com.monday8am.tweetmeck.ui.timeline.TimelineViewModelDelegateImpl
 import com.monday8am.tweetmeck.ui.tweet.TweetViewModel
 import com.monday8am.tweetmeck.ui.user.UserViewModel
 import org.koin.android.ext.koin.androidContext
@@ -46,15 +48,13 @@ val appModule = module {
         )
     }
 
-    factory { TimelineViewModelDelegateImpl(get()) }
-
     viewModel { LaunchViewModel(get()) }
     viewModel { OnboardingViewModel(get()) }
     viewModel { AuthViewModel() }
-    viewModel { HomeViewModel(get(), get(), get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { (screenName: String) -> UserViewModel(screenName, get()) }
     viewModel { (tweetId: Long) -> TweetViewModel(tweetId, get()) }
-    viewModel { SearchViewModel() }
+    viewModel { SearchViewModel(get()) }
 
     scope(named<MainActivity>()) {
         scoped { TimelinePoolProvider() }

@@ -24,5 +24,3 @@ sealed class TimelineQuery {
         }
     }
 }
-
-

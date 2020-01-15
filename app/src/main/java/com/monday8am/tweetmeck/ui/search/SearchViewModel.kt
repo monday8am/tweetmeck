@@ -2,25 +2,17 @@ package com.monday8am.tweetmeck.ui.search
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.TimelineQuery
-import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.Tweet
-import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
-import com.monday8am.tweetmeck.ui.timeline.TimelineViewModelDelegate
+import com.monday8am.tweetmeck.ui.timeline.TimelineViewModel
 import com.monday8am.tweetmeck.util.Event
-import com.monday8am.tweetmeck.util.map
 import com.monday8am.tweetmeck.util.switchMap
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 class SearchViewModel(
-    private val timelineDelegate: TimelineViewModelDelegate,
     private val dataRepository: DataRepository
-    ) : ViewModel(), TimelineViewModelDelegate by timelineDelegate {
+) : TimelineViewModel(dataRepository) {
 
     private val _searchQuery = MutableLiveData<Event<TimelineQuery.Hashtag>>()
     val searchQuery: LiveData<Event<TimelineQuery.Hashtag>> = _searchQuery
@@ -29,26 +21,14 @@ class SearchViewModel(
         dataRepository.getTimeline(it.peekContent()).pagedList
     }
 
-    private var lastSession: Session? = null
+    private val _dataLoading = MutableLiveData<Boolean>()
+    val dataLoading: LiveData<Boolean> = _dataLoading
 
-    init {
-        viewModelScope.launch {
-            dataRepository.session.collect { session ->
-                lastSession = session
-            }
-        }
-    }
+    private val _errorMessage = MutableLiveData<Event<String>>()
+    val errorMessage: LiveData<Event<String>> = _errorMessage
 
     fun searchFor(query: String) {
         // check it first!
         _searchQuery.value = Event(TimelineQuery.Hashtag(query))
-    }
-
-    override fun likeTweet(tweet: Tweet) {
-        timelineDelegate.likeTweet(tweet, lastSession, viewModelScope)
-    }
-
-    override fun retweetTweet(tweet: Tweet) {
-        timelineDelegate.retweetTweet(tweet, lastSession, viewModelScope)
     }
 }

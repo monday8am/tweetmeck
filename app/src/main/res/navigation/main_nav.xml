@@ -65,5 +65,11 @@
         <argument
             android:name="searchItem"
             app:argType="string" />
+        <action
+            android:id="@+id/action_search_to_user"
+            app:destination="@id/user_dest" />
+        <action
+            android:id="@+id/action_search_to_tweet"
+            app:destination="@id/tweet_dest" />
     </fragment>
 </navigation>

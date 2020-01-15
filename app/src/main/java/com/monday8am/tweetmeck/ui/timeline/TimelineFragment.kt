@@ -14,9 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.data.TimelineQuery
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.FragmentTimelineBinding
-import com.monday8am.tweetmeck.ui.home.HomeViewModel
 import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider
-import com.monday8am.tweetmeck.util.EventObserver
 import com.monday8am.tweetmeck.util.lazyFast
 import org.koin.androidx.scope.currentScope
 import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
@@ -47,7 +45,7 @@ class TimelineFragment : Fragment() {
         activity?.currentScope?.get<TimelinePoolProvider>()
     }
 
-    private lateinit var viewModel: HomeViewModel
+    private lateinit var viewModel: TimelineViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,7 +63,7 @@ class TimelineFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val textCreator = TweetItemTextCreator(view.context, viewModel.lastSession)
+        val textCreator = TweetItemTextCreator(view.context, viewModel.currentSession)
         adapter = TimelineAdapter(viewModel, viewLifecycleOwner, textCreator)
 
         binding.recyclerview.addItemDecoration(DividerItemDecoration(
@@ -85,9 +83,11 @@ class TimelineFragment : Fragment() {
             }
         })
 
+        /*
         viewModel.scrollToTop.observe(viewLifecycleOwner, EventObserver {
             binding.recyclerview.scrollToPosition(0)
         })
+         */
 
         binding.recyclerview.apply {
             adapter = this@TimelineFragment.adapter

@@ -1,26 +1,31 @@
 package com.monday8am.tweetmeck.ui.search
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.databinding.FragmentSearchBinding
-import com.monday8am.tweetmeck.ui.timeline.TimelineFragment
 import com.monday8am.tweetmeck.util.EventObserver
 import kotlinx.android.synthetic.main.fragment_search.view.*
 import org.koin.android.ext.android.inject
+import timber.log.Timber
 
 class SearchFragment : Fragment() {
 
     private val navArgs: SearchFragmentArgs by navArgs()
+    private val searchViewModel: SearchViewModel by inject()
+
     private lateinit var binding: FragmentSearchBinding
-    private val viewModel: SearchViewModel by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,7 +35,7 @@ class SearchFragment : Fragment() {
 
         binding = FragmentSearchBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
-            viewmodel = this@SearchFragment.viewModel
+            viewModel = this@SearchFragment.searchViewModel
         }
 
         return binding.root
@@ -43,7 +48,7 @@ class SearchFragment : Fragment() {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String): Boolean {
                     dismissKeyboard(this@apply)
-                    viewModel.searchFor(query)
+                    searchViewModel.searchFor(query)
                     return true
                 }
 
@@ -51,21 +56,43 @@ class SearchFragment : Fragment() {
                     return true
                 }
             })
-            setQuery(navArgs.searchItem, false)
         }
+
+        searchViewModel.dataLoading.observe(viewLifecycleOwner, Observer<Boolean> {
+            Timber.d("Loading: $it")
+        })
+
+        searchViewModel.openUrl.observe(viewLifecycleOwner, EventObserver {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
+        })
+
+        searchViewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
+            findNavController().navigate(SearchFragmentDirections.actionSearchToTweet(tweetId))
+        })
+
+        searchViewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
+            findNavController().navigate(SearchFragmentDirections.actionSearchToUser(screenName))
+        })
+
+        searchViewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
+            searchViewModel.searchFor(searchItem)
+        })
+
+        // Show an error message
+        searchViewModel.errorMessage.observe(viewLifecycleOwner, EventObserver { errorMsg ->
+            // TODO: Change once there's a way to show errors to the user
+            Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.searchQuery.observe(viewLifecycleOwner, EventObserver { query ->
-            val timeline = TimelineFragment.newInstance(query)
-            val ft = requireFragmentManager().beginTransaction()
-            ft.replace(R.id.timelineContainer, timeline)
-            ft.commit()
+        searchViewModel.searchQuery.observe(viewLifecycleOwner, EventObserver { query ->
+            binding.toolbar.searchView.setQuery(query.hashtag, false)
         })
 
-        viewModel.searchFor(navArgs.searchItem)
+        searchViewModel.searchFor(navArgs.searchItem)
     }
 
     override fun onPause() {

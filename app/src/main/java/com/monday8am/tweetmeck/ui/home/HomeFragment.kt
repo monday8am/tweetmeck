@@ -140,7 +140,7 @@ class HomeFragment : Fragment() {
             }
         })
 
-        tabs.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+        tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 viewModel.setScrollToTop()
             }
