@@ -31,14 +31,12 @@ interface TwitterClient {
     suspend fun getAuthUrl(requestToken: RequestToken): String
     suspend fun getAccessToken(requestToken: RequestToken, oAuthVerifier: String): AccessTokenResponse
 
-    // Logged operations
     suspend fun likeTweet(id: Long, value: Boolean, session: Session): Status
     suspend fun retweetTweet(id: Long, value: Boolean, session: Session): Status
-    suspend fun getLoggedUserLists(session: Session): List<TwitterList>
+    suspend fun getLists(screenName: String, session: Session?): List<TwitterList>
 
     // Get content
     suspend fun getUser(id: Long): User
-    suspend fun getLists(screenName: String): List<TwitterList>
     suspend fun getListTimeline(
         listId: Long,
         sinceTweetId: Long? = null,
@@ -93,12 +91,10 @@ class TwitterClientImpl(
         return client.users.showByUserId(id).await().result
     }
 
-    override suspend fun getLoggedUserLists(session: Session): List<TwitterList> {
-        client = refreshClientCredentials(session.accessToken, session.accessTokenSecret)
-        return client.lists.list().await().results
-    }
-
-    override suspend fun getLists(screenName: String): List<TwitterList> {
+    override suspend fun getLists(screenName: String, session: Session?): List<TwitterList> {
+        if (session != null) {
+            client = refreshClientCredentials(session.accessToken, session.accessTokenSecret)
+        }
         return client.lists.list(screenName).await().results
     }
 

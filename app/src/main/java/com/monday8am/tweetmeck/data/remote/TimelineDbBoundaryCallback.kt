@@ -8,7 +8,7 @@ import kotlinx.coroutines.*
 
 class TimelineDbBoundaryCallback(
     private val listId: Long,
-    private val refreshCallback: suspend (listId: Long) -> Result<Unit>,
+    private val firstLoadCallback: suspend (listId: Long) -> Result<Unit>,
     private val loadMoreCallback: suspend (listId: Long, maxTweetId: Long) -> Result<Unit>
 ) : PagedList.BoundaryCallback<Tweet>(), CoroutineScope by CoroutineScope(Dispatchers.Main) {
 
@@ -20,7 +20,7 @@ class TimelineDbBoundaryCallback(
             launch {
                 requestState.value = Result.Loading
                 val result = withContext(Dispatchers.IO) {
-                    refreshCallback(listId)
+                    firstLoadCallback(listId)
                 }
                 when (result) {
                     is Result.Success -> it.recordSuccess()
