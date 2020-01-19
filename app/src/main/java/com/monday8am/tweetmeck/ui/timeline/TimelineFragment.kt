@@ -71,7 +71,7 @@ class TimelineFragment : Fragment() {
             DividerItemDecoration.VERTICAL
         ))
 
-        viewModel.getTimelineContent(query).pagedList.observe(viewLifecycleOwner, Observer<PagedList<Tweet>> {
+        viewModel.refreshTimelineContent(query).pagedList.observe(viewLifecycleOwner, Observer<PagedList<Tweet>> {
             adapter.submitList(it) {
                 // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
                 // item added to the end of the list as an anchor during initial load.

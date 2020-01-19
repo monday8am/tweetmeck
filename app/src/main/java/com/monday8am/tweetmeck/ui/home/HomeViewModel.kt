@@ -1,12 +1,23 @@
 package com.monday8am.tweetmeck.ui.home
 
-import androidx.lifecycle.*
-import com.monday8am.tweetmeck.data.DataRepository
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.local.PreferenceStorage
 import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.succeeded
+import com.monday8am.tweetmeck.domain.auth.ObserveLoggedSessionUseCase
+import com.monday8am.tweetmeck.domain.lists.LoadListsFromRemoteUseCase
+import com.monday8am.tweetmeck.domain.lists.ObserveListsUseCase
+import com.monday8am.tweetmeck.domain.timeline.GetListTimelineUseCase
+import com.monday8am.tweetmeck.domain.timeline.GetSearchTimelineUseCase
+import com.monday8am.tweetmeck.domain.timeline.RefreshListTimelineUseCase
+import com.monday8am.tweetmeck.domain.tweet.LikeTweetUseCase
+import com.monday8am.tweetmeck.domain.tweet.RetweetUseCase
+import com.monday8am.tweetmeck.domain.user.GetUserUseCase
 import com.monday8am.tweetmeck.ui.delegates.AuthState
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
 import com.monday8am.tweetmeck.ui.timeline.TimelineViewModel
@@ -17,13 +28,26 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val signInDelegate: SignInViewModelDelegate,
-    private val dataRepository: DataRepository,
+    private val observeListUseCase: ObserveListsUseCase,
+    private val getUserUseCase: GetUserUseCase,
+    private val refreshListTimelineUseCase: RefreshListTimelineUseCase,
+    private val loadListsFromRemoteUseCase: LoadListsFromRemoteUseCase,
+    loggedSessionUseCase: ObserveLoggedSessionUseCase,
+    listTimelineUseCase: GetListTimelineUseCase,
+    searchTimelineUseCase: GetSearchTimelineUseCase,
+    likeTweetUseCase: LikeTweetUseCase,
+    retweetUseCase: RetweetUseCase,
     private val preferences: PreferenceStorage
-) : TimelineViewModel(dataRepository),
+) : TimelineViewModel(
+    loggedSessionUseCase,
+    listTimelineUseCase,
+    searchTimelineUseCase,
+    likeTweetUseCase,
+    retweetUseCase),
     SignInViewModelDelegate by signInDelegate {
 
-    val twitterLists: LiveData<List<TwitterList>>
-        get() = Transformations.distinctUntilChanged(dataRepository.lists)
+    private val _twitterList = MutableLiveData<List<TwitterList>>()
+    val twitterLists: LiveData<List<TwitterList>> = _twitterList
 
     private val _dataLoading = MediatorLiveData<Boolean>()
     val dataLoading: LiveData<Boolean> = _dataLoading
@@ -53,6 +77,7 @@ class HomeViewModel(
             _dataLoading.addSource(twitterLists) { list ->
                 _dataLoading.value = list.isEmpty()
             }
+
             _dataLoading.addSource(authState) { authEvent ->
                 when (authEvent.peekContent()) {
                     is AuthState.Loading,
@@ -61,16 +86,24 @@ class HomeViewModel(
                 }
             }
 
-            currentSessionFlow.collect { session ->
-                refreshUserContent(session)
-                refreshLists(session)
+            observeSession.collect { session ->
+                loadUserContent(session)
+                loadListContent(session)
+            }
+
+            observeListUseCase(Unit).collect {
+                if (it is Result.Success) {
+                    _twitterList.value = it.data
+                } else {
+                    _errorMessage.value = Event("Error loading list content!")
+                }
             }
         }
     }
 
-    private suspend fun refreshUserContent(session: Session?) {
+    private suspend fun loadUserContent(session: Session?) {
         if (session != null) {
-            when (val result = dataRepository.getUser(session.screenName)) {
+            when (val result = getUserUseCase(session.screenName)) {
                 is Result.Success -> _currentUserImageUrl.value = result.data.profileImageUrl
                 else -> _errorMessage.value = Event("Error loading user profile")
             }
@@ -79,14 +112,9 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun refreshLists(session: Session?) {
-        timelines.clear()
-        val result = if (session != null) {
-            dataRepository.refreshLoggedUserLists(session)
-        } else {
-            dataRepository.refreshLists(preferences.initialTopic ?: "ny_times")
-        }
-
+    private suspend fun loadListContent(session: Session?) {
+        cachedTimelineContent.clear()
+        val result = loadListsFromRemoteUseCase((preferences.initialTopic ?: "ny_times") to session)
         if (!result.succeeded) {
             _errorMessage.value = Event("Error loading lists")
         }
@@ -100,7 +128,7 @@ class HomeViewModel(
 
     fun onSwipeRefresh() {
         viewModelScope.launch {
-            val result = dataRepository.refreshListTimeline(currentTimelineId)
+            val result = refreshListTimelineUseCase(currentTimelineId)
             swipeRefreshResult.value = result
             if (result is Result.Error) {
                 _errorMessage.value = Event(result.exception.message ?: "Error refreshing content")

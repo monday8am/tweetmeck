@@ -24,3 +24,6 @@ sealed class Result<out R> {
  */
 val Result<*>.succeeded
     get() = this is Result.Success && data != null
+
+val <T> Result<T>.data: T?
+    get() = (this as? Result.Success)?.data

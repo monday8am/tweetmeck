@@ -12,7 +12,7 @@ import com.monday8am.tweetmeck.domain.pageSize
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
-open class RefreshListTimeline constructor(
+open class RefreshListTimelineUseCase constructor(
     private val remoteClient: TwitterClient,
     private val db: TwitterDatabase,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO

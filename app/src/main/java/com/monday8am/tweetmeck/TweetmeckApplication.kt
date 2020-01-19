@@ -2,6 +2,7 @@ package com.monday8am.tweetmeck
 
 import android.app.Application
 import com.monday8am.tweetmeck.di.appModule
+import com.monday8am.tweetmeck.di.useCasesModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -15,7 +16,7 @@ class TweetmeckApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@TweetmeckApplication)
-            modules(appModule)
+            modules(listOf(appModule, useCasesModule))
         }
     }
 }

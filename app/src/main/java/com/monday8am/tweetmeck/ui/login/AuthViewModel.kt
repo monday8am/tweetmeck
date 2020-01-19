@@ -3,16 +3,18 @@ package com.monday8am.tweetmeck.ui.login
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.monday8am.tweetmeck.data.remote.RequestToken
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
 import kotlinx.coroutines.launch
-import org.koin.core.context.GlobalContext
 
-class AuthViewModel : ViewModel(),
-    SignInViewModelDelegate by GlobalContext.get().koin.get() {
+class AuthViewModel(private val signInDelegate: SignInViewModelDelegate) : ViewModel(),
+    SignInViewModelDelegate by signInDelegate {
 
     fun triggerLogIn() = viewModelScope.launch { startWebAuth() }
 
-    fun setResult(url: Uri?, error: String?) = viewModelScope.launch { setWebAuthResult(url, error) }
+    fun setResult(url: Uri?, token: RequestToken, error: String?) = viewModelScope.launch {
+        setWebAuthResult(url, token, error)
+    }
 
     fun triggerLogOut() = viewModelScope.launch { logOut() }
 }

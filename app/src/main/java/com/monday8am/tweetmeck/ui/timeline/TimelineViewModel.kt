@@ -4,12 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.Result
-import com.monday8am.tweetmeck.data.TimelineContent
 import com.monday8am.tweetmeck.data.TimelineQuery
+import com.monday8am.tweetmeck.data.data
 import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.Tweet
+import com.monday8am.tweetmeck.domain.TimelineContent
+import com.monday8am.tweetmeck.domain.auth.ObserveLoggedSessionUseCase
+import com.monday8am.tweetmeck.domain.timeline.GetListTimelineUseCase
+import com.monday8am.tweetmeck.domain.timeline.GetSearchTimelineUseCase
+import com.monday8am.tweetmeck.domain.tweet.LikeTweetUseCase
+import com.monday8am.tweetmeck.domain.tweet.RetweetUseCase
 import com.monday8am.tweetmeck.util.Event
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -32,10 +37,15 @@ interface TimelineViewModelDelegate : TweetItemEventListener {
     val navigateToSearch: LiveData<Event<String>>
     val openUrl: LiveData<Event<String>>
     val timelineErrorMessage: LiveData<Event<String>>
+    val timelineContent: LiveData<TimelineContent>
 }
 
 open class TimelineViewModel(
-    private val dataRepository: DataRepository
+    private val loggedSessionUseCase: ObserveLoggedSessionUseCase,
+    private val listTimelineUseCase: GetListTimelineUseCase,
+    private val searchTimelineUseCase: GetSearchTimelineUseCase,
+    private val likeTweetUseCase: LikeTweetUseCase,
+    private val retweetUseCase: RetweetUseCase
 ) : ViewModel(), TimelineViewModelDelegate {
 
     private val _navigateToTweetDetails = MutableLiveData<Event<Long>>()
@@ -56,13 +66,16 @@ open class TimelineViewModel(
     private val _dataLoading = MutableLiveData<Boolean>()
     val timelineDataLoading: LiveData<Boolean> = _dataLoading
 
-    protected var timelines: MutableMap<String, TimelineContent> = mutableMapOf()
+    private val _timelineContent = MutableLiveData<TimelineContent>()
+    override val timelineContent: LiveData<TimelineContent> = _timelineContent
+
+    protected var cachedTimelineContent: MutableMap<String, TimelineContent> = mutableMapOf()
     var currentSession: Session? = null
 
     init {
         viewModelScope.launch {
-            dataRepository.session.collect { session ->
-                currentSession = session
+            loggedSessionUseCase(Unit).collect {
+                currentSession = it.data
             }
         }
     }
@@ -95,7 +108,7 @@ open class TimelineViewModel(
         val session = currentSession
         if (session != null) {
             viewModelScope.launch {
-                when (val result = dataRepository.likeTweet(tweet, session)) {
+                when (val result = likeTweetUseCase(tweet to session)) {
                     is Result.Error -> _errorMessage.value =
                         Event(content = result.exception.message ?: "Unknown Error")
                     else -> Timber.d("Tweet updated correctly!")
@@ -110,7 +123,7 @@ open class TimelineViewModel(
         val session = currentSession
         if (session != null) {
             viewModelScope.launch {
-                when (val result = dataRepository.retweetTweet(tweet, session)) {
+                when (val result = retweetUseCase(tweet to session)) {
                     is Result.Error -> _errorMessage.value =
                         Event(content = result.exception.message ?: "Unknown Error")
                     else -> Timber.d("Tweet updated correctly!")
@@ -121,9 +134,29 @@ open class TimelineViewModel(
         }
     }
 
-    fun getTimelineContent(query: TimelineQuery): TimelineContent {
-        return timelines.getOrPut(query.toFormattedString(), {
-            dataRepository.getTimeline(query)
-        })
+    fun refreshTimelineContent(query: TimelineQuery) {
+        viewModelScope.launch {
+            val queryId = query.toFormattedString()
+            val content = cachedTimelineContent[queryId]
+
+            if (content != null) {
+                _timelineContent.value = content
+            } else {
+                val result = when (query) {
+                    is TimelineQuery.Hashtag -> searchTimelineUseCase(query.hashtag)
+                    is TimelineQuery.List -> listTimelineUseCase(query.listId)
+                    else -> Result.Error(Exception("Not implemented query"))
+                }
+
+                when (result) {
+                    is Result.Success -> {
+                        cachedTimelineContent[queryId] = result.data
+                        _timelineContent.value = result.data
+                    }
+                    is Result.Loading -> _errorMessage.value = Event("Error loading timelime")
+                    is Result.Error -> _errorMessage.value = Event("Error loading timelime: ${result.exception.message}")
+                }
+            }
+        }
     }
 }

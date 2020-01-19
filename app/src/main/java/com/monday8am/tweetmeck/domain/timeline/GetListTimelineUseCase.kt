@@ -2,7 +2,6 @@ package com.monday8am.tweetmeck.domain.timeline
 
 import androidx.paging.toLiveData
 import com.monday8am.tweetmeck.data.Result
-import com.monday8am.tweetmeck.data.TimelineContent
 import com.monday8am.tweetmeck.data.local.TwitterDatabase
 import com.monday8am.tweetmeck.data.mappers.StatusToTweet
 import com.monday8am.tweetmeck.data.mappers.StatusToTwitterUser
@@ -11,7 +10,8 @@ import com.monday8am.tweetmeck.data.mappers.mapWith
 import com.monday8am.tweetmeck.data.models.ModelId
 import com.monday8am.tweetmeck.data.remote.TimelineDbBoundaryCallback
 import com.monday8am.tweetmeck.data.remote.TwitterClient
-import com.monday8am.tweetmeck.domain.SuspendUseCase
+import com.monday8am.tweetmeck.domain.TimelineContent
+import com.monday8am.tweetmeck.domain.UseCase
 import com.monday8am.tweetmeck.domain.pageSize
 import com.monday8am.tweetmeck.domain.pagedListConfig
 import kotlinx.coroutines.CoroutineDispatcher
@@ -22,9 +22,9 @@ open class GetListTimelineUseCase constructor(
     private val remoteClient: TwitterClient,
     private val db: TwitterDatabase,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : SuspendUseCase<ModelId, TimelineContent>(defaultDispatcher) {
+) : UseCase<ModelId, TimelineContent>(defaultDispatcher) {
 
-    override suspend fun execute(parameters: ModelId): TimelineContent {
+    override fun execute(parameters: ModelId): TimelineContent {
         val boundaryCallback = TimelineDbBoundaryCallback(
             listId = parameters,
             firstLoadCallback = ::firstLoadCallback,

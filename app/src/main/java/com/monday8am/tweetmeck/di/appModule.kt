@@ -2,10 +2,6 @@ package com.monday8am.tweetmeck.di
 
 import com.monday8am.tweetmeck.BuildConfig
 import com.monday8am.tweetmeck.MainActivity
-import com.monday8am.tweetmeck.data.AuthRepository
-import com.monday8am.tweetmeck.data.AuthRepositoryImpl
-import com.monday8am.tweetmeck.data.DataRepository
-import com.monday8am.tweetmeck.data.DataRepositoryImpl
 import com.monday8am.tweetmeck.data.local.PreferenceStorage
 import com.monday8am.tweetmeck.data.local.SharedPreferencesServiceImpl
 import com.monday8am.tweetmeck.data.local.TwitterDatabase
@@ -40,8 +36,6 @@ val appModule = module {
     factory { get<TwitterDatabase>().twitterListDao() }
     factory { get<TwitterDatabase>().twitterUserDao() }
 
-    single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
-    single<DataRepository> { DataRepositoryImpl(get(), get()) }
     single<SignInViewModelDelegate> {
         SignInViewModelDelegateImpl(
             get()
