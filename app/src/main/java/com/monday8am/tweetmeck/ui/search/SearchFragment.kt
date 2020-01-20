@@ -16,14 +16,19 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.monday8am.tweetmeck.databinding.FragmentSearchBinding
 import com.monday8am.tweetmeck.util.EventObserver
+import com.monday8am.tweetmeck.util.TimelinePoolProvider
 import kotlinx.android.synthetic.main.fragment_search.view.*
 import org.koin.android.ext.android.inject
-import timber.log.Timber
+import org.koin.androidx.scope.currentScope
 
 class SearchFragment : Fragment() {
 
     private val navArgs: SearchFragmentArgs by navArgs()
     private val searchViewModel: SearchViewModel by inject()
+
+    private val viewPoolProvider: TimelinePoolProvider? by lazy {
+        activity?.currentScope?.get<TimelinePoolProvider>()
+    }
 
     private lateinit var binding: FragmentSearchBinding
 
@@ -58,10 +63,6 @@ class SearchFragment : Fragment() {
             })
         }
 
-        searchViewModel.dataLoading.observe(viewLifecycleOwner, Observer<Boolean> {
-            Timber.d("Loading: $it")
-        })
-
         searchViewModel.openUrl.observe(viewLifecycleOwner, EventObserver {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
         })
@@ -79,7 +80,7 @@ class SearchFragment : Fragment() {
         })
 
         // Show an error message
-        searchViewModel.errorMessage.observe(viewLifecycleOwner, EventObserver { errorMsg ->
+        searchViewModel.timelineErrorMessage.observe(viewLifecycleOwner, EventObserver { errorMsg ->
             // TODO: Change once there's a way to show errors to the user
             Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
         })
@@ -90,6 +91,10 @@ class SearchFragment : Fragment() {
 
         searchViewModel.searchQuery.observe(viewLifecycleOwner, EventObserver { query ->
             binding.toolbar.searchView.setQuery(query.hashtag, false)
+        })
+
+        searchViewModel.timelineContent.observe(viewLifecycleOwner, Observer {
+            binding.timelineView.bind(searchViewModel, viewLifecycleOwner, viewPoolProvider)
         })
 
         searchViewModel.searchFor(navArgs.searchItem)

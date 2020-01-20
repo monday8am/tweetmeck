@@ -19,22 +19,20 @@ import com.monday8am.tweetmeck.data.TimelineQuery
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.databinding.FragmentHomeBinding
 import com.monday8am.tweetmeck.ui.delegates.AuthState
-import com.monday8am.tweetmeck.ui.login.AuthViewModel
-import com.monday8am.tweetmeck.ui.timeline.TimelineFragment
+import com.monday8am.tweetmeck.ui.home.page.HomePageFragment
+import com.monday8am.tweetmeck.ui.home.page.HomePageViewModel
 import com.monday8am.tweetmeck.util.EventObserver
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class HomeFragment : Fragment() {
 
     private val tabsCacheSize = 5
-
     private lateinit var binding: FragmentHomeBinding
     private lateinit var viewPager2: ViewPager2
 
     private val viewModel: HomeViewModel by viewModel()
-    private val authViewModel: AuthViewModel by sharedViewModel()
+    private val pageViewModel: HomePageViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,7 +51,6 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.twitterLists.observe(viewLifecycleOwner, Observer<List<TwitterList>> { lists ->
-            Timber.d("$lists")
             bindContent(view, lists)
         })
 
@@ -67,7 +64,7 @@ class HomeFragment : Fragment() {
             )
         })
 
-        authViewModel.authState.observe(viewLifecycleOwner, EventObserver { state ->
+        viewModel.authState.observe(viewLifecycleOwner, EventObserver { state ->
             when (state) {
                 is AuthState.Loading -> {
                     // viewBinding.button.alpha = 0.5f
@@ -94,26 +91,26 @@ class HomeFragment : Fragment() {
             Timber.d("Loading: $it")
         })
 
-        viewModel.openUrl.observe(viewLifecycleOwner, EventObserver {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
-        })
-
-        viewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
-            findNavController().navigate(HomeFragmentDirections.actionHomeToTweet(tweetId))
-        })
-
-        viewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
-            findNavController().navigate(HomeFragmentDirections.actionHomeToUser(screenName))
-        })
-
-        viewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
-            findNavController().navigate(HomeFragmentDirections.actionHomeToSearch(searchItem))
-        })
-
         // Show an error message
         viewModel.errorMessage.observe(viewLifecycleOwner, EventObserver { errorMsg ->
             // TODO: Change once there's a way to show errors to the user
             Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
+        })
+
+        pageViewModel.openUrl.observe(viewLifecycleOwner, EventObserver {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
+        })
+
+        pageViewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
+            findNavController().navigate(HomeFragmentDirections.actionHomeToTweet(tweetId))
+        })
+
+        pageViewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
+            findNavController().navigate(HomeFragmentDirections.actionHomeToUser(screenName))
+        })
+
+        pageViewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
+            findNavController().navigate(HomeFragmentDirections.actionHomeToSearch(searchItem))
         })
     }
 
@@ -123,7 +120,7 @@ class HomeFragment : Fragment() {
         viewPager2.offscreenPageLimit = tabsCacheSize
         viewPager2.adapter = object : FragmentStateAdapter(this) {
             override fun createFragment(position: Int): Fragment {
-                return TimelineFragment.newInstance(TimelineQuery.List(items[position].id))
+                return HomePageFragment.newInstance(TimelineQuery.List(items[position].id))
             }
 
             override fun getItemCount(): Int {
@@ -142,7 +139,7 @@ class HomeFragment : Fragment() {
 
         tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                viewModel.setScrollToTop()
+                pageViewModel.setScrollToTop()
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabSelected(tab: TabLayout.Tab?) {}

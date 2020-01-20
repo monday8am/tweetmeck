@@ -1,26 +1,17 @@
 package com.monday8am.tweetmeck.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.local.PreferenceStorage
 import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.data.succeeded
-import com.monday8am.tweetmeck.domain.auth.ObserveLoggedSessionUseCase
 import com.monday8am.tweetmeck.domain.lists.LoadListsFromRemoteUseCase
 import com.monday8am.tweetmeck.domain.lists.ObserveListsUseCase
-import com.monday8am.tweetmeck.domain.timeline.GetListTimelineUseCase
-import com.monday8am.tweetmeck.domain.timeline.GetSearchTimelineUseCase
 import com.monday8am.tweetmeck.domain.timeline.RefreshListTimelineUseCase
-import com.monday8am.tweetmeck.domain.tweet.LikeTweetUseCase
-import com.monday8am.tweetmeck.domain.tweet.RetweetUseCase
 import com.monday8am.tweetmeck.domain.user.GetUserUseCase
 import com.monday8am.tweetmeck.ui.delegates.AuthState
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
-import com.monday8am.tweetmeck.ui.timeline.TimelineViewModel
 import com.monday8am.tweetmeck.util.Event
 import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.flow.collect
@@ -32,19 +23,8 @@ class HomeViewModel(
     private val getUserUseCase: GetUserUseCase,
     private val refreshListTimelineUseCase: RefreshListTimelineUseCase,
     private val loadListsFromRemoteUseCase: LoadListsFromRemoteUseCase,
-    loggedSessionUseCase: ObserveLoggedSessionUseCase,
-    listTimelineUseCase: GetListTimelineUseCase,
-    searchTimelineUseCase: GetSearchTimelineUseCase,
-    likeTweetUseCase: LikeTweetUseCase,
-    retweetUseCase: RetweetUseCase,
     private val preferences: PreferenceStorage
-) : TimelineViewModel(
-    loggedSessionUseCase,
-    listTimelineUseCase,
-    searchTimelineUseCase,
-    likeTweetUseCase,
-    retweetUseCase),
-    SignInViewModelDelegate by signInDelegate {
+) : ViewModel(), SignInViewModelDelegate by signInDelegate {
 
     private val _twitterList = MutableLiveData<List<TwitterList>>()
     val twitterLists: LiveData<List<TwitterList>> = _twitterList
@@ -59,9 +39,6 @@ class HomeViewModel(
     val swipeRefreshing: LiveData<Boolean> = swipeRefreshResult.map {
         false // Whenever refresh finishes, stop the indicator, whatever the result
     }
-
-    private val _scrollToTop = MutableLiveData<Event<Unit>>()
-    val scrollToTop: LiveData<Event<Unit>> = _scrollToTop
 
     private val _errorMessage = MutableLiveData<Event<String>>()
     val errorMessage: LiveData<Event<String>> = _errorMessage
@@ -113,7 +90,6 @@ class HomeViewModel(
     }
 
     private suspend fun loadListContent(session: Session?) {
-        cachedTimelineContent.clear()
         val result = loadListsFromRemoteUseCase((preferences.initialTopic ?: "ny_times") to session)
         if (!result.succeeded) {
             _errorMessage.value = Event("Error loading lists")
@@ -138,9 +114,5 @@ class HomeViewModel(
 
     fun onChangedDisplayedTimeline(listId: Long) {
         currentTimelineId = listId
-    }
-
-    fun setScrollToTop() {
-        _scrollToTop.value = Event(Unit)
     }
 }

@@ -10,13 +10,14 @@ import com.monday8am.tweetmeck.data.remote.TwitterClientImpl
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegateImpl
 import com.monday8am.tweetmeck.ui.home.HomeViewModel
-import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider
+import com.monday8am.tweetmeck.ui.home.page.HomePageViewModel
 import com.monday8am.tweetmeck.ui.launcher.LaunchViewModel
 import com.monday8am.tweetmeck.ui.login.AuthViewModel
 import com.monday8am.tweetmeck.ui.onboarding.OnboardingViewModel
 import com.monday8am.tweetmeck.ui.search.SearchViewModel
 import com.monday8am.tweetmeck.ui.tweet.TweetViewModel
 import com.monday8am.tweetmeck.ui.user.UserViewModel
+import com.monday8am.tweetmeck.util.TimelinePoolProvider
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -38,17 +39,18 @@ val appModule = module {
 
     single<SignInViewModelDelegate> {
         SignInViewModelDelegateImpl(
-            get()
+            get(), get(), get(), get()
         )
     }
 
     viewModel { LaunchViewModel(get()) }
     viewModel { OnboardingViewModel(get()) }
-    viewModel { AuthViewModel() }
-    viewModel { HomeViewModel(get(), get(), get()) }
+    viewModel { AuthViewModel(get()) }
+    viewModel { HomeViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { HomePageViewModel(get(), get(), get(), get(), get()) }
     viewModel { (screenName: String) -> UserViewModel(screenName, get()) }
     viewModel { (tweetId: Long) -> TweetViewModel(tweetId, get()) }
-    viewModel { SearchViewModel(get()) }
+    viewModel { SearchViewModel(get(), get(), get(), get(), get()) }
 
     scope(named<MainActivity>()) {
         scoped { TimelinePoolProvider() }
