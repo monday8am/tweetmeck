@@ -19,7 +19,7 @@
         android:fitsSystemWindows="true">
 
         <include
-            layout="@layout/timeline_appbar"
+            layout="@layout/appbar_home"
             app:viewModel="@{viewModel}" />
 
         <!-- A view to draw above the AppBarLayout to mimic the status bar -->

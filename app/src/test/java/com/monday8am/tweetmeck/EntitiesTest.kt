@@ -15,9 +15,9 @@ class EntitiesTest {
 
         assertEquals(entity.start, 1)
         assertEquals(entity.end, 2)
-        assertEquals(entity.url, "url")
+        assertEquals(entity.appUrl, "url")
         assertEquals(entity.displayUrl, "displayUrl")
-        assertEquals(entity.expandedUrl, "expandedUrl")
+        assertEquals(entity.webUrl, "expandedUrl")
         assertEquals(entity.entityType, EntityLinkType.MentionedUser)
     }
 
@@ -26,9 +26,9 @@ class EntitiesTest {
         val entity = UrlEntity(
             start = 3,
             end = 4,
-            url = "_url",
+            appUrl = "_url",
             displayUrl = "_displayUrl",
-            expandedUrl = "_expandedUrl",
+            webUrl = "_expandedUrl",
             entityType = EntityLinkType.Hashtag
         )
         val content = "3\n4\n_url\n_displayUrl\n_expandedUrl\nHashtag"

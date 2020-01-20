@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.R
-import kotlinx.android.synthetic.main.onboarding_page_item.view.*
+import kotlinx.android.synthetic.main.item_onboarding_page.view.*
 
 class OnBoardingPagerAdapter(private val onBoardingPageList: Array<OnBoardingPage> = OnBoardingPage.values()) :
     RecyclerView.Adapter<PagerViewHolder>() {
@@ -34,6 +34,6 @@ class PagerViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
 
     companion object {
         @LayoutRes
-        val LAYOUT = R.layout.onboarding_page_item
+        val LAYOUT = R.layout.item_onboarding_page
     }
 }

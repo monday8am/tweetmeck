@@ -15,6 +15,7 @@ import jp.nephy.penicillin.endpoints.oauth.AccessTokenResponse
 import jp.nephy.penicillin.endpoints.oauth.accessToken
 import jp.nephy.penicillin.endpoints.oauth.authenticateUrl
 import jp.nephy.penicillin.endpoints.oauth.requestToken
+import jp.nephy.penicillin.endpoints.search.search
 import jp.nephy.penicillin.endpoints.statuses.retweet
 import jp.nephy.penicillin.endpoints.statuses.unretweet
 import jp.nephy.penicillin.endpoints.timeline.listTimeline
@@ -30,19 +31,23 @@ interface TwitterClient {
     suspend fun getAuthUrl(requestToken: RequestToken): String
     suspend fun getAccessToken(requestToken: RequestToken, oAuthVerifier: String): AccessTokenResponse
 
-    // Logged operations
     suspend fun likeTweet(id: Long, value: Boolean, session: Session): Status
     suspend fun retweetTweet(id: Long, value: Boolean, session: Session): Status
-    suspend fun getLoggedUserLists(session: Session): List<TwitterList>
+    suspend fun getLists(screenName: String, session: Session?): List<TwitterList>
 
     // Get content
     suspend fun getUser(id: Long): User
-    suspend fun getLists(screenName: String): List<TwitterList>
     suspend fun getListTimeline(
         listId: Long,
         sinceTweetId: Long? = null,
         maxTweetId: Long? = null,
         count: Int?
+    ): List<Status>
+    suspend fun search(
+        query: String,
+        sinceTweetId: Long? = null,
+        maxTweetId: Long? = null,
+        count: Int? = null
     ): List<Status>
 }
 
@@ -86,12 +91,10 @@ class TwitterClientImpl(
         return client.users.showByUserId(id).await().result
     }
 
-    override suspend fun getLoggedUserLists(session: Session): List<TwitterList> {
-        client = refreshClientCredentials(session.accessToken, session.accessTokenSecret)
-        return client.lists.list().await().results
-    }
-
-    override suspend fun getLists(screenName: String): List<TwitterList> {
+    override suspend fun getLists(screenName: String, session: Session?): List<TwitterList> {
+        if (session != null) {
+            client = refreshClientCredentials(session.accessToken, session.accessTokenSecret)
+        }
         return client.lists.list(screenName).await().results
     }
 
@@ -106,6 +109,19 @@ class TwitterClientImpl(
             sinceId = sinceTweetId,
             maxId = maxTweetId).await()
         return response.results
+    }
+
+    override suspend fun search(
+        query: String,
+        sinceTweetId: Long?,
+        maxTweetId: Long?,
+        count: Int?
+    ): List<Status> {
+        val response = client.search.search(query,
+            count = count,
+            sinceId = sinceTweetId,
+            maxId = maxTweetId).await()
+        return response.result.statuses
     }
 
     override suspend fun likeTweet(id: Long, value: Boolean, session: Session): Status {

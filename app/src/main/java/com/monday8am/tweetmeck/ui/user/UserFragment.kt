@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.monday8am.tweetmeck.databinding.UserFragmentBinding
+import com.monday8am.tweetmeck.databinding.FragmentUserBinding
 import com.monday8am.tweetmeck.ui.login.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -24,8 +24,8 @@ class UserFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        userViewModel = getViewModel { parametersOf(navArgs.userId) }
-        val binding = UserFragmentBinding.inflate(inflater, container, false).apply {
+        userViewModel = getViewModel { parametersOf(navArgs.screenName) }
+        val binding = FragmentUserBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewmodel = this@UserFragment.userViewModel
             authViewModel = this@UserFragment.authViewModel

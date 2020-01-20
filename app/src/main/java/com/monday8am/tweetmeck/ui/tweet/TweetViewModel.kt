@@ -4,14 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.models.Tweet
+import com.monday8am.tweetmeck.domain.tweet.GetTweetUseCase
 import kotlinx.coroutines.launch
 
 class TweetViewModel(
     private val tweetId: Long,
-    private val dataRepository: DataRepository
+    private val getTweetUseCase: GetTweetUseCase
 ) : ViewModel() {
 
     private val _tweet = MutableLiveData<Tweet>()
@@ -30,7 +30,7 @@ class TweetViewModel(
     private fun getTweetContent() {
         viewModelScope.launch {
             _dataLoading.value = true
-            when (val result = dataRepository.getTweet(tweetId)) {
+            when (val result = getTweetUseCase(tweetId)) {
                 is Result.Success -> _tweet.value = result.data
                 is Result.Error -> _errorMsg.value = result.exception.toString()
                 else -> _dataLoading.value = true

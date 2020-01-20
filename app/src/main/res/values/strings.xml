@@ -17,7 +17,7 @@
     <string name="next">Next</string>
     <string name="skip">Skip</string>
 
-    <!-- Timeline -->
+    <!-- Home -->
     <string name="timeline_screen_title">Timeline</string>
     <string name="timeline_no_tweets">No tweets in this list</string>
     <string name="retry">Retry</string>
@@ -30,6 +30,9 @@
 
     <!-- Single Tweet -->
     <string name="tweet_screen_title">Conversation</string>
+
+    <!-- Search -->
+    <string name="search_hint">Search in Twitter</string>
 
     <!-- Sign in dialog -->
     <string name="dialog_sign_in_title" translation_description="The title of the dialog. When the user needs to sign in.">Sign in to customize your timeline</string>

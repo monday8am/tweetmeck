@@ -2,10 +2,6 @@ package com.monday8am.tweetmeck.di
 
 import com.monday8am.tweetmeck.BuildConfig
 import com.monday8am.tweetmeck.MainActivity
-import com.monday8am.tweetmeck.data.AuthRepository
-import com.monday8am.tweetmeck.data.AuthRepositoryImpl
-import com.monday8am.tweetmeck.data.DataRepository
-import com.monday8am.tweetmeck.data.DataRepositoryImpl
 import com.monday8am.tweetmeck.data.local.PreferenceStorage
 import com.monday8am.tweetmeck.data.local.SharedPreferencesServiceImpl
 import com.monday8am.tweetmeck.data.local.TwitterDatabase
@@ -14,14 +10,14 @@ import com.monday8am.tweetmeck.data.remote.TwitterClientImpl
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegateImpl
 import com.monday8am.tweetmeck.ui.home.HomeViewModel
-import com.monday8am.tweetmeck.ui.home.TimelinePoolProvider
-import com.monday8am.tweetmeck.ui.home.timeline.TimelineViewModel
+import com.monday8am.tweetmeck.ui.home.page.HomePageViewModel
 import com.monday8am.tweetmeck.ui.launcher.LaunchViewModel
 import com.monday8am.tweetmeck.ui.login.AuthViewModel
 import com.monday8am.tweetmeck.ui.onboarding.OnboardingViewModel
 import com.monday8am.tweetmeck.ui.search.SearchViewModel
 import com.monday8am.tweetmeck.ui.tweet.TweetViewModel
 import com.monday8am.tweetmeck.ui.user.UserViewModel
+import com.monday8am.tweetmeck.util.TimelinePoolProvider
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -41,22 +37,20 @@ val appModule = module {
     factory { get<TwitterDatabase>().twitterListDao() }
     factory { get<TwitterDatabase>().twitterUserDao() }
 
-    single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
-    single<DataRepository> { DataRepositoryImpl(get(), get()) }
     single<SignInViewModelDelegate> {
         SignInViewModelDelegateImpl(
-            get()
+            get(), get(), get(), get()
         )
     }
 
     viewModel { LaunchViewModel(get()) }
     viewModel { OnboardingViewModel(get()) }
-    viewModel { AuthViewModel() }
-    viewModel { HomeViewModel(get(), get()) }
-    viewModel { (listId: Long) -> TimelineViewModel(listId, get(), get()) }
-    viewModel { (userId: Long) -> UserViewModel(userId, get()) }
+    viewModel { AuthViewModel(get()) }
+    viewModel { HomeViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { HomePageViewModel(get(), get(), get(), get(), get()) }
+    viewModel { (screenName: String) -> UserViewModel(screenName, get()) }
     viewModel { (tweetId: Long) -> TweetViewModel(tweetId, get()) }
-    viewModel { (searchItem: String) -> SearchViewModel(searchItem, get()) }
+    viewModel { SearchViewModel(get(), get(), get(), get(), get()) }
 
     scope(named<MainActivity>()) {
         scoped { TimelinePoolProvider() }

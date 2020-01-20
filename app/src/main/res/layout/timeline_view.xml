@@ -1,33 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools">
-
-<data>
-
-    <variable
-        name="viewModel"
-        type="com.monday8am.tweetmeck.ui.base.TweetListViewModel" />
-
-    <variable
-        name="isEmpty"
-        type="boolean" />
-</data>
-
 <FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <com.monday8am.tweetmeck.widget.TimelineSkeleton
+        android:id="@+id/timeline_skeleton"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="@dimen/spacing_normal"
-        app:goneUnless="@{viewModel.dataLoading}" />
+        android:paddingTop="@dimen/spacing_normal" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview"
-        app:goneUnless="@{!viewModel.dataLoading}"
+        android:id="@+id/timeline_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
@@ -36,9 +22,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:paddingTop="@dimen/spacing_normal"
         android:scrollbars="vertical"
         app:layoutManager="LinearLayoutManager"
-        tools:context=".ui.home.timeline.TimelineFragment"
+        tools:context=".ui.timeline.TimelineView"
         tools:listitem="@layout/item_tweet"
         tools:ignore="UnusedAttribute" />
 </FrameLayout>
-
-</layout>

@@ -1,14 +1,14 @@
 package com.monday8am.tweetmeck.data.local
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.monday8am.tweetmeck.data.models.TwitterList
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TwitterListDao {
 
     @Query("SELECT * FROM lists ORDER BY created_at DESC")
-    fun getAll(): LiveData<List<TwitterList>>
+    fun getAll(): Flow<List<TwitterList>>
 
     @Query("SELECT * FROM lists WHERE id = :id")
     suspend fun getItemById(id: Long): TwitterList?

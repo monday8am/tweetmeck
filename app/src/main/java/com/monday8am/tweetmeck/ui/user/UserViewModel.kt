@@ -4,14 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.monday8am.tweetmeck.data.DataRepository
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.models.TwitterUser
+import com.monday8am.tweetmeck.domain.user.GetUserUseCase
 import kotlinx.coroutines.launch
 
 class UserViewModel(
-    private val userId: Long,
-    private val dataRepository: DataRepository
+    private val userScreenName: String,
+    private val getUserUseCase: GetUserUseCase
 ) : ViewModel() {
 
     private val _user = MutableLiveData<TwitterUser>()
@@ -30,7 +30,7 @@ class UserViewModel(
     private fun getUserContent() {
         viewModelScope.launch {
             _dataLoading.value = true
-            when (val result = dataRepository.getUser(userId)) {
+            when (val result = getUserUseCase(userScreenName)) {
                 is Result.Success -> _user.value = result.data
                 is Result.Error -> _errorMsg.value = result.exception.toString()
                 else -> _dataLoading.value = true

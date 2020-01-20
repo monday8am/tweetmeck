@@ -14,13 +14,13 @@ enum class EntityLinkType {
 data class UrlEntity(
     val start: Int,
     val end: Int,
-    val url: String,
+    val appUrl: String,
     val displayUrl: String,
-    val expandedUrl: String,
+    val webUrl: String,
     val entityType: EntityLinkType
 ) {
     fun toEntityString(): String {
-        return "${start}\n${end}\n${url}\n${displayUrl}\n${expandedUrl}\n$entityType"
+        return "${start}\n${end}\n${appUrl}\n${displayUrl}\n${webUrl}\n$entityType"
     }
 
     companion object {
@@ -30,44 +30,44 @@ data class UrlEntity(
                 start = url.indices.first(),
                 end = url.indices.last(),
                 displayUrl = url.displayUrl,
-                url = url.url,
-                expandedUrl = url.expandedUrl,
+                appUrl = url.url,
+                webUrl = url.expandedUrl,
                 entityType = EntityLinkType.Url
             )
         }
 
         fun from(mentionEntity: StatusEntity.UserMentionEntity): UrlEntity {
-            val url = TweetUtils.getProfilePermalink(mentionEntity.screenName)
+            val webUrl = TweetUtils.getProfilePermalink(mentionEntity.screenName)
             return UrlEntity(
                 start = mentionEntity.indices.first(),
                 end = mentionEntity.indices.last(),
                 displayUrl = "@" + mentionEntity.screenName,
-                url = url,
-                expandedUrl = url,
+                appUrl = mentionEntity.screenName,
+                webUrl = webUrl,
                 entityType = EntityLinkType.MentionedUser
             )
         }
 
         fun from(hashtagEntity: StatusEntity.HashtagEntity): UrlEntity {
-            val url = TweetUtils.getHashtagPermalink(hashtagEntity.text)
+            val webUrl = TweetUtils.getHashtagPermalink(hashtagEntity.text)
             return UrlEntity(
                 start = hashtagEntity.indices.first(),
                 end = hashtagEntity.indices.last(),
-                url = url,
+                appUrl = "#" + hashtagEntity.text,
                 displayUrl = "#" + hashtagEntity.text,
-                expandedUrl = url,
+                webUrl = webUrl,
                 entityType = EntityLinkType.Hashtag
             )
         }
 
         fun from(symbolEntity: StatusEntity.SymbolEntity): UrlEntity {
-            val url = TweetUtils.getSymbolPermalink(symbolEntity.text)
+            val webUrl = TweetUtils.getSymbolPermalink(symbolEntity.text)
             return UrlEntity(
                 start = symbolEntity.indices.first(),
                 end = symbolEntity.indices.last(),
                 displayUrl = "$" + symbolEntity.text,
-                url = url,
-                expandedUrl = url,
+                appUrl = "$" + symbolEntity.text,
+                webUrl = webUrl,
                 entityType = EntityLinkType.Symbol
             )
         }
@@ -77,9 +77,9 @@ data class UrlEntity(
             return UrlEntity(
                 start = values[0].toInt(),
                 end = values[1].toInt(),
-                url = values[2],
+                appUrl = values[2],
                 displayUrl = values[3],
-                expandedUrl = values[4],
+                webUrl = values[4],
                 entityType = EntityLinkType.valueOf(values[5])
             )
         }

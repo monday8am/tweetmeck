@@ -7,6 +7,8 @@ import androidx.room.PrimaryKey
 import com.monday8am.tweetmeck.data.models.entities.MediaEntity
 import com.monday8am.tweetmeck.data.models.entities.UrlEntity
 
+typealias ModelId = Long
+
 data class UiUser(
     @ColumnInfo(name = "user_id") val id: Long,
     @ColumnInfo(name = "user_name")val name: String,

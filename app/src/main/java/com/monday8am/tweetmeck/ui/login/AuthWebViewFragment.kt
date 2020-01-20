@@ -1,5 +1,6 @@
 package com.monday8am.tweetmeck.ui.login
 
+import android.net.Uri
 import android.net.http.SslError
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.monday8am.tweetmeck.R
+import com.monday8am.tweetmeck.data.remote.RequestToken
 import com.monday8am.tweetmeck.ui.delegates.AuthState
 import com.monday8am.tweetmeck.util.EventObserver
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -19,6 +21,7 @@ class AuthWebViewFragment : Fragment() {
     private val viewModel: AuthViewModel by sharedViewModel()
 
     private lateinit var webView: WebView
+    private var requestToken: RequestToken? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,7 +54,7 @@ class AuthWebViewFragment : Fragment() {
                 view: WebView?,
                 request: WebResourceRequest?
             ): Boolean {
-                viewModel.setResult(request?.url, null)
+                setUrlResult(request?.url, null)
                 return super.shouldOverrideUrlLoading(view, request)
             }
 
@@ -61,7 +64,7 @@ class AuthWebViewFragment : Fragment() {
                 error: WebResourceError?
             ) {
                 super.onReceivedError(view, request, error)
-                viewModel.setResult(null, "Error authenticating user!")
+                setUrlResult(null, "Error authenticating user!")
             }
 
             override fun onReceivedSslError(
@@ -70,11 +73,17 @@ class AuthWebViewFragment : Fragment() {
                 error: SslError?
             ) {
                 super.onReceivedSslError(view, handler, error)
-                viewModel.setResult(null, "SSL error authenticating user!")
+                setUrlResult(null, "SSL error authenticating user!")
             }
         }
 
         return view
+    }
+
+    private fun setUrlResult(uri: Uri?, error: String?) {
+        requestToken?.let {
+            viewModel.setResult(uri, it, error)
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -82,7 +91,10 @@ class AuthWebViewFragment : Fragment() {
 
         viewModel.authState.observe(viewLifecycleOwner, EventObserver { state ->
             when (state) {
-                is AuthState.WaitingForUserCredentials -> webView.loadUrl(state.url)
+                is AuthState.WaitingForUserCredentials -> {
+                    requestToken = state.requestToken
+                    webView.loadUrl(state.url)
+                }
                 else -> this.findNavController().navigateUp()
             }
         })
