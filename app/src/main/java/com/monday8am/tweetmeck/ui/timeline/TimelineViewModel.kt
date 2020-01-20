@@ -37,7 +37,7 @@ interface TimelineViewModelDelegate : TweetItemEventListener {
     val navigateToSearch: LiveData<Event<String>>
     val openUrl: LiveData<Event<String>>
     val timelineErrorMessage: LiveData<Event<String>>
-    val timelineContent: LiveData<TimelineContent>
+    val timelineContent: LiveData<Pair<TimelineQuery, TimelineContent>>
 }
 
 open class TimelineViewModel(
@@ -66,8 +66,8 @@ open class TimelineViewModel(
     private val _dataLoading = MutableLiveData<Boolean>()
     val timelineDataLoading: LiveData<Boolean> = _dataLoading
 
-    private val _timelineContent = MutableLiveData<TimelineContent>()
-    override val timelineContent: LiveData<TimelineContent> = _timelineContent
+    private val _timelineContent = MutableLiveData<Pair<TimelineQuery, TimelineContent>>()
+    override val timelineContent: LiveData<Pair<TimelineQuery, TimelineContent>> = _timelineContent
 
     protected var cachedTimelineContent: MutableMap<String, TimelineContent> = mutableMapOf()
     var currentSession: Session? = null
@@ -140,7 +140,7 @@ open class TimelineViewModel(
             val content = cachedTimelineContent[queryId]
 
             if (content != null) {
-                _timelineContent.value = content
+                _timelineContent.value = Pair(query, content)
             } else {
                 val result = when (query) {
                     is TimelineQuery.Hashtag -> searchTimelineUseCase(query.hashtag)
@@ -151,7 +151,7 @@ open class TimelineViewModel(
                 when (result) {
                     is Result.Success -> {
                         cachedTimelineContent[queryId] = result.data
-                        _timelineContent.value = result.data
+                        _timelineContent.value = Pair(query, result.data)
                     }
                     is Result.Loading -> _errorMessage.value = Event("Error loading timelime")
                     is Result.Error -> _errorMessage.value = Event("Error loading timelime: ${result.exception.message}")

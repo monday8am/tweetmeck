@@ -8,7 +8,6 @@ import com.monday8am.tweetmeck.domain.timeline.GetSearchTimelineUseCase
 import com.monday8am.tweetmeck.domain.tweet.LikeTweetUseCase
 import com.monday8am.tweetmeck.domain.tweet.RetweetUseCase
 import com.monday8am.tweetmeck.ui.timeline.TimelineViewModel
-import com.monday8am.tweetmeck.util.Event
 
 class HomePageViewModel(
     loggedSessionUseCase: ObserveLoggedSessionUseCase,
@@ -23,10 +22,10 @@ class HomePageViewModel(
     likeTweetUseCase,
     retweetUseCase) {
 
-    private val _scrollToTop = MutableLiveData<Event<Unit>>()
-    val scrollToTop: LiveData<Event<Unit>> = _scrollToTop
+    private val _scrollToTop = MutableLiveData<Int>()
+    val scrollToTop: LiveData<Int> = _scrollToTop
 
-    fun setScrollToTop() {
-        _scrollToTop.value = Event(Unit)
+    fun setScrollToTop(index: Int) {
+        _scrollToTop.value = index
     }
 }

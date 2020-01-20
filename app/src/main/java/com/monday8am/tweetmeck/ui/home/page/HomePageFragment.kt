@@ -13,17 +13,20 @@ import com.monday8am.tweetmeck.util.TimelinePoolProvider
 import com.monday8am.tweetmeck.util.lazyFast
 import org.koin.androidx.scope.currentScope
 import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
+import timber.log.Timber
 
 class HomePageFragment : Fragment() {
 
     companion object {
         private const val ARG_QUERY_ID = "arg.QUERY_ID"
+        private const val ARG_INDEX_ID = "arg.INDEX_ID"
 
         @JvmStatic
-        fun newInstance(query: TimelineQuery) =
+        fun newInstance(query: TimelineQuery, index: Int) =
             HomePageFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_QUERY_ID, query.toFormattedString())
+                    putInt(ARG_INDEX_ID, index)
                 }
             }
     }
@@ -33,19 +36,23 @@ class HomePageFragment : Fragment() {
         TimelineQuery.fromFormattedString(queryString)
     }
 
+    private val position: Int by lazyFast {
+        arguments?.getInt(ARG_INDEX_ID) ?: -1
+    }
+
     private val viewPoolProvider: TimelinePoolProvider? by lazy {
         activity?.currentScope?.get<TimelinePoolProvider>()
     }
 
     private lateinit var binding: FragmentHomePageBinding
-    private lateinit var viewModel: HomePageViewModel
+    private lateinit var pageViewModel: HomePageViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = getSharedViewModel(from = { requireParentFragment() })
+        pageViewModel = getSharedViewModel(from = { requireParentFragment() })
         binding = FragmentHomePageBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -53,14 +60,26 @@ class HomePageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.scrollToTop.observe(viewLifecycleOwner, EventObserver {
-            binding.timelineView.scrollToTop()
+        pageViewModel.scrollToTop.observe(viewLifecycleOwner, Observer {
+            Timber.d("Selected position $it")
+            if(it == position) {
+                binding.timelineView.scrollToTop()
+            }
         })
 
-        viewModel.timelineContent.observe(viewLifecycleOwner, Observer {
-            binding.timelineView.bind(viewModel, viewLifecycleOwner, viewPoolProvider)
+        pageViewModel.timelineContent.observe(viewLifecycleOwner, Observer {
+            val (timelineQuery, timelineContent) = it
+            if (query == timelineQuery) {
+                Timber.d("Try to bind from fragment! ${query.toFormattedString()}")
+                binding.timelineView.bind(
+                    timelineContent,
+                    pageViewModel,
+                    viewLifecycleOwner,
+                    viewPoolProvider
+                )
+            }
         })
 
-        viewModel.refreshTimelineContent(query)
+        pageViewModel.refreshTimelineContent(query)
     }
 }

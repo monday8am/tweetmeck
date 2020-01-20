@@ -94,7 +94,13 @@ class SearchFragment : Fragment() {
         })
 
         searchViewModel.timelineContent.observe(viewLifecycleOwner, Observer {
-            binding.timelineView.bind(searchViewModel, viewLifecycleOwner, viewPoolProvider)
+            val (_, timelineContent) = it
+            binding.timelineView.bind(
+                timelineContent,
+                searchViewModel,
+                viewLifecycleOwner,
+                viewPoolProvider
+            )
         })
 
         searchViewModel.searchFor(navArgs.searchItem)

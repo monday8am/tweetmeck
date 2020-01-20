@@ -3,6 +3,7 @@ package com.monday8am.tweetmeck.ui.timeline
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.R
+import com.monday8am.tweetmeck.domain.TimelineContent
 import com.monday8am.tweetmeck.util.TimelinePoolProvider
 
 class TimelineView @JvmOverloads constructor(
@@ -22,18 +24,20 @@ class TimelineView @JvmOverloads constructor(
 
     private lateinit var adapter: TimelineAdapter
     private var recyclerView: RecyclerView
+    private val skeleton: View
 
     init {
         LayoutInflater.from(context).inflate(R.layout.timeline_view, this)
         recyclerView = findViewById(R.id.timeline_recycler)
+        skeleton = findViewById(R.id.timeline_skeleton)
     }
 
     fun bind(
+        timelineContent: TimelineContent,
         viewModel: TimelineViewModel,
         viewLifecycleOwner: LifecycleOwner,
         viewPoolProvider: TimelinePoolProvider?
     ) {
-
         val textCreator = TweetItemTextCreator(this.context, viewModel.currentSession)
         adapter = TimelineAdapter(viewModel, viewLifecycleOwner, textCreator)
 
@@ -57,7 +61,8 @@ class TimelineView @JvmOverloads constructor(
             }
         }
 
-        viewModel.timelineContent.value?.pagedList?.observe(viewLifecycleOwner, Observer {
+        timelineContent.pagedList.observe(viewLifecycleOwner, Observer {
+            skeleton.visibility = View.GONE
             adapter.submitList(it) {
                 // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
                 // item added to the end of the list as an anchor during initial load.

@@ -4,7 +4,6 @@ import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.local.TwitterDatabase
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.domain.FlowUseCase
-import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

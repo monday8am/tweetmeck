@@ -120,7 +120,7 @@ class HomeFragment : Fragment() {
         viewPager2.offscreenPageLimit = tabsCacheSize
         viewPager2.adapter = object : FragmentStateAdapter(this) {
             override fun createFragment(position: Int): Fragment {
-                return HomePageFragment.newInstance(TimelineQuery.List(items[position].id))
+                return HomePageFragment.newInstance(TimelineQuery.List(items[position].id), position)
             }
 
             override fun getItemCount(): Int {
@@ -139,7 +139,9 @@ class HomeFragment : Fragment() {
 
         tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                pageViewModel.setScrollToTop()
+                tab?.position?.let {
+                    pageViewModel.setScrollToTop(it)
+                }
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabSelected(tab: TabLayout.Tab?) {}

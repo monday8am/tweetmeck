@@ -16,6 +16,7 @@ import com.monday8am.tweetmeck.util.Event
 import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class HomeViewModel(
     private val signInDelegate: SignInViewModelDelegate,
@@ -63,17 +64,17 @@ class HomeViewModel(
                 }
             }
 
-            observeSession.collect { session ->
-                loadUserContent(session)
-                loadListContent(session)
-            }
-
             observeListUseCase(Unit).collect {
                 if (it is Result.Success) {
                     _twitterList.value = it.data
                 } else {
                     _errorMessage.value = Event("Error loading list content!")
                 }
+            }
+
+            observeSession.collect { session ->
+                loadUserContent(session)
+                loadListContent(session)
             }
         }
     }
