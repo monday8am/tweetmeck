@@ -41,7 +41,7 @@ class HomePageFragment : Fragment() {
     }
 
     private val viewPoolProvider: TimelinePoolProvider? by lazy {
-        activity?.currentScope?.get<TimelinePoolProvider>()
+        parentFragment?.currentScope?.get<TimelinePoolProvider>()
     }
 
     private lateinit var binding: FragmentHomePageBinding
@@ -63,7 +63,7 @@ class HomePageFragment : Fragment() {
         pageViewModel.scrollToTop.observe(viewLifecycleOwner, Observer {
             Timber.d("Selected position $it")
             if(it == position) {
-                binding.timelineView.scrollToTop()
+                binding.homeTimelineView.scrollToTop()
             }
         })
 
@@ -71,7 +71,7 @@ class HomePageFragment : Fragment() {
             val (timelineQuery, timelineContent) = it
             if (query == timelineQuery) {
                 Timber.d("Try to bind from fragment! ${query.toFormattedString()}")
-                binding.timelineView.bind(
+                binding.homeTimelineView.bind(
                     timelineContent,
                     pageViewModel,
                     viewLifecycleOwner,

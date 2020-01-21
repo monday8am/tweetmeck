@@ -6,12 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.monday8am.tweetmeck.widget.TimelineSkeleton
-        android:id="@+id/timeline_skeleton"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="@dimen/spacing_normal" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/timeline_recycler"
         android:layout_width="match_parent"
@@ -25,4 +19,10 @@
         tools:context=".ui.timeline.TimelineView"
         tools:listitem="@layout/item_tweet"
         tools:ignore="UnusedAttribute" />
+
+    <com.monday8am.tweetmeck.widget.TimelineSkeleton
+        android:id="@+id/timeline_skeleton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="@dimen/spacing_normal" />
 </FrameLayout>

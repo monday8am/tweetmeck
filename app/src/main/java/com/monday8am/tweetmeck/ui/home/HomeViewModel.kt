@@ -71,7 +71,9 @@ class HomeViewModel(
                     _errorMessage.value = Event("Error loading list content!")
                 }
             }
+        }
 
+        viewModelScope.launch {
             observeSession.collect { session ->
                 loadUserContent(session)
                 loadListContent(session)

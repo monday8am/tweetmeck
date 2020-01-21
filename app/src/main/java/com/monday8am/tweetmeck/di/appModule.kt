@@ -9,6 +9,7 @@ import com.monday8am.tweetmeck.data.remote.TwitterClient
 import com.monday8am.tweetmeck.data.remote.TwitterClientImpl
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegateImpl
+import com.monday8am.tweetmeck.ui.home.HomeFragment
 import com.monday8am.tweetmeck.ui.home.HomeViewModel
 import com.monday8am.tweetmeck.ui.home.page.HomePageViewModel
 import com.monday8am.tweetmeck.ui.launcher.LaunchViewModel
@@ -52,7 +53,7 @@ val appModule = module {
     viewModel { (tweetId: Long) -> TweetViewModel(tweetId, get()) }
     viewModel { SearchViewModel(get(), get(), get(), get(), get()) }
 
-    scope(named<MainActivity>()) {
+    scope(named<HomeFragment>()) {
         scoped { TimelinePoolProvider() }
     }
 }
