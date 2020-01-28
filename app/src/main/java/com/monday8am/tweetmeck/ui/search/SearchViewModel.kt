@@ -36,7 +36,7 @@ class SearchViewModel(
     }
 
     override fun searchForTag(tag: String) {
-        //_navigateToSearch.value = Event(tag)
+        // _navigateToSearch.value = Event(tag)
         Timber.d("Tag: $tag!")
     }
 }

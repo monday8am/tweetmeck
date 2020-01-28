@@ -16,10 +16,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.monday8am.tweetmeck.databinding.FragmentSearchBinding
 import com.monday8am.tweetmeck.util.EventObserver
-import com.monday8am.tweetmeck.util.TimelinePoolProvider
 import kotlinx.android.synthetic.main.fragment_search.view.*
 import org.koin.android.ext.android.inject
-import org.koin.androidx.scope.currentScope
 
 class SearchFragment : Fragment() {
 

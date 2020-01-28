@@ -1,7 +1,6 @@
 package com.monday8am.tweetmeck.di
 
 import com.monday8am.tweetmeck.BuildConfig
-import com.monday8am.tweetmeck.MainActivity
 import com.monday8am.tweetmeck.data.local.PreferenceStorage
 import com.monday8am.tweetmeck.data.local.SharedPreferencesServiceImpl
 import com.monday8am.tweetmeck.data.local.TwitterDatabase

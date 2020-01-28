@@ -1,6 +1,10 @@
 package com.monday8am.tweetmeck.ui.home
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.local.PreferenceStorage
 import com.monday8am.tweetmeck.data.models.Session
@@ -16,7 +20,6 @@ import com.monday8am.tweetmeck.util.Event
 import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class HomeViewModel(
     private val signInDelegate: SignInViewModelDelegate,

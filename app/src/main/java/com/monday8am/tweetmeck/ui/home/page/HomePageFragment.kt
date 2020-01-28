@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.monday8am.tweetmeck.data.TimelineQuery
 import com.monday8am.tweetmeck.databinding.FragmentHomePageBinding
-import com.monday8am.tweetmeck.util.EventObserver
 import com.monday8am.tweetmeck.util.TimelinePoolProvider
 import com.monday8am.tweetmeck.util.lazyFast
 import org.koin.androidx.scope.currentScope
@@ -62,7 +61,7 @@ class HomePageFragment : Fragment() {
 
         pageViewModel.scrollToTop.observe(viewLifecycleOwner, Observer {
             Timber.d("Selected position $it")
-            if(it == position) {
+            if (it == position) {
                 binding.homeTimelineView.scrollToTop()
             }
         })
