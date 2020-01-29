@@ -48,7 +48,7 @@ val appModule = module {
     viewModel { AuthViewModel(get()) }
     viewModel { HomeViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { HomePageViewModel(get(), get(), get(), get(), get()) }
-    viewModel { (screenName: String) -> UserViewModel(screenName, get()) }
+    viewModel { (screenName: String) -> UserViewModel(screenName, get(), get(), get(), get(), get(), get()) }
     viewModel { (tweetId: Long) -> TweetViewModel(tweetId, get()) }
     viewModel { SearchViewModel(get(), get(), get(), get(), get()) }
 

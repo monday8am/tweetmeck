@@ -37,6 +37,12 @@
         <argument
             android:name="screenName"
             app:argType="string" />
+        <action
+            android:id="@+id/action_user_to_tweet"
+            app:destination="@id/tweet_dest" />
+        <action
+            android:id="@+id/action_user_to_search"
+            app:destination="@id/search_dest" />
     </fragment>
     <fragment
         android:id="@+id/auth_dest"
