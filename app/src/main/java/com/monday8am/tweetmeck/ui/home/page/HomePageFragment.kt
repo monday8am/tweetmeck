@@ -78,7 +78,6 @@ class HomePageFragment : Fragment() {
                 )
             }
         })
-
         pageViewModel.refreshTimelineContent(query)
     }
 }

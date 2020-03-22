@@ -8,7 +8,7 @@
     <string name="onboarding_slide1_title">Never miss a good thread</string>
     <string name="onboarding_slide1_subtitle">The curated lists let you explore the topics easily, without missing tweets in a fast timeline flow</string>
     <string name="onboarding_slide2_title">Configure your first experience</string>
-    <string name="onboarding_slide2_subtitle">Select your area of interest and start to explore the app:</string>
+    <string name="onboarding_slide2_subtitle">Select your area of interest tapping on one of these hashtags and start to explore the app:</string>
     <string name="tag_news_btn">#News</string>
     <string name="tag_sports_btn">#Sports</string>
     <string name="tag_science_btn">#Science</string>

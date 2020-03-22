@@ -6,15 +6,21 @@ import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.domain.FlowUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
+@ExperimentalCoroutinesApi
 open class ObserveListsUseCase constructor(
     private val db: TwitterDatabase,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : FlowUseCase<Unit, List<TwitterList>>(defaultDispatcher) {
 
     override fun execute(parameters: Unit): Flow<Result<List<TwitterList>>> {
-        return db.twitterListDao().getAll().map { Result.Success(it) }
+        return db.twitterListDao()
+            .getAll()
+            .distinctUntilChanged()
+            .map { Result.Success(it) }
     }
 }

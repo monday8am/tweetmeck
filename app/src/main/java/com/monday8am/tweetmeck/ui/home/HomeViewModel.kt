@@ -55,15 +55,12 @@ class HomeViewModel(
     init {
         viewModelScope.launch {
             _dataLoading.value = true
-            _dataLoading.addSource(twitterLists) { list ->
-                _dataLoading.value = list.isEmpty()
-            }
 
             _dataLoading.addSource(authState) { authEvent ->
                 when (authEvent.peekContent()) {
                     is AuthState.Loading,
                     is AuthState.WaitingForUserCredentials -> _dataLoading.value = true
-                    else -> { }
+                    else -> { _dataLoading.value = false }
                 }
             }
 
