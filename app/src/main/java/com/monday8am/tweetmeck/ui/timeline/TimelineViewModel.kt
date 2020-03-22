@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagedList
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.TimelineQuery
 import com.monday8am.tweetmeck.data.data
@@ -16,6 +17,7 @@ import com.monday8am.tweetmeck.domain.timeline.GetSearchTimelineUseCase
 import com.monday8am.tweetmeck.domain.tweet.LikeTweetUseCase
 import com.monday8am.tweetmeck.domain.tweet.RetweetUseCase
 import com.monday8am.tweetmeck.util.Event
+import com.monday8am.tweetmeck.util.switchMap
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -37,10 +39,12 @@ interface TimelineViewModelDelegate : TweetItemEventListener {
     val navigateToSearch: LiveData<Event<String>>
     val openUrl: LiveData<Event<String>>
     val timelineErrorMessage: LiveData<Event<String>>
-    val timelineContent: LiveData<Pair<TimelineQuery, TimelineContent>>
+    val pagedList: LiveData<PagedList<Tweet>>
+    val loadMoreState: LiveData<Result<Unit>>
 }
 
 open class TimelineViewModel(
+    private val query: TimelineQuery,
     private val loggedSessionUseCase: ObserveLoggedSessionUseCase,
     private val listTimelineUseCase: GetListTimelineUseCase,
     private val searchTimelineUseCase: GetSearchTimelineUseCase,
@@ -66,10 +70,10 @@ open class TimelineViewModel(
     private val _dataLoading = MutableLiveData<Boolean>()
     val timelineDataLoading: LiveData<Boolean> = _dataLoading
 
-    private val _timelineContent = MutableLiveData<Pair<TimelineQuery, TimelineContent>>()
-    override val timelineContent: LiveData<Pair<TimelineQuery, TimelineContent>> = _timelineContent
+    private val _timelineContent = MutableLiveData<TimelineContent>()
+    override val pagedList: LiveData<PagedList<Tweet>>
+    override val loadMoreState: LiveData<Result<Unit>>
 
-    protected var cachedTimelineContent: MutableMap<String, TimelineContent> = mutableMapOf()
     var currentSession: Session? = null
 
     init {
@@ -78,6 +82,23 @@ open class TimelineViewModel(
                 currentSession = it.data
             }
         }
+
+        viewModelScope.launch {
+            val result = when (query) {
+                is TimelineQuery.Hashtag -> searchTimelineUseCase(query.hashtag)
+                is TimelineQuery.List -> listTimelineUseCase(query.listId)
+                else -> Result.Error(Exception("Not implemented query"))
+            }
+
+            when (result) {
+                is Result.Success -> { _timelineContent.value = result.data }
+                is Result.Loading -> _errorMessage.value = Event("Error loading timelime")
+                is Result.Error -> _errorMessage.value = Event("Error loading timelime: ${result.exception.message}")
+            }
+        }
+
+        pagedList = _timelineContent.switchMap { it.pagedList }
+        loadMoreState = _timelineContent.switchMap { it.loadMoreState }
     }
 
     override fun openTweetDetails(tweetId: Long) {
@@ -131,32 +152,6 @@ open class TimelineViewModel(
             }
         } else {
             _errorMessage.value = Event("User must be logged in!")
-        }
-    }
-
-    fun refreshTimelineContent(query: TimelineQuery) {
-        viewModelScope.launch {
-            val queryId = query.toFormattedString()
-            val content = cachedTimelineContent[queryId]
-
-            if (content != null) {
-                _timelineContent.value = Pair(query, content)
-            } else {
-                val result = when (query) {
-                    is TimelineQuery.Hashtag -> searchTimelineUseCase(query.hashtag)
-                    is TimelineQuery.List -> listTimelineUseCase(query.listId)
-                    else -> Result.Error(Exception("Not implemented query"))
-                }
-
-                when (result) {
-                    is Result.Success -> {
-                        cachedTimelineContent[queryId] = result.data
-                        _timelineContent.value = Pair(query, result.data)
-                    }
-                    is Result.Loading -> _errorMessage.value = Event("Error loading timelime")
-                    is Result.Error -> _errorMessage.value = Event("Error loading timelime: ${result.exception.message}")
-                }
-            }
         }
     }
 }
