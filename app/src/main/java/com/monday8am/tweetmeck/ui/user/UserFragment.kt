@@ -7,9 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.monday8am.tweetmeck.databinding.FragmentUserBinding
 import com.monday8am.tweetmeck.util.EventObserver
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -18,7 +16,7 @@ import timber.log.Timber
 
 class UserFragment : Fragment() {
 
-    private val navArgs: UserFragmentArgs by navArgs()
+    // private val navArgs: UserFragmentArgs by navArgs()
     private lateinit var userViewModel: UserViewModel
     private lateinit var binding: FragmentUserBinding
 
@@ -27,7 +25,7 @@ class UserFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        userViewModel = getViewModel { parametersOf(navArgs.screenName) }
+        userViewModel = getViewModel { parametersOf("navArgs.screenName") }
 
         binding = FragmentUserBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
@@ -45,6 +43,7 @@ class UserFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        /*
         userViewModel.timelineContent.observe(viewLifecycleOwner, Observer {
             val (_, timelineContent) = it
             binding.userTimelineView.bind(
@@ -53,13 +52,14 @@ class UserFragment : Fragment() {
                 viewLifecycleOwner
             )
         })
+         */
 
         userViewModel.openUrl.observe(viewLifecycleOwner, EventObserver {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
         })
 
         userViewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
-            findNavController().navigate(UserFragmentDirections.actionUserToTweet(tweetId))
+            // findNavController().navigate(UserFragmentDirections.actionUserToTweet(tweetId))
         })
 
         userViewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
@@ -67,7 +67,7 @@ class UserFragment : Fragment() {
         })
 
         userViewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
-            findNavController().navigate(UserFragmentDirections.actionUserToSearch(searchItem))
+            // findNavController().navigate(UserFragmentDirections.actionUserToSearch(searchItem))
         })
     }
 }

@@ -18,19 +18,21 @@ package com.monday8am.tweetmeck.ui.launcher
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.monday8am.tweetmeck.MainActivity
 import com.monday8am.tweetmeck.ui.onboarding.OnboardingActivity
 import com.monday8am.tweetmeck.util.EventObserver
 import com.monday8am.tweetmeck.util.checkAllMatched
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * A 'Trampoline' activity for sending users to an appropriate screen on launch.
  */
+@AndroidEntryPoint
 class LauncherActivity : AppCompatActivity() {
 
-    private val launchViewModel: LaunchViewModel by viewModel()
+    private val launchViewModel: LaunchViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

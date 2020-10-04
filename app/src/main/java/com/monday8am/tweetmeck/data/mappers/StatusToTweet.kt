@@ -1,8 +1,14 @@
 package com.monday8am.tweetmeck.data.mappers
 
-import com.monday8am.tweetmeck.data.models.*
+import com.monday8am.tweetmeck.data.models.Tweet
+import com.monday8am.tweetmeck.data.models.TweetUtils
+import com.monday8am.tweetmeck.data.models.UiTweet
+import com.monday8am.tweetmeck.data.models.UiUser
+import com.monday8am.tweetmeck.data.models.adjustEntitiesWithOffsets
+import com.monday8am.tweetmeck.data.models.adjustIndicesForEscapedChars
 import com.monday8am.tweetmeck.data.models.entities.MediaEntity
 import com.monday8am.tweetmeck.data.models.entities.UrlEntity
+import com.monday8am.tweetmeck.data.models.sortByStartIndex
 import com.monday8am.tweetmeck.util.TweetDateUtils
 import jp.nephy.penicillin.extensions.models.text
 import jp.nephy.penicillin.models.Status

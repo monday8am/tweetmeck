@@ -7,18 +7,24 @@ import jp.nephy.penicillin.core.session.ApiClient
 import jp.nephy.penicillin.core.session.config.account
 import jp.nephy.penicillin.core.session.config.application
 import jp.nephy.penicillin.core.session.config.token
-import jp.nephy.penicillin.endpoints.*
+import jp.nephy.penicillin.endpoints.favorites
 import jp.nephy.penicillin.endpoints.favorites.create
 import jp.nephy.penicillin.endpoints.favorites.destroy
+import jp.nephy.penicillin.endpoints.lists
 import jp.nephy.penicillin.endpoints.lists.list
+import jp.nephy.penicillin.endpoints.oauth
 import jp.nephy.penicillin.endpoints.oauth.AccessTokenResponse
 import jp.nephy.penicillin.endpoints.oauth.accessToken
 import jp.nephy.penicillin.endpoints.oauth.authenticateUrl
 import jp.nephy.penicillin.endpoints.oauth.requestToken
+import jp.nephy.penicillin.endpoints.search
 import jp.nephy.penicillin.endpoints.search.search
+import jp.nephy.penicillin.endpoints.statuses
 import jp.nephy.penicillin.endpoints.statuses.retweet
 import jp.nephy.penicillin.endpoints.statuses.unretweet
+import jp.nephy.penicillin.endpoints.timeline
 import jp.nephy.penicillin.endpoints.timeline.listTimeline
+import jp.nephy.penicillin.endpoints.users
 import jp.nephy.penicillin.endpoints.users.showByUserId
 import jp.nephy.penicillin.extensions.await
 import jp.nephy.penicillin.models.Status
@@ -29,7 +35,10 @@ interface TwitterClient {
     // Auth
     suspend fun getRequestToken(): RequestToken
     suspend fun getAuthUrl(requestToken: RequestToken): String
-    suspend fun getAccessToken(requestToken: RequestToken, oAuthVerifier: String): AccessTokenResponse
+    suspend fun getAccessToken(
+        requestToken: RequestToken,
+        oAuthVerifier: String
+    ): AccessTokenResponse
 
     suspend fun likeTweet(id: Long, value: Boolean, session: Session): Status
     suspend fun retweetTweet(id: Long, value: Boolean, session: Session): Status
@@ -43,6 +52,7 @@ interface TwitterClient {
         maxTweetId: Long? = null,
         count: Int?
     ): List<Status>
+
     suspend fun search(
         query: String,
         sinceTweetId: Long? = null,
@@ -81,7 +91,8 @@ class TwitterClientImpl(
         requestToken: RequestToken,
         oAuthVerifier: String
     ): AccessTokenResponse {
-        val response = client.oauth.accessToken(requestToken.token, requestToken.secret, oAuthVerifier)
+        val response =
+            client.oauth.accessToken(requestToken.token, requestToken.secret, oAuthVerifier)
         // recreate client but this time logged.
         client = getClient(response.accessToken, response.accessTokenSecret)
         return response
@@ -104,10 +115,12 @@ class TwitterClientImpl(
         maxTweetId: Long?,
         count: Int?
     ): List<Status> {
-        val response = client.timeline.listTimeline(listId,
+        val response = client.timeline.listTimeline(
+            listId,
             count = count,
             sinceId = sinceTweetId,
-            maxId = maxTweetId).await()
+            maxId = maxTweetId
+        ).await()
         return response.results
     }
 
@@ -117,10 +130,12 @@ class TwitterClientImpl(
         maxTweetId: Long?,
         count: Int?
     ): List<Status> {
-        val response = client.search.search(query,
+        val response = client.search.search(
+            query,
             count = count,
             sinceId = sinceTweetId,
-            maxId = maxTweetId).await()
+            maxId = maxTweetId
+        ).await()
         return response.result.statuses
     }
 
@@ -142,9 +157,13 @@ class TwitterClientImpl(
         }
     }
 
-    private fun refreshClientCredentials(accessToken: String, accessTokenSecret: String): ApiClient {
+    private fun refreshClientCredentials(
+        accessToken: String,
+        accessTokenSecret: String
+    ): ApiClient {
         if (client.session.credentials.accessToken != accessToken ||
-                client.session.credentials.accessTokenSecret != accessTokenSecret) {
+            client.session.credentials.accessTokenSecret != accessTokenSecret
+        ) {
             return getClient(accessToken, accessTokenSecret)
         }
         return client

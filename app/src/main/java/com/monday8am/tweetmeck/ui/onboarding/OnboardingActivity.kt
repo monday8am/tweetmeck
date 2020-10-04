@@ -8,6 +8,7 @@ import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.viewpager2.widget.ViewPager2
@@ -15,12 +16,13 @@ import com.monday8am.tweetmeck.MainActivity
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.databinding.ActivityOnboardingBinding
 import com.monday8am.tweetmeck.util.EventObserver
-import org.koin.android.ext.android.inject
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class OnboardingActivity : AppCompatActivity() {
 
     private val numberOfPages by lazy { OnBoardingPage.values().size }
-    private val onboardingViewModel: OnboardingViewModel by inject()
+    private val onboardingViewModel: OnboardingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

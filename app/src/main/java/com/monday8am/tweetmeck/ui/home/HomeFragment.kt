@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -55,6 +54,7 @@ class HomeFragment : Fragment() {
         })
 
         viewModel.navigateToSignInDialog.observe(viewLifecycleOwner, EventObserver { isSigned ->
+            /*
             findNavController().navigate(
                 if (isSigned) {
                     R.id.action_timeline_dest_to_sign_out_dialog_dest
@@ -62,6 +62,7 @@ class HomeFragment : Fragment() {
                     R.id.action_timeline_dest_to_sign_in_dialog_dest
                 }
             )
+             */
         })
 
         viewModel.authState.observe(viewLifecycleOwner, EventObserver { state ->
@@ -72,7 +73,7 @@ class HomeFragment : Fragment() {
                     Timber.d("Loading")
                 }
                 is AuthState.WaitingForUserCredentials -> {
-                    findNavController().navigate(R.id.action_timeline_dest_to_auth_dest)
+                    // findNavController().navigate(R.id.action_timeline_dest_to_auth_dest)
                 }
                 is AuthState.Logged -> {
                     Timber.d("Logged")
@@ -101,15 +102,15 @@ class HomeFragment : Fragment() {
         })
 
         pageViewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
-            findNavController().navigate(HomeFragmentDirections.actionHomeToTweet(tweetId))
+            // findNavController().navigate(HomeFragmentDirections.actionHomeToTweet(tweetId))
         })
 
         pageViewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
-            findNavController().navigate(HomeFragmentDirections.actionHomeToUser(screenName))
+            // findNavController().navigate(HomeFragmentDirections.actionHomeToUser(screenName))
         })
 
         pageViewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
-            findNavController().navigate(HomeFragmentDirections.actionHomeToSearch(searchItem))
+            // findNavController().navigate(HomeFragmentDirections.actionHomeToSearch(searchItem))
         })
     }
 

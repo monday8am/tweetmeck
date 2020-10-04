@@ -68,11 +68,11 @@ open class TimelineViewModel(
     override val timelineErrorMessage: LiveData<Event<String>> = _errorMessage
 
     private val _dataLoading = MutableLiveData<Boolean>()
-    val timelineDataLoading: LiveData<Boolean> = _dataLoading
+    val dataLoading: LiveData<Boolean> = _dataLoading
 
     private val _timelineContent = MutableLiveData<TimelineContent>()
-    override val pagedList: LiveData<PagedList<Tweet>>
-    override val loadMoreState: LiveData<Result<Unit>>
+    final override val pagedList: LiveData<PagedList<Tweet>>
+    final override val loadMoreState: LiveData<Result<Unit>>
 
     var currentSession: Session? = null
 

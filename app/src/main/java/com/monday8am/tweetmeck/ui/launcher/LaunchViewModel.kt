@@ -1,5 +1,6 @@
 package com.monday8am.tweetmeck.ui.launcher
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,7 +11,9 @@ import com.monday8am.tweetmeck.util.map
 /**
  * Logic for determining which screen to send users to on app launch.
  */
-class LaunchViewModel(preferencesStorage: PreferenceStorage) : ViewModel() {
+
+class LaunchViewModel @ViewModelInject constructor(preferencesStorage: PreferenceStorage) :
+    ViewModel() {
 
     private val onboardingCompletedResult = MutableLiveData<Boolean>()
 

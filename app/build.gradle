@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
@@ -23,6 +24,15 @@ android {
         buildConfigField("String", "callbackUrl", apiKeyProperties['callbackUrl'])
         buildConfigField("String", "accessToken", apiKeyProperties['accessToken'])
         buildConfigField("String", "accessTokenSecret", apiKeyProperties['accessTokenSecret'])
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += [
+                        "room.schemaLocation":"$projectDir/schemas".toString(),
+                        "room.incremental":"true",
+                        "room.expandProjection":"true"]
+            }
+        }
     }
     buildTypes {
         release {
@@ -35,6 +45,10 @@ android {
     }
     dataBinding {
         enabled true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -72,7 +86,7 @@ dependencies {
 
     kapt "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
-    implementation "androidx.paging:paging-runtime-ktx:$rootProject.navigationVersion"
+    implementation "androidx.paging:paging-runtime-ktx:$rootProject.pagingRuntimeVersion"
 
     // Remote
     implementation "io.ktor:ktor-client-android:$rootProject.ktor_version"
@@ -82,16 +96,21 @@ dependencies {
     kapt "com.github.bumptech.glide:compiler:$rootProject.glideVersion"
 
     // Testing
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    testImplementation 'junit:junit:4.13'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     // Extra
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:4.1.2'
+    implementation 'com.ncapdevi:frag-nav:3.2.0'
 
     // DI
     implementation "org.koin:koin-android:$rootProject.koinVersion"
     implementation "org.koin:koin-androidx-viewmodel:$rootProject.koinVersion"
     implementation "org.koin:koin-androidx-scope:$rootProject.koinVersion"
+    implementation "com.google.dagger:hilt-android:$rootProject.daggerHiltVersion"
+    kapt "com.google.dagger:hilt-android-compiler:$rootProject.daggerHiltVersion"
+    implementation 'androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha02'
+    kapt 'androidx.hilt:hilt-compiler:1.0.0-alpha02'
 }

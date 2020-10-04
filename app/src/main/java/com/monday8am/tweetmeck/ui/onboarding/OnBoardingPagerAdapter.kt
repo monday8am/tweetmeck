@@ -26,7 +26,7 @@ class OnBoardingPagerAdapter(private val onBoardingPageList: Array<OnBoardingPag
 
 class PagerViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
     fun bind(onBoardingPage: OnBoardingPage) {
-       val res = root.context.resources
+        val res = root.context.resources
         root.titleTv.text = res.getString(onBoardingPage.titleResource)
         root.subTitleTv.text = res.getString(onBoardingPage.subTitleResource)
         root.centerImg.setImageResource(onBoardingPage.centerImageResource)

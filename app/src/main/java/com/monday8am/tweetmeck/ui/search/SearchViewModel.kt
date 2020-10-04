@@ -13,12 +13,14 @@ import com.monday8am.tweetmeck.util.Event
 import timber.log.Timber
 
 class SearchViewModel(
+    query: TimelineQuery,
     loggedSessionUseCase: ObserveLoggedSessionUseCase,
     listTimelineUseCase: GetListTimelineUseCase,
     searchTimelineUseCase: GetSearchTimelineUseCase,
     likeTweetUseCase: LikeTweetUseCase,
     retweetUseCase: RetweetUseCase
 ) : TimelineViewModel(
+    query,
     loggedSessionUseCase,
     listTimelineUseCase,
     searchTimelineUseCase,
@@ -32,7 +34,7 @@ class SearchViewModel(
         // TODO: check it first!
         val timelineQuery = TimelineQuery.Hashtag(query)
         _searchQuery.value = Event(timelineQuery)
-        refreshTimelineContent(timelineQuery)
+        // refreshTimelineContent(timelineQuery)
     }
 
     override fun searchForTag(tag: String) {
