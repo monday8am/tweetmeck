@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Tweetmeck.iml" filepath="$PROJECT_DIR$/Tweetmeck.iml" group="Tweetmeck" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="Tweetmeck/app" />
+      <module fileurl="file://$PROJECT_DIR$/Tweetmeck.iml" filepath="$PROJECT_DIR$/Tweetmeck.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Tweetmeck.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Tweetmeck.app.iml" />
     </modules>
   </component>
 </project>

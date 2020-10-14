@@ -8,15 +8,16 @@ import com.monday8am.tweetmeck.data.mappers.mapToSession
 import com.monday8am.tweetmeck.data.mappers.mapWith
 import com.monday8am.tweetmeck.data.remote.RequestToken
 import com.monday8am.tweetmeck.data.remote.TwitterClient
+import com.monday8am.tweetmeck.di.IoDispatcher
 import com.monday8am.tweetmeck.domain.SuspendUseCase
 import com.monday8am.tweetmeck.domain.oauthVerifierConst
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 
-open class SignInUseCase constructor(
+open class SignInUseCase @Inject constructor(
     private val remoteClient: TwitterClient,
     private val db: TwitterDatabase,
-    defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+    @IoDispatcher defaultDispatcher: CoroutineDispatcher
 ) : SuspendUseCase<Pair<Uri, RequestToken>, Unit>(defaultDispatcher) {
 
     override suspend fun execute(parameters: Pair<Uri, RequestToken>) {

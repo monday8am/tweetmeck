@@ -14,6 +14,7 @@ import com.monday8am.tweetmeck.domain.auth.SignInUseCase
 import com.monday8am.tweetmeck.domain.auth.SignOutUseCase
 import com.monday8am.tweetmeck.util.Event
 import com.monday8am.tweetmeck.util.map
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -35,8 +36,8 @@ interface SignInViewModelDelegate {
     suspend fun logOut()
 }
 
-class SignInViewModelDelegateImpl(
-    private val observeCurrentSessionUseCase: ObserveLoggedSessionUseCase,
+class SignInViewModelDelegateImpl @Inject constructor(
+    observeCurrentSessionUseCase: ObserveLoggedSessionUseCase,
     private val getAuthUrlUseCase: GetAuthUrlUseCase,
     private val signInUseCase: SignInUseCase,
     private val signOutUseCase: SignOutUseCase

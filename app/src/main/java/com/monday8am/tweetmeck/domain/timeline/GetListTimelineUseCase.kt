@@ -10,18 +10,19 @@ import com.monday8am.tweetmeck.data.mappers.mapWith
 import com.monday8am.tweetmeck.data.models.ModelId
 import com.monday8am.tweetmeck.data.remote.TimelineDbBoundaryCallback
 import com.monday8am.tweetmeck.data.remote.TwitterClient
+import com.monday8am.tweetmeck.di.IoDispatcher
 import com.monday8am.tweetmeck.domain.TimelineContent
 import com.monday8am.tweetmeck.domain.UseCase
 import com.monday8am.tweetmeck.domain.pageSize
 import com.monday8am.tweetmeck.domain.pagedListConfig
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-open class GetListTimelineUseCase constructor(
+open class GetListTimelineUseCase @Inject constructor(
     private val remoteClient: TwitterClient,
     private val db: TwitterDatabase,
-    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+    @IoDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : UseCase<ModelId, TimelineContent>(defaultDispatcher) {
 
     override fun execute(parameters: ModelId): TimelineContent {

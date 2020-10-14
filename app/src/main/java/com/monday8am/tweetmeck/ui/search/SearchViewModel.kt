@@ -13,14 +13,12 @@ import com.monday8am.tweetmeck.util.Event
 import timber.log.Timber
 
 class SearchViewModel(
-    query: TimelineQuery,
     loggedSessionUseCase: ObserveLoggedSessionUseCase,
     listTimelineUseCase: GetListTimelineUseCase,
     searchTimelineUseCase: GetSearchTimelineUseCase,
     likeTweetUseCase: LikeTweetUseCase,
     retweetUseCase: RetweetUseCase
 ) : TimelineViewModel(
-    query,
     loggedSessionUseCase,
     listTimelineUseCase,
     searchTimelineUseCase,

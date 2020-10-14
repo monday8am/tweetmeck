@@ -7,17 +7,18 @@ import com.monday8am.tweetmeck.data.mappers.mapWith
 import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.remote.TwitterClient
+import com.monday8am.tweetmeck.di.IoDispatcher
 import com.monday8am.tweetmeck.domain.SuspendUseCase
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 
 /**
  * Retweet Tweet use case
  */
-open class RetweetUseCase constructor(
+open class RetweetUseCase @Inject constructor(
     private val remoteClient: TwitterClient,
     private val db: TwitterDatabase,
-    defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+    @IoDispatcher defaultDispatcher: CoroutineDispatcher
 ) : SuspendUseCase<Pair<Tweet, Session>, Unit>(defaultDispatcher) {
 
     override suspend fun execute(parameters: Pair<Tweet, Session>) {

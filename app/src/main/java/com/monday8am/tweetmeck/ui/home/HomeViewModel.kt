@@ -1,5 +1,6 @@
 package com.monday8am.tweetmeck.ui.home
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,7 +22,7 @@ import com.monday8am.tweetmeck.util.map
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class HomeViewModel(
+class HomeViewModel @ViewModelInject constructor(
     private val signInDelegate: SignInViewModelDelegate,
     private val observeListUseCase: ObserveListsUseCase,
     private val getUserUseCase: GetUserUseCase,

@@ -1,13 +1,14 @@
 package com.monday8am.tweetmeck.domain.auth
 
 import com.monday8am.tweetmeck.data.local.TwitterDatabase
+import com.monday8am.tweetmeck.di.IoDispatcher
 import com.monday8am.tweetmeck.domain.UseCase
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 
-open class SignOutUseCase constructor(
+open class SignOutUseCase @Inject constructor(
     private val db: TwitterDatabase,
-    defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+    @IoDispatcher defaultDispatcher: CoroutineDispatcher
 ) : UseCase<Unit, Unit>(defaultDispatcher) {
 
     override fun execute(parameters: Unit) {

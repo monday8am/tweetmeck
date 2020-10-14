@@ -1,6 +1,5 @@
 package com.monday8am.tweetmeck.data.local
 
-import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.WorkerThread
@@ -14,11 +13,11 @@ interface PreferenceStorage {
     var initialTopic: String?
 }
 
-class SharedPreferencesServiceImpl @Inject constructor(private val application: Application) :
+class SharedPreferencesServiceImpl @Inject constructor(private val context: Context) :
     PreferenceStorage {
 
     private val prefs: Lazy<SharedPreferences> = lazy { // Lazy to prevent IO access to main thread.
-        application.getSharedPreferences(
+        context.getSharedPreferences(
             PREFS_NAME, Context.MODE_PRIVATE
         )
     }

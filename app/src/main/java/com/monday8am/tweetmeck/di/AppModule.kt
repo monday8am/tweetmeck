@@ -1,54 +1,83 @@
 package com.monday8am.tweetmeck.di
 
+import android.content.Context
+import com.monday8am.tweetmeck.BuildConfig
 import com.monday8am.tweetmeck.data.local.PreferenceStorage
 import com.monday8am.tweetmeck.data.local.SharedPreferencesServiceImpl
-import dagger.Binds
+import com.monday8am.tweetmeck.data.local.TweetDao
+import com.monday8am.tweetmeck.data.local.TwitterDatabase
+import com.monday8am.tweetmeck.data.local.TwitterListDao
+import com.monday8am.tweetmeck.data.local.TwitterUserDao
+import com.monday8am.tweetmeck.data.remote.TwitterClient
+import com.monday8am.tweetmeck.data.remote.TwitterClientImpl
+import com.monday8am.tweetmeck.domain.auth.GetAuthUrlUseCase
+import com.monday8am.tweetmeck.domain.auth.ObserveLoggedSessionUseCase
+import com.monday8am.tweetmeck.domain.auth.SignInUseCase
+import com.monday8am.tweetmeck.domain.auth.SignOutUseCase
+import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
+import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegateImpl
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Singleton
-
-/*
-val appModule = module {
-    single { TwitterDatabase.create(androidContext()) }
-    single<PreferenceStorage> { SharedPreferencesServiceImpl(androidContext()) }
-    single<TwitterClient> { TwitterClientImpl(
-        BuildConfig.apiKey,
-        BuildConfig.apiSecret,
-        BuildConfig.accessToken,
-        BuildConfig.accessTokenSecret,
-        BuildConfig.callbackUrl) }
-
-    factory { get<TwitterDatabase>().tweetDao() }
-    factory { get<TwitterDatabase>().twitterListDao() }
-    factory { get<TwitterDatabase>().twitterUserDao() }
-
-    single<SignInViewModelDelegate> {
-        SignInViewModelDelegateImpl(
-            get(), get(), get(), get()
-        )
-    }
-
-    viewModel { LaunchViewModel(get()) }
-    viewModel { OnboardingViewModel(get()) }
-    viewModel { AuthViewModel(get()) }
-    viewModel { HomeViewModel(get(), get(), get(), get(), get(), get()) }
-    viewModel { HomePageViewModel(get(), get(), get(), get(), get(), get()) }
-    viewModel { (screenName: String) -> UserViewModel(screenName, get(), get(), get(), get(), get(), get(), get()) }
-    viewModel { (tweetId: Long) -> TweetViewModel(tweetId, get()) }
-    viewModel { SearchViewModel(get(), get(), get(), get(), get(), get()) }
-
-    scope(named<HomeFragment>()) {
-        scoped { TimelinePoolProvider() }
-    }
-}
-*/
 
 @Module
 @InstallIn(ApplicationComponent::class)
-abstract class AppModule {
+class AppModule {
 
     @Singleton
-    @Binds
-    abstract fun bindPreferencesStorage(preferenceStorage: SharedPreferencesServiceImpl): PreferenceStorage
+    @Provides
+    fun providesTwitterDb(@ApplicationContext context: Context): TwitterDatabase {
+        return TwitterDatabase.create(context)
+    }
+
+    @Singleton
+    @Provides
+    fun providesTwitterClient(): TwitterClient {
+        return TwitterClientImpl(
+            BuildConfig.apiKey,
+            BuildConfig.apiSecret,
+            BuildConfig.accessToken,
+            BuildConfig.accessTokenSecret,
+            BuildConfig.callbackUrl)
+    }
+
+    @Singleton
+    @Provides
+    fun providesPreferencesStorage(@ApplicationContext context: Context): PreferenceStorage {
+        return SharedPreferencesServiceImpl(context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSignInViewModelDelegate(
+        observeCurrentSessionUseCase: ObserveLoggedSessionUseCase,
+        getAuthUrlUseCase: GetAuthUrlUseCase,
+        signInUseCase: SignInUseCase,
+        signOutUseCase: SignOutUseCase
+    ): SignInViewModelDelegate {
+        return SignInViewModelDelegateImpl(
+            observeCurrentSessionUseCase = observeCurrentSessionUseCase,
+            getAuthUrlUseCase = getAuthUrlUseCase,
+            signInUseCase = signInUseCase,
+            signOutUseCase = signOutUseCase
+        )
+    }
+
+    @Provides
+    fun providesTweetDao(database: TwitterDatabase): TweetDao {
+        return database.tweetDao()
+    }
+
+    @Provides
+    fun providesTwitterListDao(database: TwitterDatabase): TwitterListDao {
+        return database.twitterListDao()
+    }
+
+    @Provides
+    fun providesTwitterUserDao(database: TwitterDatabase): TwitterUserDao {
+        return database.twitterUserDao()
+    }
 }

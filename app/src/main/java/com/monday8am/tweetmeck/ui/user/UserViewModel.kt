@@ -22,7 +22,6 @@ class UserViewModel(
     likeTweetUseCase: LikeTweetUseCase,
     retweetUseCase: RetweetUseCase
 ) : TimelineViewModel(
-    query,
     loggedSessionUseCase,
     listTimelineUseCase,
     searchTimelineUseCase,

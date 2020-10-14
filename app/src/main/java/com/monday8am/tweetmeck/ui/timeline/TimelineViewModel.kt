@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 interface TweetItemEventListener {
+    fun runQuery(query: TimelineQuery)
     fun openTweetDetails(tweetId: Long)
     fun openUserDetails(screenName: String)
     fun openUrl(url: String)
@@ -44,7 +45,6 @@ interface TimelineViewModelDelegate : TweetItemEventListener {
 }
 
 open class TimelineViewModel(
-    private val query: TimelineQuery,
     private val loggedSessionUseCase: ObserveLoggedSessionUseCase,
     private val listTimelineUseCase: GetListTimelineUseCase,
     private val searchTimelineUseCase: GetSearchTimelineUseCase,
@@ -83,6 +83,11 @@ open class TimelineViewModel(
             }
         }
 
+        pagedList = _timelineContent.switchMap { it.pagedList }
+        loadMoreState = _timelineContent.switchMap { it.loadMoreState }
+    }
+
+    override fun runQuery(query: TimelineQuery) {
         viewModelScope.launch {
             val result = when (query) {
                 is TimelineQuery.Hashtag -> searchTimelineUseCase(query.hashtag)
@@ -91,14 +96,14 @@ open class TimelineViewModel(
             }
 
             when (result) {
-                is Result.Success -> { _timelineContent.value = result.data }
+                is Result.Success -> {
+                    _timelineContent.value = result.data
+                }
                 is Result.Loading -> _errorMessage.value = Event("Error loading timelime")
-                is Result.Error -> _errorMessage.value = Event("Error loading timelime: ${result.exception.message}")
+                is Result.Error -> _errorMessage.value =
+                    Event("Error loading timelime: ${result.exception.message}")
             }
         }
-
-        pagedList = _timelineContent.switchMap { it.pagedList }
-        loadMoreState = _timelineContent.switchMap { it.loadMoreState }
     }
 
     override fun openTweetDetails(tweetId: Long) {

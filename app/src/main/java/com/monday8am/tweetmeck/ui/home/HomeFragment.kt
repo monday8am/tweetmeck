@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -21,17 +22,18 @@ import com.monday8am.tweetmeck.ui.delegates.AuthState
 import com.monday8am.tweetmeck.ui.home.page.HomePageFragment
 import com.monday8am.tweetmeck.ui.home.page.HomePageViewModel
 import com.monday8am.tweetmeck.util.EventObserver
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private val tabsCacheSize = 5
     private lateinit var binding: FragmentHomeBinding
     private lateinit var viewPager2: ViewPager2
 
-    private val viewModel: HomeViewModel by viewModel()
-    private val pageViewModel: HomePageViewModel by viewModel()
+    private val viewModel: HomeViewModel by viewModels()
+    private val pageViewModel: HomePageViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,7 +51,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.twitterLists.observe(viewLifecycleOwner, Observer<List<TwitterList>> { lists ->
+        viewModel.twitterLists.observe(viewLifecycleOwner, { lists ->
             bindContent(view, lists)
         })
 
