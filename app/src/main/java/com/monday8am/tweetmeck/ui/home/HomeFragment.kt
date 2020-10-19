@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -23,8 +22,16 @@ import com.monday8am.tweetmeck.ui.home.page.HomePageFragment
 import com.monday8am.tweetmeck.ui.home.page.HomePageViewModel
 import com.monday8am.tweetmeck.util.EventObserver
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.parcel.Parcelize
+import nav.enro.annotations.NavigationDestination
+import nav.enro.core.NavigationKey
+import nav.enro.core.navigationHandle
 import timber.log.Timber
 
+@Parcelize
+class HomeNavKey : NavigationKey
+
+@NavigationDestination(HomeNavKey::class)
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
@@ -32,6 +39,7 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var viewPager2: ViewPager2
 
+    private val navigation by navigationHandle<HomeNavKey>()
     private val viewModel: HomeViewModel by viewModels()
     private val pageViewModel: HomePageViewModel by viewModels()
 
@@ -56,18 +64,16 @@ class HomeFragment : Fragment() {
         })
 
         viewModel.navigateToSignInDialog.observe(viewLifecycleOwner, EventObserver { isSigned ->
-            /*
-            findNavController().navigate(
-                if (isSigned) {
-                    R.id.action_timeline_dest_to_sign_out_dialog_dest
-                } else {
-                    R.id.action_timeline_dest_to_sign_in_dialog_dest
-                }
-            )
-             */
+            if (isSigned) {
+                // R.id.action_timeline_dest_to_sign_out_dialog_dest
+            } else {
+                // navigation.forward(Authenticate())
+                Timber.d("Key! ${navigation.key}")
+            }
         })
 
         viewModel.authState.observe(viewLifecycleOwner, EventObserver { state ->
+            Timber.d("State: $state")
             when (state) {
                 is AuthState.Loading -> {
                     // viewBinding.button.alpha = 0.5f
@@ -75,6 +81,7 @@ class HomeFragment : Fragment() {
                     Timber.d("Loading")
                 }
                 is AuthState.WaitingForUserCredentials -> {
+
                     // findNavController().navigate(R.id.action_timeline_dest_to_auth_dest)
                 }
                 is AuthState.Logged -> {
@@ -85,12 +92,8 @@ class HomeFragment : Fragment() {
                 }
             }
         })
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        viewModel.dataLoading.observe(viewLifecycleOwner, Observer<Boolean> {
+        viewModel.dataLoading.observe(viewLifecycleOwner, {
             Timber.d("Loading: $it")
         })
 

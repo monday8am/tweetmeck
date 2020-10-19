@@ -13,16 +13,26 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
+import androidx.fragment.app.viewModels
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.data.remote.RequestToken
 import com.monday8am.tweetmeck.ui.delegates.AuthState
 import com.monday8am.tweetmeck.util.EventObserver
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.parcel.Parcelize
+import nav.enro.annotations.NavigationDestination
+import nav.enro.core.NavigationKey
+import nav.enro.core.close
+import nav.enro.core.getNavigationHandle
 
+@Parcelize
+class Authenticate : NavigationKey
+
+@AndroidEntryPoint
+@NavigationDestination(Authenticate::class)
 class AuthWebViewFragment : Fragment() {
 
-    private val viewModel: AuthViewModel by sharedViewModel()
+    private val viewModel: AuthViewModel by viewModels()
 
     private lateinit var webView: WebView
     private var requestToken: RequestToken? = null
@@ -90,8 +100,8 @@ class AuthWebViewFragment : Fragment() {
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         viewModel.authState.observe(viewLifecycleOwner, EventObserver { state ->
             when (state) {
@@ -99,7 +109,9 @@ class AuthWebViewFragment : Fragment() {
                     requestToken = state.requestToken
                     webView.loadUrl(state.url)
                 }
-                else -> this.findNavController().navigateUp()
+                else -> {
+                    getNavigationHandle<Authenticate>().close()
+                }
             }
         })
     }

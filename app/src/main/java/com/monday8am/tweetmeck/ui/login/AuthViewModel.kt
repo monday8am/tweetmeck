@@ -8,9 +8,9 @@ import com.monday8am.tweetmeck.data.remote.RequestToken
 import com.monday8am.tweetmeck.ui.delegates.SignInViewModelDelegate
 import kotlinx.coroutines.launch
 
-class AuthViewModel @ViewModelInject constructor(private val signInDelegate: SignInViewModelDelegate) :
-    ViewModel(),
-    SignInViewModelDelegate by signInDelegate {
+class AuthViewModel @ViewModelInject constructor(
+    private val signInDelegate: SignInViewModelDelegate
+) : ViewModel(), SignInViewModelDelegate by signInDelegate {
 
     fun triggerLogIn() = viewModelScope.launch { startWebAuth() }
 

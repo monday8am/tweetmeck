@@ -1,6 +1,5 @@
 package com.monday8am.tweetmeck.ui.onboarding
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -12,15 +11,27 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.viewpager2.widget.ViewPager2
-import com.monday8am.tweetmeck.MainActivity
+import com.monday8am.tweetmeck.MainKey
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.databinding.ActivityOnboardingBinding
 import com.monday8am.tweetmeck.util.EventObserver
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.parcel.Parcelize
+import nav.enro.annotations.NavigationDestination
+import nav.enro.core.NavigationAnimations
+import nav.enro.core.NavigationDirection
+import nav.enro.core.NavigationInstruction
+import nav.enro.core.NavigationKey
+import nav.enro.core.navigationHandle
+
+@Parcelize
+class OnnboardingScreenKey : NavigationKey
 
 @AndroidEntryPoint
+@NavigationDestination(OnnboardingScreenKey::class, allowDefault = true)
 class OnboardingActivity : AppCompatActivity() {
 
+    private val navigation by navigationHandle<OnnboardingScreenKey>()
     private val numberOfPages by lazy { OnBoardingPage.values().size }
     private val onboardingViewModel: OnboardingViewModel by viewModels()
 
@@ -35,8 +46,11 @@ class OnboardingActivity : AppCompatActivity() {
         }
         onboardingViewModel.navigateToMainActivity.observe(this, EventObserver {
             this.run {
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+                navigation.executeInstruction(NavigationInstruction.Open(
+                    navigationDirection = NavigationDirection.REPLACE_ROOT,
+                    navigationKey = MainKey(),
+                    animations = NavigationAnimations.none
+                ))
             }
         })
 

@@ -46,6 +46,7 @@ allprojects {
         jcenter()
         mavenCentral()
         maven { url "https://dl.bintray.com/nephyproject/stable" }
+        maven { url  "https://dl.bintray.com/isaac-udy/Enro" }
     }
 }
 

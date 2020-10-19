@@ -2,24 +2,28 @@ package com.monday8am.tweetmeck
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.monday8am.tweetmeck.ui.navigator.ScreenNavigator
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import com.monday8am.tweetmeck.ui.home.HomeNavKey
+import kotlinx.android.parcel.Parcelize
+import nav.enro.annotations.NavigationDestination
+import nav.enro.core.NavigationKey
+import nav.enro.core.navigationHandle
+import timber.log.Timber
 
-@AndroidEntryPoint
+@Parcelize
+class MainKey : NavigationKey
+
+@NavigationDestination(MainKey::class)
 class MainActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var screenNavigator: ScreenNavigator
+    private val navigation by navigationHandle<MainKey> {
+        container(R.id.homeContainer) {
+            it is HomeNavKey
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        screenNavigator.initialize(savedInstanceState)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        screenNavigator.saveInstanceState(outState)
+        Timber.d("Navigation key: ${navigation.key}")
     }
 }
