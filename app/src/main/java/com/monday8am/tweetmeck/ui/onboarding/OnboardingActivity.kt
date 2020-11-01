@@ -25,13 +25,13 @@ import nav.enro.core.NavigationKey
 import nav.enro.core.navigationHandle
 
 @Parcelize
-class OnnboardingScreenKey : NavigationKey
+class OnnboardingKey : NavigationKey
 
 @AndroidEntryPoint
-@NavigationDestination(OnnboardingScreenKey::class, allowDefault = true)
+@NavigationDestination(OnnboardingKey::class)
 class OnboardingActivity : AppCompatActivity() {
 
-    private val navigation by navigationHandle<OnnboardingScreenKey>()
+    private val navigation by navigationHandle<OnnboardingKey>()
     private val numberOfPages by lazy { OnBoardingPage.values().size }
     private val onboardingViewModel: OnboardingViewModel by viewModels()
 
@@ -49,7 +49,7 @@ class OnboardingActivity : AppCompatActivity() {
                 navigation.executeInstruction(NavigationInstruction.Open(
                     navigationDirection = NavigationDirection.REPLACE_ROOT,
                     navigationKey = MainKey(),
-                    animations = NavigationAnimations.none
+                    animations = NavigationAnimations.default
                 ))
             }
         })

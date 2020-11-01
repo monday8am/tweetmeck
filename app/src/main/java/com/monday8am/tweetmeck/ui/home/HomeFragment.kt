@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -20,18 +21,21 @@ import com.monday8am.tweetmeck.databinding.FragmentHomeBinding
 import com.monday8am.tweetmeck.ui.delegates.AuthState
 import com.monday8am.tweetmeck.ui.home.page.HomePageFragment
 import com.monday8am.tweetmeck.ui.home.page.HomePageViewModel
+import com.monday8am.tweetmeck.ui.login.AuthenticateKey
+import com.monday8am.tweetmeck.ui.login.SignInKey
+import com.monday8am.tweetmeck.ui.login.SignOutKey
 import com.monday8am.tweetmeck.util.EventObserver
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.parcel.Parcelize
 import nav.enro.annotations.NavigationDestination
 import nav.enro.core.NavigationKey
+import nav.enro.core.forward
 import nav.enro.core.navigationHandle
-import timber.log.Timber
 
 @Parcelize
-class HomeNavKey : NavigationKey
+class HomeKey : NavigationKey
 
-@NavigationDestination(HomeNavKey::class)
+@NavigationDestination(HomeKey::class)
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
@@ -39,8 +43,8 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var viewPager2: ViewPager2
 
-    private val navigation by navigationHandle<HomeNavKey>()
-    private val viewModel: HomeViewModel by viewModels()
+    private val navigation by navigationHandle<HomeKey>()
+    private val viewModel: HomeViewModel by activityViewModels()
     private val pageViewModel: HomePageViewModel by viewModels()
 
     override fun onCreateView(
@@ -64,37 +68,23 @@ class HomeFragment : Fragment() {
         })
 
         viewModel.navigateToSignInDialog.observe(viewLifecycleOwner, EventObserver { isSigned ->
-            if (isSigned) {
-                // R.id.action_timeline_dest_to_sign_out_dialog_dest
-            } else {
-                // navigation.forward(Authenticate())
-                Timber.d("Key! ${navigation.key}")
-            }
+            val key = if (isSigned) SignOutKey() else SignInKey()
+            navigation.forward(key)
         })
 
         viewModel.authState.observe(viewLifecycleOwner, EventObserver { state ->
-            Timber.d("State: $state")
             when (state) {
-                is AuthState.Loading -> {
-                    // viewBinding.button.alpha = 0.5f
-                    // viewBinding.button.isEnabled = false
-                    Timber.d("Loading")
-                }
+                is AuthState.Loading -> { }
                 is AuthState.WaitingForUserCredentials -> {
-
-                    // findNavController().navigate(R.id.action_timeline_dest_to_auth_dest)
+                    navigation.forward(AuthenticateKey())
                 }
-                is AuthState.Logged -> {
-                    Timber.d("Logged")
-                }
-                is AuthState.Error -> {
-                    Timber.d("Error")
-                }
+                is AuthState.Logged -> { }
+                is AuthState.Error -> { }
+                else -> { }
             }
         })
 
         viewModel.dataLoading.observe(viewLifecycleOwner, {
-            Timber.d("Loading: $it")
         })
 
         // Show an error message

@@ -21,15 +21,27 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.monday8am.tweetmeck.MainActivity
+import com.monday8am.tweetmeck.MainKey
 import com.monday8am.tweetmeck.ui.onboarding.OnboardingActivity
+import com.monday8am.tweetmeck.ui.onboarding.OnnboardingKey
 import com.monday8am.tweetmeck.util.EventObserver
-import com.monday8am.tweetmeck.util.checkAllMatched
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.parcel.Parcelize
+import nav.enro.annotations.NavigationDestination
+import nav.enro.core.NavigationAnimations
+import nav.enro.core.NavigationDirection
+import nav.enro.core.NavigationInstruction
+import nav.enro.core.NavigationKey
+import nav.enro.core.addOpenInstruction
 
 /**
  * A 'Trampoline' activity for sending users to an appropriate screen on launch.
  */
+@Parcelize
+class LauncherKey : NavigationKey
+
 @AndroidEntryPoint
+@NavigationDestination(OnnboardingKey::class, allowDefault = true)
 class LauncherActivity : AppCompatActivity() {
 
     private val launchViewModel: LaunchViewModel by viewModels()
@@ -38,10 +50,16 @@ class LauncherActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         launchViewModel.launchDestination.observe(this, EventObserver { destination ->
-            when (destination) {
-                LaunchDestination.MAIN_ACTIVITY -> startActivity(Intent(this, MainActivity::class.java))
-                LaunchDestination.ONBOARDING -> startActivity(Intent(this, OnboardingActivity::class.java))
-            }.checkAllMatched
+            val instruction = NavigationInstruction.Open(
+                navigationDirection = NavigationDirection.REPLACE_ROOT,
+                navigationKey = if (destination == LaunchDestination.MAIN_ACTIVITY) MainKey() else OnnboardingKey(),
+                animations = NavigationAnimations.none
+            )
+            val intent = Intent(
+                this,
+                if (destination == LaunchDestination.MAIN_ACTIVITY) MainActivity::class.java else OnboardingActivity::class.java
+            ).addOpenInstruction(instruction)
+            startActivity(intent)
             finish()
         })
     }

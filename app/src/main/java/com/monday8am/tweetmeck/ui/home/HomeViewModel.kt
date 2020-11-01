@@ -1,5 +1,6 @@
 package com.monday8am.tweetmeck.ui.home
 
+import android.net.Uri
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -10,6 +11,7 @@ import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.local.PreferenceStorage
 import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.data.models.TwitterList
+import com.monday8am.tweetmeck.data.remote.RequestToken
 import com.monday8am.tweetmeck.data.succeeded
 import com.monday8am.tweetmeck.domain.lists.LoadListsFromRemoteUseCase
 import com.monday8am.tweetmeck.domain.lists.ObserveListsUseCase
@@ -119,4 +121,12 @@ class HomeViewModel @ViewModelInject constructor(
     fun onChangedDisplayedTimeline(listId: Long) {
         currentTimelineId = listId
     }
+
+    fun triggerLogIn() = viewModelScope.launch { startWebAuth() }
+
+    fun setResult(url: Uri?, token: RequestToken, error: String?) = viewModelScope.launch {
+        setWebAuthResult(url, token, error)
+    }
+
+    fun triggerLogOut() = viewModelScope.launch { logOut() }
 }
