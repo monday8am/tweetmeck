@@ -1,6 +1,6 @@
 package com.monday8am.tweetmeck.data.mappers
 
-import jp.nephy.penicillin.models.PenicillinModel
+import blue.starry.penicillin.models.PenicillinModel
 
 interface Mapper<F, T> {
     fun map(from: F): T

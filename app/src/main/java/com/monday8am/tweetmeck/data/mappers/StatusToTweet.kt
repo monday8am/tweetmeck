@@ -1,5 +1,6 @@
 package com.monday8am.tweetmeck.data.mappers
 
+import blue.starry.penicillin.models.Status
 import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.models.TweetUtils
 import com.monday8am.tweetmeck.data.models.UiTweet
@@ -10,8 +11,6 @@ import com.monday8am.tweetmeck.data.models.entities.MediaEntity
 import com.monday8am.tweetmeck.data.models.entities.UrlEntity
 import com.monday8am.tweetmeck.data.models.sortByStartIndex
 import com.monday8am.tweetmeck.util.TweetDateUtils
-import jp.nephy.penicillin.extensions.models.text
-import jp.nephy.penicillin.models.Status
 
 class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
     override fun map(from: Status): Tweet {
@@ -56,7 +55,7 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
     }
 
     private fun getUnescapedContent(tweet: Status): Pair<String, List<IntArray>> {
-        return TweetUtils.unescapeTweetContent(tweet.text)
+        return TweetUtils.unescapeTweetContent(tweet.textRaw ?: "")
     }
 
     private fun getUrlEntities(

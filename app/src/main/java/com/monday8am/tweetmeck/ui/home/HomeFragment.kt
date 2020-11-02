@@ -97,15 +97,12 @@ class HomeFragment : Fragment() {
         })
 
         pageViewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
-            // findNavController().navigate(HomeFragmentDirections.actionHomeToTweet(tweetId))
         })
 
         pageViewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
-            // findNavController().navigate(HomeFragmentDirections.actionHomeToUser(screenName))
         })
 
         pageViewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
-            // findNavController().navigate(HomeFragmentDirections.actionHomeToSearch(searchItem))
         })
     }
 

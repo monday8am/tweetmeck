@@ -52,10 +52,14 @@ android {
         jvmTarget = "1.8"
     }
     packagingOptions {
-        pickFirst 'META-INF/kotlinx-io.kotlin_module'
-        pickFirst 'META-INF/atomicfu.kotlin_module'
-        pickFirst 'META-INF/kotlinx-coroutines-io.kotlin_module'
-        pickFirst 'META-INF/kotlinx-coroutines-core.kotlin_module'
+        exclude 'META-INF/jsonkt.kotlin_module'
+        exclude 'META-INF/ktor-client-core.kotlin_module'
+        exclude 'META-INF/ktor-io.kotlin_module'
+        exclude 'META-INF/ktor-http.kotlin_module'
+        exclude 'META-INF/ktor-http-cio.kotlin_module'
+        exclude 'META-INF/kotlinx-serialization-runtime.kotlin_module'
+        exclude 'META-INF/kotlin-logging.kotlin_module'
+        exclude 'META-INF/ktor-utils.kotlin_module'
     }
 }
 
@@ -87,9 +91,9 @@ dependencies {
     implementation "androidx.paging:paging-runtime-ktx:$rootProject.pagingRuntimeVersion"
 
     // Remote
+    implementation "blue.starry:penicillin:$rootProject.penicillin_version"
     implementation "io.ktor:ktor-client-android:$rootProject.ktor_version"
-    implementation "jp.nephy:penicillin:$rootProject.penicillin_version"
-    implementation "jp.nephy:jsonkt:$rootProject.jsonkt_version"
+    implementation "com.soywiz.korlibs.klock:klock-jvm:1.7.3"
     implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"
     kapt "com.github.bumptech.glide:compiler:$rootProject.glideVersion"
 
