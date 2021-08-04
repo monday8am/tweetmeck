@@ -1,15 +1,12 @@
 package com.monday8am.tweetmeck.ui.home
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
+import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -19,20 +16,31 @@ import com.monday8am.tweetmeck.data.TimelineQuery
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.databinding.FragmentHomeBinding
 import com.monday8am.tweetmeck.ui.delegates.AuthState
-import com.monday8am.tweetmeck.ui.home.page.HomePageFragment
-import com.monday8am.tweetmeck.ui.home.page.HomePageViewModel
+import com.monday8am.tweetmeck.ui.login.AuthenticateKey
+import com.monday8am.tweetmeck.ui.login.SignInKey
+import com.monday8am.tweetmeck.ui.login.SignOutKey
 import com.monday8am.tweetmeck.util.EventObserver
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.parcel.Parcelize
+import nav.enro.annotations.NavigationDestination
+import nav.enro.core.NavigationKey
+import nav.enro.core.forward
+import nav.enro.core.navigationHandle
 import timber.log.Timber
 
+@Parcelize
+class HomeKey : NavigationKey
+
+@NavigationDestination(HomeKey::class)
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private val tabsCacheSize = 5
     private lateinit var binding: FragmentHomeBinding
     private lateinit var viewPager2: ViewPager2
 
-    private val viewModel: HomeViewModel by viewModel()
-    private val pageViewModel: HomePageViewModel by viewModel()
+    private val navigation by navigationHandle<HomeKey>()
+    private val viewModel: HomeViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,68 +58,50 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.twitterLists.observe(viewLifecycleOwner, Observer<List<TwitterList>> { lists ->
-            bindContent(view, lists)
-        })
+        viewModel.twitterLists.observe(
+            viewLifecycleOwner,
+            { lists ->
+                Timber.d("lists! : $lists")
+                bindContent(view, lists)
+            }
+        )
 
-        viewModel.navigateToSignInDialog.observe(viewLifecycleOwner, EventObserver { isSigned ->
-            findNavController().navigate(
-                if (isSigned) {
-                    R.id.action_timeline_dest_to_sign_out_dialog_dest
-                } else {
-                    R.id.action_timeline_dest_to_sign_in_dialog_dest
-                }
-            )
-        })
+        viewModel.navigateToSignInDialog.observe(
+            viewLifecycleOwner,
+            EventObserver { isSigned ->
+                val key = if (isSigned) SignOutKey() else SignInKey()
+                navigation.forward(key)
+            }
+        )
 
-        viewModel.authState.observe(viewLifecycleOwner, EventObserver { state ->
-            when (state) {
-                is AuthState.Loading -> {
-                    // viewBinding.button.alpha = 0.5f
-                    // viewBinding.button.isEnabled = false
-                    Timber.d("Loading")
-                }
-                is AuthState.WaitingForUserCredentials -> {
-                    findNavController().navigate(R.id.action_timeline_dest_to_auth_dest)
-                }
-                is AuthState.Logged -> {
-                    Timber.d("Logged")
-                }
-                is AuthState.Error -> {
-                    Timber.d("Error")
+        viewModel.authState.observe(
+            viewLifecycleOwner,
+            EventObserver { state ->
+                when (state) {
+                    is AuthState.Loading -> { }
+                    is AuthState.WaitingForUserCredentials -> {
+                        navigation.forward(AuthenticateKey())
+                    }
+                    is AuthState.Logged -> { }
+                    is AuthState.Error -> { }
+                    else -> { }
                 }
             }
-        })
-    }
+        )
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        viewModel.dataLoading.observe(viewLifecycleOwner, Observer<Boolean> {
-            Timber.d("Loading: $it")
-        })
+        viewModel.dataLoading.observe(
+            viewLifecycleOwner,
+            {
+            }
+        )
 
         // Show an error message
-        viewModel.errorMessage.observe(viewLifecycleOwner, EventObserver { errorMsg ->
-            // TODO: Change once there's a way to show errors to the user
-            Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
-        })
-
-        pageViewModel.openUrl.observe(viewLifecycleOwner, EventObserver {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
-        })
-
-        pageViewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
-            findNavController().navigate(HomeFragmentDirections.actionHomeToTweet(tweetId))
-        })
-
-        pageViewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
-            findNavController().navigate(HomeFragmentDirections.actionHomeToUser(screenName))
-        })
-
-        pageViewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
-            findNavController().navigate(HomeFragmentDirections.actionHomeToSearch(searchItem))
-        })
+        viewModel.errorMessage.observe(
+            viewLifecycleOwner,
+            EventObserver { errorMsg ->
+                Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
+            }
+        )
     }
 
     private fun bindContent(view: View, items: List<TwitterList>) {
@@ -140,7 +130,7 @@ class HomeFragment : Fragment() {
         tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 tab?.position?.let {
-                    pageViewModel.setScrollToTop(it)
+                    // pageViewModel.setScrollToTop(it)
                 }
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {}

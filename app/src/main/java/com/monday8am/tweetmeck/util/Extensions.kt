@@ -78,8 +78,10 @@ private fun createStateForViewPadding(view: View) = ViewDimensions(
 
 private fun createStateForViewMargin(view: View): ViewDimensions {
     return (view.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
-        ViewDimensions(it.leftMargin, it.topMargin, it.rightMargin, it.bottomMargin,
-            it.marginStart, it.marginEnd)
+        ViewDimensions(
+            it.leftMargin, it.topMargin, it.rightMargin, it.bottomMargin,
+            it.marginStart, it.marginEnd
+        )
     } ?: ViewDimensions()
 }
 

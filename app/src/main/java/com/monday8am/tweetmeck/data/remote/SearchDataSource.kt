@@ -50,7 +50,7 @@ class SearchDataSource(
             try {
                 val result = withContext(Dispatchers.IO) {
                     client.search(query, key)
-                          .map { it.mapWith(StatusToTweet(-1).asLambda()) }
+                        .map { it.mapWith(StatusToTweet(-1).asLambda()) }
                 }
                 requestState.value = Result.Success(
                     callback.onResult(result)

@@ -1,32 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 <data>
+    <import type="androidx.lifecycle.LiveData" />
+
     <variable
         name="viewmodel"
         type="com.monday8am.tweetmeck.ui.user.UserViewModel" />
 
     <variable
-        name="authViewModel"
-        type="com.monday8am.tweetmeck.ui.login.AuthViewModel" />
+        name="user"
+        type="LiveData&lt;com.monday8am.tweetmeck.data.models.TwitterUser&gt;" />
+
+    <variable
+        name="textCreator"
+        type="com.monday8am.tweetmeck.ui.timeline.TweetItemTextCreator" />
+
 </data>
 <androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:ignore="MergeRootFrame"
     app:marginLeftSystemWindowInsets="@{true}"
     app:marginRightSystemWindowInsets="@{true}"
+    tools:ignore="MergeRootFrame"
     tools:context=".ui.user.UserFragment">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftGuideline"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/margin_normal" />
+
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/tweet_detail_appbars"
+        android:id="@+id/user_detail_appbars"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/spacing_normal"
         android:fitsSystemWindows="true">
-
         <!-- Toolbar needs to be on top for the back button to be tappable -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -38,30 +51,71 @@
             app:navigationIcon="@drawable/ic_arrow_back" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <TextView
-        android:id="@+id/logout_textView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@{viewmodel.user.screenName}"
-        android:textAlignment="center"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.30" />
+    <ImageView
+        android:id="@id/profile_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintStart_toEndOf="@id/leftGuideline"
+        app:layout_constraintTop_toBottomOf="@+id/user_detail_appbars"
+        android:contentDescription="@string/a11y_sign_in"
+        android:background="@drawable/ic_signin_bg" />
 
-    <Button
-        android:id="@+id/logout_btn"
+    <TextView
+        android:id="@+id/screen_name_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/sign_out"
-        android:onClick="@{() -> authViewModel.triggerLogOut()}"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="@dimen/margin_semi_large"
+        android:text="@{user.screenName}"
+        android:textAppearance="@style/TextAppearance.Tweetmeck.subtitle1"
+        app:layout_constraintStart_toEndOf="@id/leftGuideline"
+        app:layout_constraintTop_toBottomOf="@id/profile_button"
+        tools:text="__Sotiria | Joined 27 Aug 2019" />
+
+    <TextView
+        android:id="@+id/user_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
+        android:text="@{user.name}"
+        android:textAppearance="@style/TextAppearance.Tweetmeck.H4"
+        android:layout_marginEnd="@dimen/margin_normal"
+        app:layout_constraintStart_toEndOf="@id/leftGuideline"
+        app:layout_constraintTop_toBottomOf="@id/screen_name_tv"
+        tools:text="SotiTheodoropoulou" />
+
+    <com.monday8am.tweetmeck.widget.SpannedTextView
+        android:id="@+id/user_description_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_semi_large"
+        android:text="@{user.description}"
+        android:textAppearance="@style/TextAppearance.Tweetmeck.Body1"
+        app:layout_constraintStart_toEndOf="@id/leftGuideline"
+        android:layout_marginEnd="@dimen/margin_normal"
+        app:layout_constraintTop_toBottomOf="@id/user_name_tv"
+        tools:text="What's new in Android" />
+
+    <TextView
+        android:id="@+id/location_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
+        android:text="@{user.location}"
+        android:drawableStart="@drawable/ic_location"
+        android:gravity="center_vertical"
+        android:textAppearance="@style/TextAppearance.Tweetmeck.Caption"
+        android:textColor="@color/base00"
+        app:layout_constraintStart_toEndOf="@id/leftGuideline"
+        app:layout_constraintTop_toBottomOf="@id/user_description_tv"
+        tools:text="Jumerah, Dubai, UAE" />
+
+    <com.monday8am.tweetmeck.ui.timeline.TimelineView
+        android:id="@+id/userTimelineView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/location_tv"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

@@ -4,8 +4,8 @@ import com.monday8am.tweetmeck.data.models.ListVisibilityMode
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.util.TweetDateUtils
 
-class ListToTwitterList() : Mapper<jp.nephy.penicillin.models.TwitterList, TwitterList> {
-    override fun map(from: jp.nephy.penicillin.models.TwitterList): TwitterList {
+class ListToTwitterList() : Mapper<blue.starry.penicillin.models.TwitterList, TwitterList> {
+    override fun map(from: blue.starry.penicillin.models.TwitterList): TwitterList {
         return TwitterList(
             from.id,
             TweetDateUtils.apiTimeToLong(from.createdAtRaw),
@@ -18,6 +18,7 @@ class ListToTwitterList() : Mapper<jp.nephy.penicillin.models.TwitterList, Twitt
             from.slug,
             from.subscriberCount,
             from.uri,
-            from.user.id)
+            from.user.id
+        )
     }
 }

@@ -11,25 +11,16 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.monday8am.tweetmeck.databinding.FragmentSearchBinding
 import com.monday8am.tweetmeck.util.EventObserver
-import com.monday8am.tweetmeck.util.TimelinePoolProvider
 import kotlinx.android.synthetic.main.fragment_search.view.*
 import org.koin.android.ext.android.inject
-import org.koin.androidx.scope.currentScope
 
 class SearchFragment : Fragment() {
 
-    private val navArgs: SearchFragmentArgs by navArgs()
+    // private val navArgs: SearchFragmentArgs by navArgs()
     private val searchViewModel: SearchViewModel by inject()
-
-    private val viewPoolProvider: TimelinePoolProvider? by lazy {
-        activity?.currentScope?.get<TimelinePoolProvider>()
-    }
-
     private lateinit var binding: FragmentSearchBinding
 
     override fun onCreateView(
@@ -37,7 +28,6 @@ class SearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         binding = FragmentSearchBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = this@SearchFragment.searchViewModel
@@ -63,47 +53,70 @@ class SearchFragment : Fragment() {
             })
         }
 
-        searchViewModel.openUrl.observe(viewLifecycleOwner, EventObserver {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
-        })
-
-        searchViewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
-            findNavController().navigate(SearchFragmentDirections.actionSearchToTweet(tweetId))
-        })
-
-        searchViewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
-            findNavController().navigate(SearchFragmentDirections.actionSearchToUser(screenName))
-        })
-
-        searchViewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
-            searchViewModel.searchFor(searchItem)
-        })
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
 
         // Show an error message
-        searchViewModel.timelineErrorMessage.observe(viewLifecycleOwner, EventObserver { errorMsg ->
-            // TODO: Change once there's a way to show errors to the user
-            Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
-        })
+        searchViewModel.timelineErrorMessage.observe(
+            viewLifecycleOwner,
+            EventObserver { errorMsg ->
+                // TODO: Change once there's a way to show errors to the user
+                Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
+            }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        searchViewModel.searchQuery.observe(viewLifecycleOwner, EventObserver { query ->
-            binding.toolbar.searchView.setQuery(query.hashtag, false)
-        })
+        searchViewModel.searchQuery.observe(
+            viewLifecycleOwner,
+            EventObserver { query ->
+                binding.toolbar.searchView.setQuery(query.hashtag, false)
+            }
+        )
 
+        /*
         searchViewModel.timelineContent.observe(viewLifecycleOwner, Observer {
             val (_, timelineContent) = it
-            binding.timelineView.bind(
+            binding.searchTimelineView.bind(
                 timelineContent,
                 searchViewModel,
-                viewLifecycleOwner,
-                viewPoolProvider
+                viewLifecycleOwner
             )
         })
+         */
 
-        searchViewModel.searchFor(navArgs.searchItem)
+        searchViewModel.openUrl.observe(
+            viewLifecycleOwner,
+            EventObserver {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
+            }
+        )
+
+        searchViewModel.navigateToTweetDetails.observe(
+            viewLifecycleOwner,
+            EventObserver { tweetId ->
+                // findNavController().navigate(SearchFragmentDirections.actionSearchToTweet(tweetId))
+            }
+        )
+
+        searchViewModel.navigateToUserDetails.observe(
+            viewLifecycleOwner,
+            EventObserver { screenName ->
+                // findNavController().navigate(SearchFragmentDirections.actionSearchToUser(screenName))
+            }
+        )
+
+        searchViewModel.navigateToSearch.observe(
+            viewLifecycleOwner,
+            EventObserver { searchItem ->
+                searchViewModel.searchFor(searchItem)
+            }
+        )
+
+        // searchViewModel.searchFor(navArgs.searchItem)
     }
 
     override fun onPause() {

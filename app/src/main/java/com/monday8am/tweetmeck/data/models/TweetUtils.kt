@@ -4,7 +4,7 @@ import android.net.Uri
 import android.text.TextUtils
 import com.monday8am.tweetmeck.data.models.entities.UrlEntity
 import com.monday8am.tweetmeck.util.legacy.HtmlEntities
-import java.util.*
+import java.util.Locale
 
 object TweetUtils {
 

@@ -1,9 +1,11 @@
 package com.monday8am.tweetmeck.ui.timeline
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagedList
 import com.monday8am.tweetmeck.data.Result
 import com.monday8am.tweetmeck.data.TimelineQuery
 import com.monday8am.tweetmeck.data.data
@@ -16,11 +18,13 @@ import com.monday8am.tweetmeck.domain.timeline.GetSearchTimelineUseCase
 import com.monday8am.tweetmeck.domain.tweet.LikeTweetUseCase
 import com.monday8am.tweetmeck.domain.tweet.RetweetUseCase
 import com.monday8am.tweetmeck.util.Event
+import com.monday8am.tweetmeck.util.switchMap
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 interface TweetItemEventListener {
+    fun runQuery(query: TimelineQuery)
     fun openTweetDetails(tweetId: Long)
     fun openUserDetails(screenName: String)
     fun openUrl(url: String)
@@ -37,10 +41,11 @@ interface TimelineViewModelDelegate : TweetItemEventListener {
     val navigateToSearch: LiveData<Event<String>>
     val openUrl: LiveData<Event<String>>
     val timelineErrorMessage: LiveData<Event<String>>
-    val timelineContent: LiveData<Pair<TimelineQuery, TimelineContent>>
+    val pagedList: LiveData<PagedList<Tweet>>
+    val loadMoreState: LiveData<Result<Unit>>
 }
 
-open class TimelineViewModel(
+open class TimelineViewModel @ViewModelInject constructor(
     private val loggedSessionUseCase: ObserveLoggedSessionUseCase,
     private val listTimelineUseCase: GetListTimelineUseCase,
     private val searchTimelineUseCase: GetSearchTimelineUseCase,
@@ -64,18 +69,41 @@ open class TimelineViewModel(
     override val timelineErrorMessage: LiveData<Event<String>> = _errorMessage
 
     private val _dataLoading = MutableLiveData<Boolean>()
-    val timelineDataLoading: LiveData<Boolean> = _dataLoading
+    val dataLoading: LiveData<Boolean> = _dataLoading
 
-    private val _timelineContent = MutableLiveData<Pair<TimelineQuery, TimelineContent>>()
-    override val timelineContent: LiveData<Pair<TimelineQuery, TimelineContent>> = _timelineContent
+    private val _timelineContent = MutableLiveData<TimelineContent>()
+    final override val pagedList: LiveData<PagedList<Tweet>>
+    final override val loadMoreState: LiveData<Result<Unit>>
 
-    protected var cachedTimelineContent: MutableMap<String, TimelineContent> = mutableMapOf()
     var currentSession: Session? = null
 
     init {
         viewModelScope.launch {
             loggedSessionUseCase(Unit).collect {
                 currentSession = it.data
+            }
+        }
+
+        pagedList = _timelineContent.switchMap { it.pagedList }
+        loadMoreState = _timelineContent.switchMap { it.loadMoreState }
+    }
+
+    override fun runQuery(query: TimelineQuery) {
+        viewModelScope.launch {
+            val result = when (query) {
+                is TimelineQuery.Hashtag -> searchTimelineUseCase(query.hashtag)
+                is TimelineQuery.List -> listTimelineUseCase(query.listId)
+                else -> Result.Error(Exception("Not implemented query"))
+            }
+
+            when (result) {
+                is Result.Success -> {
+                    _timelineContent.value = result.data
+                }
+                is Result.Loading -> _errorMessage.value = Event("Error loading timelime")
+                is Result.Error ->
+                    _errorMessage.value =
+                        Event("Error loading timelime: ${result.exception.message}")
             }
         }
     }
@@ -109,8 +137,9 @@ open class TimelineViewModel(
         if (session != null) {
             viewModelScope.launch {
                 when (val result = likeTweetUseCase(tweet to session)) {
-                    is Result.Error -> _errorMessage.value =
-                        Event(content = result.exception.message ?: "Unknown Error")
+                    is Result.Error ->
+                        _errorMessage.value =
+                            Event(content = result.exception.message ?: "Unknown Error")
                     else -> Timber.d("Tweet updated correctly!")
                 }
             }
@@ -124,39 +153,14 @@ open class TimelineViewModel(
         if (session != null) {
             viewModelScope.launch {
                 when (val result = retweetUseCase(tweet to session)) {
-                    is Result.Error -> _errorMessage.value =
-                        Event(content = result.exception.message ?: "Unknown Error")
+                    is Result.Error ->
+                        _errorMessage.value =
+                            Event(content = result.exception.message ?: "Unknown Error")
                     else -> Timber.d("Tweet updated correctly!")
                 }
             }
         } else {
             _errorMessage.value = Event("User must be logged in!")
-        }
-    }
-
-    fun refreshTimelineContent(query: TimelineQuery) {
-        viewModelScope.launch {
-            val queryId = query.toFormattedString()
-            val content = cachedTimelineContent[queryId]
-
-            if (content != null) {
-                _timelineContent.value = Pair(query, content)
-            } else {
-                val result = when (query) {
-                    is TimelineQuery.Hashtag -> searchTimelineUseCase(query.hashtag)
-                    is TimelineQuery.List -> listTimelineUseCase(query.listId)
-                    else -> Result.Error(Exception("Not implemented query"))
-                }
-
-                when (result) {
-                    is Result.Success -> {
-                        cachedTimelineContent[queryId] = result.data
-                        _timelineContent.value = Pair(query, result.data)
-                    }
-                    is Result.Loading -> _errorMessage.value = Event("Error loading timelime")
-                    is Result.Error -> _errorMessage.value = Event("Error loading timelime: ${result.exception.message}")
-                }
-            }
         }
     }
 }

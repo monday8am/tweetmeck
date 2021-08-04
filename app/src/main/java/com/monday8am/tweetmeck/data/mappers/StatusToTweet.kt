@@ -1,11 +1,16 @@
 package com.monday8am.tweetmeck.data.mappers
 
-import com.monday8am.tweetmeck.data.models.*
+import blue.starry.penicillin.models.Status
+import com.monday8am.tweetmeck.data.models.Tweet
+import com.monday8am.tweetmeck.data.models.TweetUtils
+import com.monday8am.tweetmeck.data.models.UiTweet
+import com.monday8am.tweetmeck.data.models.UiUser
+import com.monday8am.tweetmeck.data.models.adjustEntitiesWithOffsets
+import com.monday8am.tweetmeck.data.models.adjustIndicesForEscapedChars
 import com.monday8am.tweetmeck.data.models.entities.MediaEntity
 import com.monday8am.tweetmeck.data.models.entities.UrlEntity
+import com.monday8am.tweetmeck.data.models.sortByStartIndex
 import com.monday8am.tweetmeck.util.TweetDateUtils
-import jp.nephy.penicillin.extensions.models.text
-import jp.nephy.penicillin.models.Status
 
 class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
     override fun map(from: Status): Tweet {
@@ -19,7 +24,8 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
             listId = listId,
             inReplyToScreenName = from.inReplyToScreenName,
             inReplyToStatusId = from.inReplyToStatusId,
-            inReplyToUserId = from.inReplyToUserId)
+            inReplyToUserId = from.inReplyToUserId
+        )
     }
 
     private fun getTimelineUser(status: Status): UiUser {
@@ -46,11 +52,12 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
             retweetCount = status.retweetCount,
             favoriteCount = status.favoriteCount,
             favorited = status.favorited,
-            retweeted = status.retweeted)
+            retweeted = status.retweeted
+        )
     }
 
     private fun getUnescapedContent(tweet: Status): Pair<String, List<IntArray>> {
-        return TweetUtils.unescapeTweetContent(tweet.text)
+        return TweetUtils.unescapeTweetContent(tweet.textRaw ?: "")
     }
 
     private fun getUrlEntities(
@@ -64,10 +71,12 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
             urls = urls.take(urls.size - 1)
         }
 
-        return (status.entities.hashtags.map { UrlEntity.from(it) } +
+        return (
+            status.entities.hashtags.map { UrlEntity.from(it) } +
                 urls +
                 status.entities.userMentions.map { UrlEntity.from(it) } +
-                status.entities.symbols.map { UrlEntity.from(it) })
+                status.entities.symbols.map { UrlEntity.from(it) }
+            )
             .sortByStartIndex()
             .adjustIndicesForEscapedChars(unescapedTweetContent.second)
             .adjustEntitiesWithOffsets(subrogatedIndexes)

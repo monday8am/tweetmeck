@@ -5,6 +5,7 @@
     <dimen name="tag_vert_padding">6dp</dimen>
     <dimen name="tag_corner_radius">100dp</dimen> <!-- Large value ensures the 'pill' shape -->
 
+    <dimen name="margin_semi_large">24dp</dimen>
     <dimen name="margin_normal">16dp</dimen>
     <dimen name="margin_small">8dp</dimen>
     <dimen name="margin_large">32dp</dimen>

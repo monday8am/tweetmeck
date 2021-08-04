@@ -19,16 +19,26 @@ package com.monday8am.tweetmeck.ui.login
 import android.app.Dialog
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.monday8am.tweetmeck.R
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import com.monday8am.tweetmeck.ui.home.HomeViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.parcel.Parcelize
+import nav.enro.annotations.NavigationDestination
+import nav.enro.core.NavigationKey
 
 /**
  * Dialog that confirms that a user wishes to sign out.
  */
+@Parcelize
+class SignOutKey : NavigationKey
+
+@NavigationDestination(SignOutKey::class)
+@AndroidEntryPoint
 class SignOutDialogFragment : AppCompatDialogFragment() {
 
-    private val viewModel: AuthViewModel by sharedViewModel()
+    private val viewModel: HomeViewModel by activityViewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext())

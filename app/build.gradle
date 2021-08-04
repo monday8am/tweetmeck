@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
@@ -23,6 +24,15 @@ android {
         buildConfigField("String", "callbackUrl", apiKeyProperties['callbackUrl'])
         buildConfigField("String", "accessToken", apiKeyProperties['accessToken'])
         buildConfigField("String", "accessTokenSecret", apiKeyProperties['accessTokenSecret'])
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += [
+                        "room.schemaLocation":"$projectDir/schemas".toString(),
+                        "room.incremental":"true",
+                        "room.expandProjection":"true"]
+            }
+        }
     }
     buildTypes {
         release {
@@ -30,20 +40,26 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    viewBinding {
-        enabled = true
+    buildFeatures {
+        dataBinding true
+        viewBinding = true
     }
-    dataBinding {
-        enabled true
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = "1.8"
     }
     packagingOptions {
-        pickFirst 'META-INF/kotlinx-io.kotlin_module'
-        pickFirst 'META-INF/atomicfu.kotlin_module'
-        pickFirst 'META-INF/kotlinx-coroutines-io.kotlin_module'
-        pickFirst 'META-INF/kotlinx-coroutines-core.kotlin_module'
+        exclude 'META-INF/jsonkt.kotlin_module'
+        exclude 'META-INF/ktor-client-core.kotlin_module'
+        exclude 'META-INF/ktor-io.kotlin_module'
+        exclude 'META-INF/ktor-http.kotlin_module'
+        exclude 'META-INF/ktor-http-cio.kotlin_module'
+        exclude 'META-INF/kotlinx-serialization-runtime.kotlin_module'
+        exclude 'META-INF/kotlin-logging.kotlin_module'
+        exclude 'META-INF/ktor-utils.kotlin_module'
     }
 }
 
@@ -72,26 +88,34 @@ dependencies {
 
     kapt "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
-    implementation "androidx.paging:paging-runtime-ktx:$rootProject.navigationVersion"
+    implementation "androidx.paging:paging-runtime-ktx:$rootProject.pagingRuntimeVersion"
 
     // Remote
+    implementation "blue.starry:penicillin:$rootProject.penicillin_version"
     implementation "io.ktor:ktor-client-android:$rootProject.ktor_version"
-    implementation "jp.nephy:penicillin:$rootProject.penicillin_version"
-    implementation "jp.nephy:jsonkt:$rootProject.jsonkt_version"
+    implementation "com.soywiz.korlibs.klock:klock-jvm:1.7.3"
     implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"
     kapt "com.github.bumptech.glide:compiler:$rootProject.glideVersion"
 
     // Testing
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    testImplementation 'junit:junit:4.13'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     // Extra
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:4.1.2'
 
+    // Nav
+    implementation "nav.enro:enro:1.2.1"
+    kapt "nav.enro:enro-processor:1.2.1"
+
     // DI
     implementation "org.koin:koin-android:$rootProject.koinVersion"
     implementation "org.koin:koin-androidx-viewmodel:$rootProject.koinVersion"
     implementation "org.koin:koin-androidx-scope:$rootProject.koinVersion"
+    implementation "com.google.dagger:hilt-android:$rootProject.daggerHiltVersion"
+    kapt "com.google.dagger:hilt-android-compiler:$rootProject.daggerHiltVersion"
+    implementation 'androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha02'
+    kapt 'androidx.hilt:hilt-compiler:1.0.0-alpha02'
 }

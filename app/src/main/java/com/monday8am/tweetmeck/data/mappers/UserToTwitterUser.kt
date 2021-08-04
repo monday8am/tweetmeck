@@ -1,8 +1,8 @@
 package com.monday8am.tweetmeck.data.mappers
 
+import blue.starry.penicillin.models.User
 import com.monday8am.tweetmeck.data.models.TwitterUser
 import com.monday8am.tweetmeck.util.TweetDateUtils
-import jp.nephy.penicillin.models.User
 
 class UserToTwitterUser : Mapper<User, TwitterUser> {
     override fun map(from: User): TwitterUser {
@@ -26,6 +26,7 @@ class UserToTwitterUser : Mapper<User, TwitterUser> {
             from.profileImageUrl,
             from.defaultProfileImage,
             from.following,
-            from.followRequestSent)
+            from.followRequestSent
+        )
     }
 }

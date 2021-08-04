@@ -6,7 +6,9 @@ import com.monday8am.tweetmeck.R
 import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 object TweetDateUtils {
 
@@ -76,7 +78,7 @@ object TweetDateUtils {
 
     private fun formatLongDateString(context: Context, date: Date): String {
         return getDateFormat(context, R.string.tw__relative_date_format_long).format(date)
-}
+    }
 
     private fun formatShortDateString(context: Context, date: Date): String {
         return getDateFormat(context, R.string.tw__relative_date_format_short).format(date)

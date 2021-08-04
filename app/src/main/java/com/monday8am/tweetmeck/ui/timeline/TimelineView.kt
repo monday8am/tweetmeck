@@ -30,22 +30,26 @@ class TimelineView @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.timeline_view, this)
         recyclerView = findViewById(R.id.timeline_recycler)
         skeleton = findViewById(R.id.timeline_skeleton)
+        skeleton.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
     }
 
     fun bind(
         timelineContent: TimelineContent,
         viewModel: TimelineViewModel,
         viewLifecycleOwner: LifecycleOwner,
-        viewPoolProvider: TimelinePoolProvider?
+        viewPoolProvider: TimelinePoolProvider? = null
     ) {
         val textCreator = TweetItemTextCreator(this.context, viewModel.currentSession)
         adapter = TimelineAdapter(viewModel, viewLifecycleOwner, textCreator)
 
         recyclerView.let {
-            it.addItemDecoration(DividerItemDecoration(
-                it.context,
-                DividerItemDecoration.VERTICAL
-            ))
+            it.addItemDecoration(
+                DividerItemDecoration(
+                    it.context,
+                    DividerItemDecoration.VERTICAL
+                )
+            )
 
             it.apply {
                 adapter = this@TimelineView.adapter
@@ -61,18 +65,23 @@ class TimelineView @JvmOverloads constructor(
             }
         }
 
-        timelineContent.pagedList.observe(viewLifecycleOwner, Observer {
-            skeleton.visibility = View.GONE
-            adapter.submitList(it) {
-                // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
-                // item added to the end of the list as an anchor during initial load.
-                val layoutManager = (recyclerView.layoutManager as LinearLayoutManager)
-                val position = layoutManager.findFirstCompletelyVisibleItemPosition()
-                if (position != RecyclerView.NO_POSITION) {
-                    recyclerView.scrollToPosition(position)
+        timelineContent.pagedList.observe(
+            viewLifecycleOwner,
+            Observer {
+                skeleton.visibility = View.GONE
+                recyclerView.visibility = View.VISIBLE
+
+                adapter.submitList(it) {
+                    // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
+                    // item added to the end of the list as an anchor during initial load.
+                    val layoutManager = (recyclerView.layoutManager as LinearLayoutManager)
+                    val position = layoutManager.findFirstCompletelyVisibleItemPosition()
+                    if (position != RecyclerView.NO_POSITION) {
+                        recyclerView.scrollToPosition(position)
+                    }
                 }
             }
-        })
+        )
     }
 
     fun scrollToTop() {

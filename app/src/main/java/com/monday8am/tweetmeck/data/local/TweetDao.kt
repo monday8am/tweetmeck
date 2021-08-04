@@ -1,7 +1,11 @@
 package com.monday8am.tweetmeck.data.local
 
 import androidx.paging.DataSource
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
 import com.monday8am.tweetmeck.data.models.Tweet
 
 @Dao

@@ -3,32 +3,48 @@ package com.monday8am.tweetmeck.ui.login
 import android.net.Uri
 import android.net.http.SslError
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.webkit.*
+import android.webkit.SslErrorHandler
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
+import androidx.fragment.app.activityViewModels
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.data.remote.RequestToken
 import com.monday8am.tweetmeck.ui.delegates.AuthState
+import com.monday8am.tweetmeck.ui.home.HomeViewModel
 import com.monday8am.tweetmeck.util.EventObserver
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.parcel.Parcelize
+import nav.enro.annotations.NavigationDestination
+import nav.enro.core.NavigationKey
+import nav.enro.core.close
+import nav.enro.core.getNavigationHandle
 
-class AuthWebViewFragment : Fragment() {
+@Parcelize
+class AuthenticateKey : NavigationKey
 
-    private val viewModel: AuthViewModel by sharedViewModel()
+@NavigationDestination(AuthenticateKey::class)
+@AndroidEntryPoint
+class AuthWebViewFragment : Fragment(R.layout.fragment_auth_web_view) {
+
+    private val viewModel: HomeViewModel by activityViewModels()
 
     private lateinit var webView: WebView
     private var requestToken: RequestToken? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_auth_web_view, container, false)
+    private fun setUrlResult(uri: Uri?, error: String?) {
+        requestToken?.let {
+            viewModel.setResult(uri, it, error)
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         val spinner = view.findViewById<ProgressBar>(R.id.webViewSpinner)
         webView = view.findViewById(R.id.webView)
 
@@ -77,26 +93,19 @@ class AuthWebViewFragment : Fragment() {
             }
         }
 
-        return view
-    }
-
-    private fun setUrlResult(uri: Uri?, error: String?) {
-        requestToken?.let {
-            viewModel.setResult(uri, it, error)
-        }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        viewModel.authState.observe(viewLifecycleOwner, EventObserver { state ->
-            when (state) {
-                is AuthState.WaitingForUserCredentials -> {
-                    requestToken = state.requestToken
-                    webView.loadUrl(state.url)
+        viewModel.authState.observe(
+            viewLifecycleOwner,
+            EventObserver { state ->
+                when (state) {
+                    is AuthState.WaitingForUserCredentials -> {
+                        requestToken = state.requestToken
+                        webView.loadUrl(state.url)
+                    }
+                    else -> {
+                        getNavigationHandle<AuthenticateKey>().close()
+                    }
                 }
-                else -> this.findNavController().navigateUp()
             }
-        })
+        )
     }
 }

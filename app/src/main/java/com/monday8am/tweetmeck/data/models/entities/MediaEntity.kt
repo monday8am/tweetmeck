@@ -14,7 +14,7 @@ data class MediaEntity(
     }
 
     companion object {
-        fun from(media: jp.nephy.penicillin.models.entities.MediaEntity): MediaEntity {
+        fun from(media: blue.starry.penicillin.models.entities.MediaEntity): MediaEntity {
             return MediaEntity(
                 start = media.indices.first(),
                 end = media.indices.last(),

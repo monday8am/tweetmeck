@@ -1,8 +1,8 @@
 package com.monday8am.tweetmeck.data.models.entities
 
+import blue.starry.penicillin.models.entities.StatusEntity
+import blue.starry.penicillin.models.entities.URLEntity
 import com.monday8am.tweetmeck.data.models.TweetUtils
-import jp.nephy.penicillin.models.entities.StatusEntity
-import jp.nephy.penicillin.models.entities.URLEntity
 
 enum class EntityLinkType {
     Hashtag,

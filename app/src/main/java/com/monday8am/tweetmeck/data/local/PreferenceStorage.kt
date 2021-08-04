@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.WorkerThread
 import androidx.core.content.edit
+import javax.inject.Inject
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -12,10 +13,11 @@ interface PreferenceStorage {
     var initialTopic: String?
 }
 
-class SharedPreferencesServiceImpl constructor(private val context: Context) : PreferenceStorage {
+class SharedPreferencesServiceImpl @Inject constructor(private val context: Context) :
+    PreferenceStorage {
 
     private val prefs: Lazy<SharedPreferences> = lazy { // Lazy to prevent IO access to main thread.
-        context.applicationContext.getSharedPreferences(
+        context.getSharedPreferences(
             PREFS_NAME, Context.MODE_PRIVATE
         )
     }
