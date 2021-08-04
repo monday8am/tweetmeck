@@ -29,8 +29,8 @@ class StatusBarScrim @JvmOverloads constructor(
 
         if (hMode != MeasureSpec.EXACTLY) {
             val newHeightSpec = MeasureSpec.makeMeasureSpec(
-                    lastWindowInsets?.systemWindowInsetTop ?: 0,
-                    MeasureSpec.EXACTLY
+                lastWindowInsets?.systemWindowInsetTop ?: 0,
+                MeasureSpec.EXACTLY
             )
             super.onMeasure(widthMeasureSpec, newHeightSpec)
         } else {

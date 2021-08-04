@@ -8,23 +8,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.paging.PagedList
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.monday8am.tweetmeck.data.TimelineQuery
-import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.databinding.FragmentTimelineBinding
 import com.monday8am.tweetmeck.util.EventObserver
 import com.monday8am.tweetmeck.util.TimelinePoolProvider
 import com.monday8am.tweetmeck.util.lazyFast
-import org.koin.androidx.scope.currentScope
-import org.koin.androidx.viewmodel.ext.android.getViewModel
-import org.koin.core.parameter.parametersOf
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import javax.inject.Inject
 
+@AndroidEntryPoint
 open class TimelineFragment : Fragment() {
 
     companion object {
@@ -39,7 +37,7 @@ open class TimelineFragment : Fragment() {
             }
     }
 
-    private val query: TimelineQuery by lazyFast {
+    protected val query: TimelineQuery by lazyFast {
         val queryString = arguments?.getString(ARG_QUERY_ID) ?: throw IllegalStateException("Missing arguments!")
         TimelineQuery.fromFormattedString(queryString)
     }
@@ -47,18 +45,16 @@ open class TimelineFragment : Fragment() {
     private lateinit var adapter: TimelineAdapter
     private lateinit var binding: FragmentTimelineBinding
 
-    private val viewPoolProvider: TimelinePoolProvider? by lazy {
-        activity?.currentScope?.get<TimelinePoolProvider>()
-    }
+    @Inject
+    lateinit var itemPoolPoint: TimelinePoolProvider
 
-    private lateinit var viewModel: TimelineViewModel
+    private val viewModel: TimelineViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = getViewModel { parametersOf(query) }
         binding = FragmentTimelineBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = this@TimelineFragment.viewModel
@@ -72,26 +68,31 @@ open class TimelineFragment : Fragment() {
         val textCreator = TweetItemTextCreator(view.context, viewModel.currentSession)
         adapter = TimelineAdapter(viewModel, viewLifecycleOwner, textCreator)
 
-        binding.recyclerview.addItemDecoration(DividerItemDecoration(
-            binding.recyclerview.context,
-            DividerItemDecoration.VERTICAL
-        ))
+        binding.recyclerview.addItemDecoration(
+            DividerItemDecoration(
+                binding.recyclerview.context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
 
-        viewModel.pagedList.observe(viewLifecycleOwner, Observer<PagedList<Tweet>> {
-            adapter.submitList(it) {
-                // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
-                // item added to the end of the list as an anchor during initial load.
-                val layoutManager = (binding.recyclerview.layoutManager as LinearLayoutManager)
-                val position = layoutManager.findFirstCompletelyVisibleItemPosition()
-                if (position != RecyclerView.NO_POSITION) {
-                    binding.recyclerview.scrollToPosition(position)
+        viewModel.pagedList.observe(
+            viewLifecycleOwner,
+            {
+                adapter.submitList(it) {
+                    // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
+                    // item added to the end of the list as an anchor during initial load.
+                    val layoutManager = (binding.recyclerview.layoutManager as LinearLayoutManager)
+                    val position = layoutManager.findFirstCompletelyVisibleItemPosition()
+                    if (position != RecyclerView.NO_POSITION) {
+                        binding.recyclerview.scrollToPosition(position)
+                    }
                 }
             }
-        })
+        )
 
         binding.recyclerview.apply {
             adapter = this@TimelineFragment.adapter
-            setRecycledViewPool(viewPoolProvider?.tweetItemPool)
+            setRecycledViewPool(itemPoolPoint.tweetItemPool)
             (layoutManager as LinearLayoutManager).recycleChildrenOnDetach = true
             (itemAnimator as DefaultItemAnimator).run {
                 supportsChangeAnimations = false
@@ -102,30 +103,50 @@ open class TimelineFragment : Fragment() {
             }
         }
 
-        viewModel.openUrl.observe(viewLifecycleOwner, EventObserver {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
-        })
+        viewModel.openUrl.observe(
+            viewLifecycleOwner,
+            EventObserver {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
+            }
+        )
 
-        viewModel.loadMoreState.observe(viewLifecycleOwner, Observer {
-            Timber.d("Request state! $it")
-        })
+        viewModel.loadMoreState.observe(
+            viewLifecycleOwner,
+            {
+                Timber.d("Request state! $it")
+            }
+        )
 
-        viewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
-            Timber.d("navigate to tweet $tweetId")
-        })
+        viewModel.navigateToTweetDetails.observe(
+            viewLifecycleOwner,
+            EventObserver { tweetId ->
+                Timber.d("navigate to tweet $tweetId")
+            }
+        )
 
-        viewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
-            Timber.d("navigate to user $screenName")
-        })
+        viewModel.navigateToUserDetails.observe(
+            viewLifecycleOwner,
+            EventObserver { screenName ->
+                Timber.d("navigate to user $screenName")
+            }
+        )
 
-        viewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
-            Timber.d("search for $searchItem")
-        })
+        viewModel.navigateToSearch.observe(
+            viewLifecycleOwner,
+            EventObserver { searchItem ->
+                Timber.d("search for $searchItem")
+            }
+        )
 
         // Show an error message
-        viewModel.timelineErrorMessage.observe(viewLifecycleOwner, EventObserver { errorMsg ->
-            // TODO: Change once there's a way to show errors to the user
-            Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
-        })
+        viewModel.timelineErrorMessage.observe(
+            viewLifecycleOwner,
+            EventObserver { errorMsg ->
+                // TODO: Change once there's a way to show errors to the user
+                Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
+            }
+        )
+
+        viewModel.runQuery(query)
     }
 }

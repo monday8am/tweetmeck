@@ -5,13 +5,13 @@ import com.monday8am.tweetmeck.data.local.TwitterDatabase
 import com.monday8am.tweetmeck.data.models.TwitterList
 import com.monday8am.tweetmeck.di.IoDispatcher
 import com.monday8am.tweetmeck.domain.FlowUseCase
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 open class ObserveListsUseCase @Inject constructor(

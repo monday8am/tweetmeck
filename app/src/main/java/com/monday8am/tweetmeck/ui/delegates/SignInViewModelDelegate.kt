@@ -14,9 +14,9 @@ import com.monday8am.tweetmeck.domain.auth.SignInUseCase
 import com.monday8am.tweetmeck.domain.auth.SignOutUseCase
 import com.monday8am.tweetmeck.util.Event
 import com.monday8am.tweetmeck.util.map
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 sealed class AuthState {
     object NotLogged : AuthState()
@@ -75,16 +75,19 @@ class SignInViewModelDelegateImpl @Inject constructor(
         _authState.value = AuthState.Loading
 
         when (val response = getAuthUrlUseCase(Unit)) {
-            is Result.Success -> _authState.value =
-                AuthState.WaitingForUserCredentials(
-                    response.data.url, response.data.requestToken
-                )
-            is Result.Error -> _authState.value =
-                AuthState.Error(
-                    response.exception.message ?: "Error getting auth URL"
-                )
-            else -> _authState.value =
-                AuthState.Error("Error getting auth URL")
+            is Result.Success ->
+                _authState.value =
+                    AuthState.WaitingForUserCredentials(
+                        response.data.url, response.data.requestToken
+                    )
+            is Result.Error ->
+                _authState.value =
+                    AuthState.Error(
+                        response.exception.message ?: "Error getting auth URL"
+                    )
+            else ->
+                _authState.value =
+                    AuthState.Error("Error getting auth URL")
         }
     }
 
@@ -98,14 +101,16 @@ class SignInViewModelDelegateImpl @Inject constructor(
                     _authState.value = AuthState.Logged
                 } else {
                     _authState.value = AuthState.Error(
-                            errorMsg = "Wrong result after login request"
-                        )
+                        errorMsg = "Wrong result after login request"
+                    )
                 }
             }
-            errorMsg != null -> _authState.value =
-                AuthState.Error(errorMsg = errorMsg)
-            else -> _authState.value =
-                AuthState.NotLogged
+            errorMsg != null ->
+                _authState.value =
+                    AuthState.Error(errorMsg = errorMsg)
+            else ->
+                _authState.value =
+                    AuthState.NotLogged
         }
     }
 

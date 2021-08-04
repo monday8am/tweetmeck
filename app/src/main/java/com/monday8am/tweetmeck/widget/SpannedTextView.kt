@@ -29,8 +29,10 @@ class SpannedTextView @JvmOverloads constructor(
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                Selection.setSelection(spannable, spannable.getSpanStart(pressedSpan),
-                    spannable.getSpanEnd(pressedSpan))
+                Selection.setSelection(
+                    spannable, spannable.getSpanStart(pressedSpan),
+                    spannable.getSpanEnd(pressedSpan)
+                )
             }
             MotionEvent.ACTION_UP -> {
                 pressedSpan.onClick(this)

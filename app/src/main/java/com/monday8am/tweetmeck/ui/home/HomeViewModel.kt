@@ -33,6 +33,9 @@ class HomeViewModel @ViewModelInject constructor(
     private val preferences: PreferenceStorage
 ) : ViewModel(), SignInViewModelDelegate by signInDelegate {
 
+    private val _scrollToTop = MutableLiveData<Int>()
+    val scrollToTop: LiveData<Int> = _scrollToTop
+
     private val _twitterList = MutableLiveData<List<TwitterList>>()
     val twitterLists: LiveData<List<TwitterList>> = _twitterList
 
@@ -78,25 +81,35 @@ class HomeViewModel @ViewModelInject constructor(
 
         viewModelScope.launch {
             observeSession.collect { session ->
-                loadUserContent(session)
-                loadListContent(session)
+                if (session != null) {
+                    loadUserContent(session)
+                } else {
+                    _currentUserImageUrl.value = null
+                    loadDefaultLists(session)
+                }
             }
         }
     }
 
-    private suspend fun loadUserContent(session: Session?) {
-        if (session != null) {
-            when (val result = getUserUseCase(session.screenName)) {
-                is Result.Success -> _currentUserImageUrl.value = result.data.profileImageUrl
-                else -> _errorMessage.value = Event("Error loading user profile")
+    private suspend fun loadUserContent(session: Session) {
+        when (val result = getUserUseCase(session.screenName)) {
+            is Result.Success -> {
+                _currentUserImageUrl.value = result.data.profileImageUrl
+                loadListContent(session, result.data.screenName)
             }
-        } else {
-            _currentUserImageUrl.value = null
+            else -> _errorMessage.value = Event("Error loading user profile")
         }
     }
 
-    private suspend fun loadListContent(session: Session?) {
+    private suspend fun loadDefaultLists(session: Session?) {
         val result = loadListsFromRemoteUseCase((preferences.initialTopic ?: "ny_times") to session)
+        if (!result.succeeded) {
+            _errorMessage.value = Event("Error loading lists")
+        }
+    }
+
+    private suspend fun loadListContent(session: Session, userScreenName: String) {
+        val result = loadListsFromRemoteUseCase(userScreenName to session)
         if (!result.succeeded) {
             _errorMessage.value = Event("Error loading lists")
         }
@@ -120,6 +133,10 @@ class HomeViewModel @ViewModelInject constructor(
 
     fun onChangedDisplayedTimeline(listId: Long) {
         currentTimelineId = listId
+    }
+
+    fun setScrollToTop(index: Int) {
+        _scrollToTop.value = index
     }
 
     fun triggerLogIn() = viewModelScope.launch { startWebAuth() }

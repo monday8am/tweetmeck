@@ -2,7 +2,7 @@
 
 buildscript {
     ext {
-        kotlin_version = '1.4.10'
+        kotlin_version = '1.5.21'
         compileSdkVersion = 29
         navigationVersion = "2.3.0"
         appCompatVersion = "1.3.0-alpha02"
@@ -27,14 +27,13 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
         mavenCentral()
         maven {
             url "https://dl.bintray.com/nephyproject/stable"
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath 'com.android.tools.build:gradle:7.0.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$daggerHiltVersion"
@@ -46,7 +45,6 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral()
         maven { url "https://dl.bintray.com/nephyproject/stable" }
         maven { url  "https://dl.bintray.com/isaac-udy/Enro" }

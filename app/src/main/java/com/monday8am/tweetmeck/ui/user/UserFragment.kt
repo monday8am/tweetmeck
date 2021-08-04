@@ -54,20 +54,32 @@ class UserFragment : Fragment() {
         })
          */
 
-        userViewModel.openUrl.observe(viewLifecycleOwner, EventObserver {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
-        })
+        userViewModel.openUrl.observe(
+            viewLifecycleOwner,
+            EventObserver {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
+            }
+        )
 
-        userViewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
-            // findNavController().navigate(UserFragmentDirections.actionUserToTweet(tweetId))
-        })
+        userViewModel.navigateToTweetDetails.observe(
+            viewLifecycleOwner,
+            EventObserver { tweetId ->
+                // findNavController().navigate(UserFragmentDirections.actionUserToTweet(tweetId))
+            }
+        )
 
-        userViewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
-            Timber.d(screenName)
-        })
+        userViewModel.navigateToUserDetails.observe(
+            viewLifecycleOwner,
+            EventObserver { screenName ->
+                Timber.d(screenName)
+            }
+        )
 
-        userViewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
-            // findNavController().navigate(UserFragmentDirections.actionUserToSearch(searchItem))
-        })
+        userViewModel.navigateToSearch.observe(
+            viewLifecycleOwner,
+            EventObserver { searchItem ->
+                // findNavController().navigate(UserFragmentDirections.actionUserToSearch(searchItem))
+            }
+        )
     }
 }

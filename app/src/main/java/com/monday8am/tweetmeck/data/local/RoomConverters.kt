@@ -28,13 +28,16 @@ object RoomConverters {
     @TypeConverter
     @JvmStatic
     fun fromUrlEntities(entities: List<UrlEntity>): String {
-        return entities.map { it.toEntityString() }.fold("", { accumulator, newItem ->
-            if (accumulator.isEmpty()) {
-                newItem
-            } else {
-                "${accumulator}${separator}$newItem"
+        return entities.map { it.toEntityString() }.fold(
+            "",
+            { accumulator, newItem ->
+                if (accumulator.isEmpty()) {
+                    newItem
+                } else {
+                    "${accumulator}${separator}$newItem"
+                }
             }
-        })
+        )
     }
 
     @TypeConverter
@@ -48,12 +51,15 @@ object RoomConverters {
     @TypeConverter
     @JvmStatic
     fun fromMediaEntities(entities: List<MediaEntity>): String {
-        return entities.map { it.toEntityString() }.fold("", { accumulator, newItem ->
-            if (accumulator.isEmpty()) {
-                newItem
-            } else {
-                "${accumulator}${separator}$newItem"
+        return entities.map { it.toEntityString() }.fold(
+            "",
+            { accumulator, newItem ->
+                if (accumulator.isEmpty()) {
+                    newItem
+                } else {
+                    "${accumulator}${separator}$newItem"
+                }
             }
-        })
+        )
     }
 }

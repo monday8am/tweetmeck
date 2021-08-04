@@ -26,6 +26,7 @@ class UserToTwitterUser : Mapper<User, TwitterUser> {
             from.profileImageUrl,
             from.defaultProfileImage,
             from.following,
-            from.followRequestSent)
+            from.followRequestSent
+        )
     }
 }

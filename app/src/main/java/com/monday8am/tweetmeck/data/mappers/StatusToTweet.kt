@@ -24,7 +24,8 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
             listId = listId,
             inReplyToScreenName = from.inReplyToScreenName,
             inReplyToStatusId = from.inReplyToStatusId,
-            inReplyToUserId = from.inReplyToUserId)
+            inReplyToUserId = from.inReplyToUserId
+        )
     }
 
     private fun getTimelineUser(status: Status): UiUser {
@@ -51,7 +52,8 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
             retweetCount = status.retweetCount,
             favoriteCount = status.favoriteCount,
             favorited = status.favorited,
-            retweeted = status.retweeted)
+            retweeted = status.retweeted
+        )
     }
 
     private fun getUnescapedContent(tweet: Status): Pair<String, List<IntArray>> {
@@ -69,10 +71,12 @@ class StatusToTweet(private val listId: Long) : Mapper<Status, Tweet> {
             urls = urls.take(urls.size - 1)
         }
 
-        return (status.entities.hashtags.map { UrlEntity.from(it) } +
+        return (
+            status.entities.hashtags.map { UrlEntity.from(it) } +
                 urls +
                 status.entities.userMentions.map { UrlEntity.from(it) } +
-                status.entities.symbols.map { UrlEntity.from(it) })
+                status.entities.symbols.map { UrlEntity.from(it) }
+            )
             .sortByStartIndex()
             .adjustIndicesForEscapedChars(unescapedTweetContent.second)
             .adjustEntitiesWithOffsets(subrogatedIndexes)

@@ -49,18 +49,21 @@ class LauncherActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        launchViewModel.launchDestination.observe(this, EventObserver { destination ->
-            val instruction = NavigationInstruction.Open(
-                navigationDirection = NavigationDirection.REPLACE_ROOT,
-                navigationKey = if (destination == LaunchDestination.MAIN_ACTIVITY) MainKey() else OnnboardingKey(),
-                animations = NavigationAnimations.none
-            )
-            val intent = Intent(
-                this,
-                if (destination == LaunchDestination.MAIN_ACTIVITY) MainActivity::class.java else OnboardingActivity::class.java
-            ).addOpenInstruction(instruction)
-            startActivity(intent)
-            finish()
-        })
+        launchViewModel.launchDestination.observe(
+            this,
+            EventObserver { destination ->
+                val instruction = NavigationInstruction.Open(
+                    navigationDirection = NavigationDirection.REPLACE_ROOT,
+                    navigationKey = if (destination == LaunchDestination.MAIN_ACTIVITY) MainKey() else OnnboardingKey(),
+                    animations = NavigationAnimations.none
+                )
+                val intent = Intent(
+                    this,
+                    if (destination == LaunchDestination.MAIN_ACTIVITY) MainActivity::class.java else OnboardingActivity::class.java
+                ).addOpenInstruction(instruction)
+                startActivity(intent)
+                finish()
+            }
+        )
     }
 }

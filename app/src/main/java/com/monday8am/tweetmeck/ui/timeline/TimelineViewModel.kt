@@ -1,5 +1,6 @@
 package com.monday8am.tweetmeck.ui.timeline
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -44,7 +45,7 @@ interface TimelineViewModelDelegate : TweetItemEventListener {
     val loadMoreState: LiveData<Result<Unit>>
 }
 
-open class TimelineViewModel(
+open class TimelineViewModel @ViewModelInject constructor(
     private val loggedSessionUseCase: ObserveLoggedSessionUseCase,
     private val listTimelineUseCase: GetListTimelineUseCase,
     private val searchTimelineUseCase: GetSearchTimelineUseCase,
@@ -100,8 +101,9 @@ open class TimelineViewModel(
                     _timelineContent.value = result.data
                 }
                 is Result.Loading -> _errorMessage.value = Event("Error loading timelime")
-                is Result.Error -> _errorMessage.value =
-                    Event("Error loading timelime: ${result.exception.message}")
+                is Result.Error ->
+                    _errorMessage.value =
+                        Event("Error loading timelime: ${result.exception.message}")
             }
         }
     }
@@ -135,8 +137,9 @@ open class TimelineViewModel(
         if (session != null) {
             viewModelScope.launch {
                 when (val result = likeTweetUseCase(tweet to session)) {
-                    is Result.Error -> _errorMessage.value =
-                        Event(content = result.exception.message ?: "Unknown Error")
+                    is Result.Error ->
+                        _errorMessage.value =
+                            Event(content = result.exception.message ?: "Unknown Error")
                     else -> Timber.d("Tweet updated correctly!")
                 }
             }
@@ -150,8 +153,9 @@ open class TimelineViewModel(
         if (session != null) {
             viewModelScope.launch {
                 when (val result = retweetUseCase(tweet to session)) {
-                    is Result.Error -> _errorMessage.value =
-                        Event(content = result.exception.message ?: "Unknown Error")
+                    is Result.Error ->
+                        _errorMessage.value =
+                            Event(content = result.exception.message ?: "Unknown Error")
                     else -> Timber.d("Tweet updated correctly!")
                 }
             }

@@ -5,10 +5,10 @@ import com.monday8am.tweetmeck.data.local.TwitterDatabase
 import com.monday8am.tweetmeck.data.models.Session
 import com.monday8am.tweetmeck.di.IoDispatcher
 import com.monday8am.tweetmeck.domain.FlowUseCase
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 open class ObserveLoggedSessionUseCase @Inject constructor(
     private val db: TwitterDatabase,

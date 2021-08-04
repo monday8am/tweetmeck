@@ -15,7 +15,10 @@ import com.monday8am.tweetmeck.data.models.TwitterUser
         TwitterList::class,
         TwitterUser::class,
         Tweet::class,
-        Session::class], version = 1, exportSchema = false)
+        Session::class
+    ],
+    version = 1, exportSchema = false
+)
 @TypeConverters(RoomConverters::class)
 abstract class TwitterDatabase : RoomDatabase() {
     abstract fun twitterListDao(): TwitterListDao

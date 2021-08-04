@@ -41,7 +41,8 @@ class AppModule {
             BuildConfig.apiSecret,
             BuildConfig.accessToken,
             BuildConfig.accessTokenSecret,
-            BuildConfig.callbackUrl)
+            BuildConfig.callbackUrl
+        )
     }
 
     @Singleton

@@ -58,18 +58,24 @@ class SearchFragment : Fragment() {
         }
 
         // Show an error message
-        searchViewModel.timelineErrorMessage.observe(viewLifecycleOwner, EventObserver { errorMsg ->
-            // TODO: Change once there's a way to show errors to the user
-            Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
-        })
+        searchViewModel.timelineErrorMessage.observe(
+            viewLifecycleOwner,
+            EventObserver { errorMsg ->
+                // TODO: Change once there's a way to show errors to the user
+                Toast.makeText(this.context, errorMsg, Toast.LENGTH_LONG).show()
+            }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        searchViewModel.searchQuery.observe(viewLifecycleOwner, EventObserver { query ->
-            binding.toolbar.searchView.setQuery(query.hashtag, false)
-        })
+        searchViewModel.searchQuery.observe(
+            viewLifecycleOwner,
+            EventObserver { query ->
+                binding.toolbar.searchView.setQuery(query.hashtag, false)
+            }
+        )
 
         /*
         searchViewModel.timelineContent.observe(viewLifecycleOwner, Observer {
@@ -82,21 +88,33 @@ class SearchFragment : Fragment() {
         })
          */
 
-        searchViewModel.openUrl.observe(viewLifecycleOwner, EventObserver {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
-        })
+        searchViewModel.openUrl.observe(
+            viewLifecycleOwner,
+            EventObserver {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
+            }
+        )
 
-        searchViewModel.navigateToTweetDetails.observe(viewLifecycleOwner, EventObserver { tweetId ->
-            // findNavController().navigate(SearchFragmentDirections.actionSearchToTweet(tweetId))
-        })
+        searchViewModel.navigateToTweetDetails.observe(
+            viewLifecycleOwner,
+            EventObserver { tweetId ->
+                // findNavController().navigate(SearchFragmentDirections.actionSearchToTweet(tweetId))
+            }
+        )
 
-        searchViewModel.navigateToUserDetails.observe(viewLifecycleOwner, EventObserver { screenName ->
-            // findNavController().navigate(SearchFragmentDirections.actionSearchToUser(screenName))
-        })
+        searchViewModel.navigateToUserDetails.observe(
+            viewLifecycleOwner,
+            EventObserver { screenName ->
+                // findNavController().navigate(SearchFragmentDirections.actionSearchToUser(screenName))
+            }
+        )
 
-        searchViewModel.navigateToSearch.observe(viewLifecycleOwner, EventObserver { searchItem ->
-            searchViewModel.searchFor(searchItem)
-        })
+        searchViewModel.navigateToSearch.observe(
+            viewLifecycleOwner,
+            EventObserver { searchItem ->
+                searchViewModel.searchFor(searchItem)
+            }
+        )
 
         // searchViewModel.searchFor(navArgs.searchItem)
     }

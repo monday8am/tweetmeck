@@ -18,6 +18,7 @@ class ListToTwitterList() : Mapper<blue.starry.penicillin.models.TwitterList, Tw
             from.slug,
             from.subscriberCount,
             from.uri,
-            from.user.id)
+            from.user.id
+        )
     }
 }

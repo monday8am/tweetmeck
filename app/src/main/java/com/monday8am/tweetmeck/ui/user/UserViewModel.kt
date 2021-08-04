@@ -26,7 +26,8 @@ class UserViewModel(
     listTimelineUseCase,
     searchTimelineUseCase,
     likeTweetUseCase,
-    retweetUseCase) {
+    retweetUseCase
+) {
 
     private val _user = MutableLiveData<TwitterUser>()
     val user: LiveData<TwitterUser> = _user

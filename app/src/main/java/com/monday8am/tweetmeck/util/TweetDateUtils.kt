@@ -78,7 +78,7 @@ object TweetDateUtils {
 
     private fun formatLongDateString(context: Context, date: Date): String {
         return getDateFormat(context, R.string.tw__relative_date_format_long).format(date)
-}
+    }
 
     private fun formatShortDateString(context: Context, date: Date): String {
         return getDateFormat(context, R.string.tw__relative_date_format_short).format(date)

@@ -8,8 +8,8 @@ import com.monday8am.tweetmeck.domain.TimelineContent
 import com.monday8am.tweetmeck.domain.UseCase
 import com.monday8am.tweetmeck.domain.pagedListConfig
 import com.monday8am.tweetmeck.util.switchMap
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
+import javax.inject.Inject
 
 open class GetSearchTimelineUseCase @Inject constructor(
     private val remoteClient: TwitterClient,

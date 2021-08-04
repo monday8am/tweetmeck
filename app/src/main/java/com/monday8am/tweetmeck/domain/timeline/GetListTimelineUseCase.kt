@@ -15,9 +15,9 @@ import com.monday8am.tweetmeck.domain.TimelineContent
 import com.monday8am.tweetmeck.domain.UseCase
 import com.monday8am.tweetmeck.domain.pageSize
 import com.monday8am.tweetmeck.domain.pagedListConfig
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 open class GetListTimelineUseCase @Inject constructor(
     private val remoteClient: TwitterClient,
@@ -34,7 +34,8 @@ open class GetListTimelineUseCase @Inject constructor(
 
         val livePagedList = db.tweetDao().getTweetsByListId(parameters).toLiveData(
             config = pagedListConfig,
-            boundaryCallback = boundaryCallback)
+            boundaryCallback = boundaryCallback
+        )
         return TimelineContent(
             pagedList = livePagedList,
             loadMoreState = boundaryCallback.requestState

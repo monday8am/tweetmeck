@@ -32,6 +32,7 @@ import blue.starry.penicillin.models.TwitterList
 import blue.starry.penicillin.models.User
 import com.monday8am.tweetmeck.data.models.Session
 import io.ktor.http.Url
+import timber.log.Timber
 
 interface TwitterClient {
     // Auth
@@ -108,7 +109,9 @@ class TwitterClientImpl(
         if (session != null) {
             client = refreshClientCredentials(session.accessToken, session.accessTokenSecret)
         }
-        return client.lists.list(screenName).execute().results
+        val xx = client.lists.list(screenName).execute().results
+        Timber.d("Lists: $xx")
+        return xx
     }
 
     override suspend fun getListTimeline(

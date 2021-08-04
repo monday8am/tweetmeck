@@ -9,8 +9,8 @@ import com.monday8am.tweetmeck.data.models.Tweet
 import com.monday8am.tweetmeck.data.remote.TwitterClient
 import com.monday8am.tweetmeck.di.IoDispatcher
 import com.monday8am.tweetmeck.domain.SuspendUseCase
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
+import javax.inject.Inject
 
 /**
  * Like Tweet use case

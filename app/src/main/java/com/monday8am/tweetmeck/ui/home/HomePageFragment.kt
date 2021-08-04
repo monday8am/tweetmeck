@@ -1,18 +1,18 @@
-package com.monday8am.tweetmeck.ui.home.page
+package com.monday8am.tweetmeck.ui.home
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
+import androidx.fragment.app.activityViewModels
 import com.monday8am.tweetmeck.data.TimelineQuery
 import com.monday8am.tweetmeck.ui.timeline.TimelineFragment
 import com.monday8am.tweetmeck.util.lazyFast
-import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
+@AndroidEntryPoint
 class HomePageFragment : TimelineFragment() {
 
     companion object {
-        private const val ARG_QUERY_ID = "arg.QUERY_ID"
         private const val ARG_INDEX_ID = "arg.INDEX_ID"
 
         @JvmStatic
@@ -24,27 +24,23 @@ class HomePageFragment : TimelineFragment() {
             }
     }
 
-    private val query: TimelineQuery by lazyFast {
-        val queryString =
-            arguments?.getString(ARG_QUERY_ID) ?: throw IllegalStateException("Missing arguments!")
-        TimelineQuery.fromFormattedString(queryString)
-    }
+    private val sharedViewModel: HomeViewModel by activityViewModels()
 
     private val position: Int by lazyFast {
         arguments?.getInt(ARG_INDEX_ID) ?: -1
     }
 
-    private lateinit var pageViewModel: HomePageViewModel
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        pageViewModel = getSharedViewModel(from = { requireParentFragment() })
-        pageViewModel.scrollToTop.observe(viewLifecycleOwner, Observer {
-            Timber.d("Selected position $it")
-            if (it == position) {
-                // binding.homeTimelineView.scrollToTop()
+        sharedViewModel.scrollToTop.observe(
+            viewLifecycleOwner,
+            {
+                Timber.d("Selected position $it")
+                if (it == position) {
+                    // binding.homeTimelineView.scrollToTop()
+                }
             }
-        })
+        )
     }
 }

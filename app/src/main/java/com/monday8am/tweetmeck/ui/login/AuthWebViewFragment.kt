@@ -93,16 +93,19 @@ class AuthWebViewFragment : Fragment(R.layout.fragment_auth_web_view) {
             }
         }
 
-        viewModel.authState.observe(viewLifecycleOwner, EventObserver { state ->
-            when (state) {
-                is AuthState.WaitingForUserCredentials -> {
-                    requestToken = state.requestToken
-                    webView.loadUrl(state.url)
-                }
-                else -> {
-                    getNavigationHandle<AuthenticateKey>().close()
+        viewModel.authState.observe(
+            viewLifecycleOwner,
+            EventObserver { state ->
+                when (state) {
+                    is AuthState.WaitingForUserCredentials -> {
+                        requestToken = state.requestToken
+                        webView.loadUrl(state.url)
+                    }
+                    else -> {
+                        getNavigationHandle<AuthenticateKey>().close()
+                    }
                 }
             }
-        })
+        )
     }
 }

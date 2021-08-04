@@ -44,15 +44,20 @@ class OnboardingActivity : AppCompatActivity() {
             viewModel = onboardingViewModel
             lifecycleOwner = this@OnboardingActivity
         }
-        onboardingViewModel.navigateToMainActivity.observe(this, EventObserver {
-            this.run {
-                navigation.executeInstruction(NavigationInstruction.Open(
-                    navigationDirection = NavigationDirection.REPLACE_ROOT,
-                    navigationKey = MainKey(),
-                    animations = NavigationAnimations.default
-                ))
+        onboardingViewModel.navigateToMainActivity.observe(
+            this,
+            EventObserver {
+                this.run {
+                    navigation.executeInstruction(
+                        NavigationInstruction.Open(
+                            navigationDirection = NavigationDirection.REPLACE_ROOT,
+                            navigationKey = MainKey(),
+                            animations = NavigationAnimations.default
+                        )
+                    )
+                }
             }
-        })
+        )
 
         bindContent(binding)
         setImmersiveMode()
@@ -63,8 +68,8 @@ class OnboardingActivity : AppCompatActivity() {
         // immersive mode so images can draw behind the status bar
         val decor = window.decorView
         val flags = decor.systemUiVisibility or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         decor.systemUiVisibility = flags
     }
 
@@ -111,7 +116,8 @@ class OnboardingActivity : AppCompatActivity() {
         val clickableSpans = TimelineTopics.values().map {
             getClickableSpan(
                 action = onboardingViewModel::getStartedClick,
-                value = it)
+                value = it
+            )
         }
 
         var offSet = 0

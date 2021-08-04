@@ -84,12 +84,14 @@ data class Tweet(
     private fun setFavorite(content: UiTweet, newValue: Boolean): UiTweet {
         return content.copy(
             favorited = newValue,
-            favoriteCount = if (newValue) content.favoriteCount + 1 else content.favoriteCount - 1)
+            favoriteCount = if (newValue) content.favoriteCount + 1 else content.favoriteCount - 1
+        )
     }
 
     private fun setRetweeted(content: UiTweet, newValue: Boolean): UiTweet {
         return content.copy(
             retweeted = newValue,
-            retweetCount = if (newValue) content.retweetCount + 1 else content.retweetCount - 1)
+            retweetCount = if (newValue) content.retweetCount + 1 else content.retweetCount - 1
+        )
     }
 }

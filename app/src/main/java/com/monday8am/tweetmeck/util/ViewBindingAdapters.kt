@@ -162,16 +162,20 @@ fun applySystemWindows(
     marginGestureRight: Boolean,
     marginGestureBottom: Boolean
 ) {
-    require(((padSystemWindowLeft && padGestureLeft) ||
-            (padSystemWindowTop && padGestureTop) ||
-            (padSystemWindowRight && padGestureRight) ||
-            (padSystemWindowBottom && padGestureBottom) ||
-            (marginSystemWindowLeft && marginGestureLeft) ||
-            (marginSystemWindowTop && marginGestureTop) ||
-            (marginSystemWindowRight && marginGestureRight) ||
-            (marginSystemWindowBottom && marginGestureBottom)).not()) {
+    require(
+        (
+            (padSystemWindowLeft && padGestureLeft) ||
+                (padSystemWindowTop && padGestureTop) ||
+                (padSystemWindowRight && padGestureRight) ||
+                (padSystemWindowBottom && padGestureBottom) ||
+                (marginSystemWindowLeft && marginGestureLeft) ||
+                (marginSystemWindowTop && marginGestureTop) ||
+                (marginSystemWindowRight && marginGestureRight) ||
+                (marginSystemWindowBottom && marginGestureBottom)
+            ).not()
+    ) {
         "Invalid parameters. Can not request system window and gesture inset handling" +
-                " for the same dimension"
+            " for the same dimension"
     }
 
     view.doOnApplyWindowInsets { v, insets, initialPadding, initialMargin ->
@@ -206,8 +210,8 @@ fun applySystemWindows(
 
         // Margin handling
         val marginInsetRequested = marginSystemWindowLeft || marginGestureLeft ||
-                marginSystemWindowTop || marginGestureTop || marginSystemWindowRight ||
-                marginGestureRight || marginSystemWindowBottom || marginGestureBottom
+            marginSystemWindowTop || marginGestureTop || marginSystemWindowRight ||
+            marginGestureRight || marginSystemWindowBottom || marginGestureBottom
         require(!(marginInsetRequested && v.layoutParams !is ViewGroup.MarginLayoutParams)) {
             "Margin inset handling requested but view LayoutParams do not extend MarginLayoutParams"
         }
