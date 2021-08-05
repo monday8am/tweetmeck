@@ -24,9 +24,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.monday8am.tweetmeck.R
 import com.monday8am.tweetmeck.ui.home.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import dev.enro.annotations.NavigationDestination
+import dev.enro.core.NavigationKey
 import kotlinx.android.parcel.Parcelize
-import nav.enro.annotations.NavigationDestination
-import nav.enro.core.NavigationKey
 
 /**
  * Dialog that confirms that a user wishes to sign out.

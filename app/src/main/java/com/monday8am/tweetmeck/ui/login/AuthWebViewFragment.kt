@@ -18,11 +18,11 @@ import com.monday8am.tweetmeck.ui.delegates.AuthState
 import com.monday8am.tweetmeck.ui.home.HomeViewModel
 import com.monday8am.tweetmeck.util.EventObserver
 import dagger.hilt.android.AndroidEntryPoint
+import dev.enro.annotations.NavigationDestination
+import dev.enro.core.NavigationKey
+import dev.enro.core.close
+import dev.enro.core.getNavigationHandle
 import kotlinx.android.parcel.Parcelize
-import nav.enro.annotations.NavigationDestination
-import nav.enro.core.NavigationKey
-import nav.enro.core.close
-import nav.enro.core.getNavigationHandle
 
 @Parcelize
 class AuthenticateKey : NavigationKey

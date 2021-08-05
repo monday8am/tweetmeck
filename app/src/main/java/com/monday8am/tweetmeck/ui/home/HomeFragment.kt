@@ -21,11 +21,11 @@ import com.monday8am.tweetmeck.ui.login.SignInKey
 import com.monday8am.tweetmeck.ui.login.SignOutKey
 import com.monday8am.tweetmeck.util.EventObserver
 import dagger.hilt.android.AndroidEntryPoint
+import dev.enro.annotations.NavigationDestination
+import dev.enro.core.NavigationKey
+import dev.enro.core.forward
+import dev.enro.core.navigationHandle
 import kotlinx.android.parcel.Parcelize
-import nav.enro.annotations.NavigationDestination
-import nav.enro.core.NavigationKey
-import nav.enro.core.forward
-import nav.enro.core.navigationHandle
 import timber.log.Timber
 
 @Parcelize

@@ -26,13 +26,13 @@ import com.monday8am.tweetmeck.ui.onboarding.OnboardingActivity
 import com.monday8am.tweetmeck.ui.onboarding.OnnboardingKey
 import com.monday8am.tweetmeck.util.EventObserver
 import dagger.hilt.android.AndroidEntryPoint
+import dev.enro.annotations.NavigationDestination
+import dev.enro.core.NavigationAnimations
+import dev.enro.core.NavigationDirection
+import dev.enro.core.NavigationInstruction
+import dev.enro.core.NavigationKey
+import dev.enro.core.addOpenInstruction
 import kotlinx.android.parcel.Parcelize
-import nav.enro.annotations.NavigationDestination
-import nav.enro.core.NavigationAnimations
-import nav.enro.core.NavigationDirection
-import nav.enro.core.NavigationInstruction
-import nav.enro.core.NavigationKey
-import nav.enro.core.addOpenInstruction
 
 /**
  * A 'Trampoline' activity for sending users to an appropriate screen on launch.
