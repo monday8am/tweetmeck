@@ -26,7 +26,6 @@ import blue.starry.penicillin.endpoints.timeline
 import blue.starry.penicillin.endpoints.timeline.listTimeline
 import blue.starry.penicillin.endpoints.users
 import blue.starry.penicillin.endpoints.users.showByUserId
-import blue.starry.penicillin.extensions.execute
 import blue.starry.penicillin.models.Status
 import blue.starry.penicillin.models.TwitterList
 import blue.starry.penicillin.models.User
