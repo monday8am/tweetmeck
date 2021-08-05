@@ -16,22 +16,11 @@
 
 package com.monday8am.tweetmeck.ui.launcher
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.monday8am.tweetmeck.MainActivity
-import com.monday8am.tweetmeck.MainKey
-import com.monday8am.tweetmeck.ui.onboarding.OnboardingActivity
-import com.monday8am.tweetmeck.ui.onboarding.OnnboardingKey
-import com.monday8am.tweetmeck.util.EventObserver
 import dagger.hilt.android.AndroidEntryPoint
-import dev.enro.annotations.NavigationDestination
-import dev.enro.core.NavigationAnimations
-import dev.enro.core.NavigationDirection
-import dev.enro.core.NavigationInstruction
 import dev.enro.core.NavigationKey
-import dev.enro.core.addOpenInstruction
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -41,29 +30,11 @@ import kotlinx.android.parcel.Parcelize
 class LauncherKey : NavigationKey
 
 @AndroidEntryPoint
-@NavigationDestination(OnnboardingKey::class, allowDefault = true)
 class LauncherActivity : AppCompatActivity() {
 
     private val launchViewModel: LaunchViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        launchViewModel.launchDestination.observe(
-            this,
-            EventObserver { destination ->
-                val instruction = NavigationInstruction.Open(
-                    navigationDirection = NavigationDirection.REPLACE_ROOT,
-                    navigationKey = if (destination == LaunchDestination.MAIN_ACTIVITY) MainKey() else OnnboardingKey(),
-                    animations = NavigationAnimations.none
-                )
-                val intent = Intent(
-                    this,
-                    if (destination == LaunchDestination.MAIN_ACTIVITY) MainActivity::class.java else OnboardingActivity::class.java
-                ).addOpenInstruction(instruction)
-                startActivity(intent)
-                finish()
-            }
-        )
     }
 }
